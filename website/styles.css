@@ -3,27 +3,27 @@
    Inspired by GeoAxis: Obsidian Dark (#050505), Editorial Serif & Glassmorphism
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
   --bg: #050505;
-  --bg-gradient: radial-gradient(circle at 50% 0%, #121212 0%, #050505 60%);
-  --surface-1: #0d0d0d;
-  --surface-2: #141414;
-  --surface-3: #1a1a1a;
-  --surface-glass: rgba(18, 18, 18, 0.72);
+  --bg-gradient: radial-gradient(circle at 50% 0%, #111111 0%, #050505 70%);
+  --surface-1: #0b0b0b;
+  --surface-2: #121212;
+  --surface-3: #181818;
+  --surface-glass: rgba(14, 14, 14, 0.75);
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.14);
-  --border-active: rgba(255, 255, 255, 0.3);
+  --border-active: rgba(255, 255, 255, 0.32);
   --text-primary: #ffffff;
-  --text-secondary: #8e8e8e;
-  --text-muted: #555555;
+  --text-secondary: #949494;
+  --text-muted: #585858;
   --accent-white: #ffffff;
   --radius-container: 32px;
-  --radius-card: 22px;
+  --radius-card: 20px;
   --radius-pill: 9999px;
-  --shadow-card: 0 30px 60px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-nav: 0 20px 40px -10px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-card: 0 30px 80px -20px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-nav: 0 20px 40px -10px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
 /* Light / Dim / Midnight theme variable switches */
@@ -92,27 +92,27 @@ a {
 
 /* Utility Layout */
 .container {
-  max-width: 1200px;
+  max-width: 1220px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
 .section-spacing {
-  padding: 96px 0;
+  padding: 36px 0;
 }
 
 @media (max-width: 768px) {
   .section-spacing {
-    padding: 64px 0;
+    padding: 24px 0;
   }
 }
 
-/* Rounded Dark Section Containers */
+/* Rounded Dark Section Containers (Matches Screenshot) */
 .dark-container {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-container);
-  padding: 64px;
+  padding: 68px 56px;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-card);
@@ -159,16 +159,16 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
   background: var(--surface-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  padding: 8px 10px 8px 18px;
+  padding: 6px 6px 6px 18px;
   box-shadow: var(--shadow-nav);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  max-width: 740px;
+  max-width: 760px;
   width: 100%;
 }
 
@@ -497,14 +497,15 @@ a {
 }
 
 .why-choose-left h2 {
-  font-size: 3.6rem;
-  margin-bottom: 18px;
-  letter-spacing: -0.02em;
+  font-size: 4rem;
+  line-height: 1.05;
+  margin-bottom: 20px;
+  letter-spacing: -0.025em;
 }
 
 .why-choose-left p {
-  font-size: 1.1rem;
-  max-width: 380px;
+  font-size: 1.15rem;
+  max-width: 400px;
   color: var(--text-secondary);
   line-height: 1.6;
 }
@@ -560,19 +561,20 @@ a {
    ========================================================================== */
 .view-features-banner {
   text-align: center;
-  padding: 80px 48px;
+  padding: 88px 48px;
 }
 
 .view-features-banner h2 {
-  font-size: 3.8rem;
+  font-size: 4.2rem;
   margin-bottom: 20px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
 }
 
 .view-features-banner p {
-  max-width: 640px;
+  max-width: 650px;
   margin: 0 auto 36px auto;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   color: var(--text-secondary);
   line-height: 1.6;
 }
