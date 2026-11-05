@@ -11,7 +11,11 @@ import '../domain/services/task_service.dart';
 import '../domain/services/memory_vault_service.dart';
 import 'repositories/entries_repository.dart';
 import 'repositories/tasks_and_goals_repository.dart';
+import '../domain/models/habit_item.dart';
 import '../domain/services/inbox_service.dart';
+import '../domain/services/habit_service.dart';
+import '../domain/services/focus_service.dart';
+import '../domain/services/wellness_service.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
@@ -19,6 +23,9 @@ class AppRepository extends ChangeNotifier {
   final EntriesRepository entriesRepository = EntriesRepository();
   final TasksAndGoalsRepository tasksAndGoalsRepository = TasksAndGoalsRepository();
   final InboxService inboxService = InboxService();
+  final HabitService habitService = HabitService();
+  final FocusService focusService = FocusService();
+  final WellnessService wellnessService = WellnessService();
 
   List<AlarmItem> alarms = [];
   List<DailyPlanBlock> planBlocks = [];
@@ -204,5 +211,49 @@ class AppRepository extends ChangeNotifier {
 
     // 6. Seed Simulated Month for Part 2 Verification
     entriesRepository.seedSimulatedMonth(now.year, now.month);
+
+    // 7. Seed Active Habits for Part 7
+    habitService.saveHabit(
+      HabitItem(
+        id: 'habit_water',
+        name: 'Daily Hydration (2.5L)',
+        nameBn: 'পানি পান (২.৫ লিটার)',
+        glyph: '💧',
+        targetValue: 2500,
+        unit: 'ml',
+        currentStreak: 5,
+        longestStreak: 12,
+        freezeTokens: 1,
+        createdAt: now.subtract(const Duration(days: 30)),
+      ),
+    );
+    habitService.saveHabit(
+      HabitItem(
+        id: 'habit_read',
+        name: 'Read 15 Pages',
+        nameBn: 'বই পড়া (১৫ পৃষ্ঠা)',
+        glyph: '📖',
+        targetValue: 15,
+        unit: 'pages',
+        currentStreak: 7,
+        longestStreak: 14,
+        freezeTokens: 2,
+        createdAt: now.subtract(const Duration(days: 20)),
+      ),
+    );
+    habitService.saveHabit(
+      HabitItem(
+        id: 'habit_workout',
+        name: 'Morning Workout & Stretch',
+        nameBn: 'সকালের ব্যায়াম ও স্ট্রেচিং',
+        glyph: '⚡',
+        targetValue: 30,
+        unit: 'mins',
+        currentStreak: 3,
+        longestStreak: 9,
+        freezeTokens: 0,
+        createdAt: now.subtract(const Duration(days: 15)),
+      ),
+    );
   }
 }

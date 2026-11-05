@@ -1,6 +1,9 @@
 import 'journal_entry.dart';
 
 class DayPageModel {
+  static String formatDayKey(DateTime dt) =>
+      '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+
   final String dayKey; // YYYY-MM-DD
   final DateTime date;
   final String? title;
