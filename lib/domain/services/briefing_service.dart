@@ -58,6 +58,23 @@ class BriefingService {
     );
   }
 
+  /// Returns spoken TTS script for Morning Briefing
+  static String generateSpokenMorningBriefing({
+    required DailyBriefing briefing,
+    String? frogTitle,
+    bool isBangla = false,
+  }) {
+    if (isBangla) {
+      return '${briefing.greeting}! ${briefing.weatherBrief} '
+          '${frogTitle != null ? 'আজকের প্রধান লক্ষ্য: $frogTitle। ' : ''}'
+          'আজকের মোট ${briefing.topTaskTitles.length}টি শীর্ষ কাজ আপনার অপেক্ষায় রয়েছে।';
+    } else {
+      return '${briefing.greeting}! ${briefing.weatherBrief} '
+          '${frogTitle != null ? 'Daily Big Frog target: $frogTitle. ' : ''}'
+          'You have ${briefing.topTaskTitles.length} high priority tasks lined up. Master your day.';
+    }
+  }
+
   /// Builds an Evening Reflection summary with rollover candidates.
   static EveningReflection generateEveningReview({
     required List<TaskItem> allTasks,

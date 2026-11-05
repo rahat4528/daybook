@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import '../../core/design/app_tokens.dart';
 import '../../core/enums/core_enums.dart';
 
 class SkyVisualTheme {
   final List<Color> gradientColors;
-  final Color celestialColor; // Sun or Moon
+  final Color celestialColor; // Sun (#B6FF00) or Moon (#FFFFFF)
   final double celestialX; // 0.0 (left) to 1.0 (right)
   final double celestialY; // 0.0 (top) to 1.0 (horizon)
   final bool isMoon;
   final double starOpacity;
   final double cloudDensity;
   final int rainParticleCount;
+  final bool hasThunder;
+  final bool isFoggy;
   final Color ambientTextColor;
 
   const SkyVisualTheme({
@@ -21,6 +24,8 @@ class SkyVisualTheme {
     this.starOpacity = 0.0,
     this.cloudDensity = 0.2,
     this.rainParticleCount = 0,
+    this.hasThunder = false,
+    this.isFoggy = false,
     this.ambientTextColor = Colors.white,
   });
 }
@@ -38,7 +43,7 @@ class WeatherSceneEngine {
     return WeatherType.overcast;
   }
 
-  /// Computes complete visual theme for dynamic CustomPainter.
+  /// Computes complete visual theme strictly following DayBook OLED Monochrome + Lime rules
   static SkyVisualTheme computeTheme({
     required SkyPhase phase,
     required WeatherType condition,
@@ -47,120 +52,95 @@ class WeatherSceneEngine {
   }) {
     final timePercent = (hour * 60 + minute) / 1440.0;
 
-    List<Color> gradient;
-    Color celestial;
+    // Strict OLED black (#000000) base with soft ambient horizon gradient
+    List<Color> gradient = [AppTokens.bg, AppTokens.surface1];
+    Color celestial = AppTokens.accentLime;
     bool isMoon = false;
     double starOpacity = 0.0;
     double cloudDensity = 0.2;
     int rainCount = 0;
+    bool hasThunder = false;
+    bool isFoggy = false;
     double celestialY = 0.3;
-    Color ambientText = Colors.white;
 
     switch (phase) {
       case SkyPhase.dawn:
         gradient = [
-          const Color(0xFF1E1B4B), // Deep indigo
-          const Color(0xFF4C1D95), // Violet
-          const Color(0xFFF59E0B), // Sunrise Amber
-          const Color(0xFFFED7AA), // Peach horizon
+          AppTokens.bg,
+          AppTokens.surface1,
+          AppTokens.accentLime.withValues(alpha: 0.08),
         ];
-        celestial = const Color(0xFFFDE68A);
-        celestialY = 0.65;
-        starOpacity = 0.3;
+        celestial = AppTokens.accentLime;
+        celestialY = 0.60;
+        starOpacity = 0.25;
         break;
 
       case SkyPhase.morning:
-        gradient = [
-          const Color(0xFF0284C7), // Morning sky blue
-          const Color(0xFF38BDF8),
-          const Color(0xFFBAE6FD),
-        ];
-        celestial = const Color(0xFFFEF08A);
+        gradient = [AppTokens.bg, AppTokens.surface1];
+        celestial = AppTokens.accentLime;
         celestialY = 0.25;
-        ambientText = const Color(0xFF0F172A);
         break;
 
       case SkyPhase.afternoon:
-        gradient = [
-          const Color(0xFF0369A1), // Vibrant azure
-          const Color(0xFF0EA5E9),
-          const Color(0xFF7DD3FC),
-        ];
-        celestial = const Color(0xFFFDE047);
-        celestialY = 0.18;
-        ambientText = const Color(0xFF0F172A);
+        gradient = [AppTokens.bg, AppTokens.surface1];
+        celestial = AppTokens.accentLime;
+        celestialY = 0.20;
         break;
 
       case SkyPhase.goldenHour:
         gradient = [
-          const Color(0xFF312E81), // Dusk twilight
-          const Color(0xFFC026D3), // Magenta glow
-          const Color(0xFFF97316), // Blazing orange
-          const Color(0xFFFDE047), // Gold horizon
+          AppTokens.bg,
+          AppTokens.surface1,
+          AppTokens.accentLime.withValues(alpha: 0.12),
         ];
-        celestial = const Color(0xFFF97316);
-        celestialY = 0.6;
+        celestial = AppTokens.accentLime;
+        celestialY = 0.55;
         break;
 
       case SkyPhase.dusk:
-        gradient = [
-          const Color(0xFF0F172A),
-          const Color(0xFF311042),
-          const Color(0xFF581C87),
-          const Color(0xFF9A3412),
-        ];
-        celestial = const Color(0xFFCBD5E1);
-        celestialY = 0.75;
-        starOpacity = 0.5;
+        gradient = [AppTokens.bg, AppTokens.surface1];
+        celestial = Colors.white70;
+        celestialY = 0.70;
+        starOpacity = 0.45;
         break;
 
       case SkyPhase.night:
-        gradient = [
-          const Color(0xFF020617), // Midnight void
-          const Color(0xFF0B1120),
-          const Color(0xFF172554),
-        ];
-        celestial = const Color(0xFFF1F5F9); // Pearly moon
+        gradient = [AppTokens.bg, AppTokens.surface1];
+        celestial = Colors.white;
         isMoon = true;
-        starOpacity = 0.95;
-        celestialY = 0.22;
+        starOpacity = 0.90;
+        celestialY = 0.25;
         break;
     }
 
     // Weather condition modifiers
     switch (condition) {
       case WeatherType.partlyCloudy:
-        cloudDensity = 0.5;
+        cloudDensity = 0.45;
         break;
       case WeatherType.overcast:
         cloudDensity = 0.85;
-        gradient = gradient.map((c) => Color.lerp(c, const Color(0xFF475569), 0.4)!).toList();
         break;
       case WeatherType.rain:
-        cloudDensity = 0.9;
-        rainCount = 45;
-        gradient = gradient.map((c) => Color.lerp(c, const Color(0xFF334155), 0.5)!).toList();
+        cloudDensity = 0.85;
+        rainCount = 20; // Hard-capped at 20-25 particles for battery conservation
         break;
       case WeatherType.thunderstorm:
-        cloudDensity = 0.95;
-        rainCount = 75;
-        gradient = [
-          const Color(0xFF090D16),
-          const Color(0xFF1E1B4B),
-          const Color(0xFF1E293B),
-        ];
+        cloudDensity = 0.90;
+        rainCount = 25;
+        hasThunder = true;
         break;
       case WeatherType.foggy:
-        cloudDensity = 0.7;
-        gradient = gradient.map((c) => Color.lerp(c, const Color(0xFFCBD5E1), 0.55)!).toList();
+        cloudDensity = 0.60;
+        isFoggy = true;
         break;
       case WeatherType.clear:
-        cloudDensity = 0.15;
+        cloudDensity = 0.10;
         break;
     }
 
-    // Position of sun / moon across horizontal axis (0.15 to 0.85)
-    final celestialX = (0.15 + (timePercent * 0.7)).clamp(0.15, 0.85);
+    // Horizontal celestial trajectory across width
+    final celestialX = (0.15 + (timePercent * 0.70)).clamp(0.15, 0.85);
 
     return SkyVisualTheme(
       gradientColors: gradient,
@@ -171,8 +151,9 @@ class WeatherSceneEngine {
       starOpacity: starOpacity,
       cloudDensity: cloudDensity,
       rainParticleCount: rainCount,
-      ambientTextColor: ambientText,
+      hasThunder: hasThunder,
+      isFoggy: isFoggy,
+      ambientTextColor: Colors.white,
     );
   }
 }
-

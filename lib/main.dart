@@ -16,6 +16,8 @@ import 'presentation/widgets/sky_canvas.dart';
 import 'presentation/widgets/daily_progress_ring.dart';
 import 'presentation/widgets/briefing_sheets.dart';
 import 'domain/services/briefing_service.dart';
+import 'domain/models/weather_info.dart';
+import 'domain/services/planner_algorithm.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -110,6 +112,8 @@ class DayBookShell extends StatefulWidget {
 
 class _DayBookShellState extends State<DayBookShell> {
   int _currentIndex = 0;
+  final Set<String> _quickHabitsCompleted = {};
+  String _selectedMood = '⚡ High Energy';
 
   void _openMorningBriefing() {
     final briefing = BriefingService.generateMorningBriefing(
@@ -433,6 +437,39 @@ class _DayBookShellState extends State<DayBookShell> {
           ),
           const SizedBox(height: 12),
 
+          // Weather Strip
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.surface1,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      WeatherInfo.defaultDhaka().skyGlyph,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${repo.weatherState.temperatureC.toStringAsFixed(0)}°C • ${repo.weatherState.condition.label}',
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 12.5, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Text(
+                  repo.weatherState.cityName,
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+
           // 2. Daily Trajectory Progress Ring
           DailyProgressRing(
             completedTasks: completedCount,
@@ -443,6 +480,40 @@ class _DayBookShellState extends State<DayBookShell> {
             sleepMinute: repo.sleepMinute,
           ),
           const SizedBox(height: 8),
+
+          // Next Alarm Card (if available)
+          if (repo.alarms.isNotEmpty) ...[
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.surface1,
+                borderRadius: BorderRadius.circular(AppRadius.card),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.alarm, color: AppColors.accentLime, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          repo.isBangla ? 'পরবর্তী অ্যালার্ম' : 'NEXT ALARM',
+                          style: const TextStyle(color: AppColors.accentLime, fontSize: 10.5, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${repo.alarms.first.timeFormatted} • ${repo.alarms.first.label} (${repo.alarms.first.challengeType.displayName})',
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
 
           // 3. Signature Day Page Entry Card
           Container(
@@ -503,6 +574,83 @@ class _DayBookShellState extends State<DayBookShell> {
             ),
           ),
 
+          // Habit Quick-Tap Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+            child: Text(
+              repo.isBangla ? 'দৈনিক অভ্যাস কুইক-ট্যাপ' : 'HABITS QUICK-TAP',
+              style: AppTypography.sectionHeader,
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+            child: Row(
+              children: ['💧 Water', '🚶 Walk', '📖 Read 15m', '💻 Code'].map((h) {
+                final isDone = _quickHabitsCompleted.contains(h);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(h),
+                    selected: isDone,
+                    backgroundColor: AppColors.surface1,
+                    selectedColor: AppColors.accentLime,
+                    labelStyle: TextStyle(
+                      color: isDone ? Colors.black : AppColors.textPrimary,
+                      fontWeight: isDone ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 12,
+                    ),
+                    side: BorderSide(color: isDone ? AppColors.accentLime : AppColors.border),
+                    onSelected: (val) {
+                      setState(() {
+                        if (val) {
+                          _quickHabitsCompleted.add(h);
+                        } else {
+                          _quickHabitsCompleted.remove(h);
+                        }
+                      });
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
+          // Mood & Energy Selector
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+            child: Text(
+              repo.isBangla ? 'মন ও শক্তি স্তর' : 'MOOD & ENERGY',
+              style: AppTypography.sectionHeader,
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+            child: Row(
+              children: ['⚡ High Energy', '😊 Focused', '😐 Normal', '🌧 Low Energy'].map((m) {
+                final isSelected = _selectedMood == m;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(m),
+                    selected: isSelected,
+                    backgroundColor: AppColors.surface1,
+                    selectedColor: AppColors.accentLime,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.black : AppColors.textPrimary,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 12,
+                    ),
+                    side: BorderSide(color: isSelected ? AppColors.accentLime : AppColors.border),
+                    onSelected: (_) => setState(() => _selectedMood = m),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 8),
+
           // 4. Section Title
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
@@ -523,52 +671,69 @@ class _DayBookShellState extends State<DayBookShell> {
                 child: Text('All tasks completed for today.', style: AppTypography.bodySecondary),
               ),
             )
-          else
-            ...todayTasks.take(3).map((task) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.surface1,
-                  borderRadius: BorderRadius.circular(AppRadius.card),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-                        color: task.isCompleted ? AppColors.accentLime : AppColors.textSecondary,
-                      ),
-                      onPressed: () {
-                        repo.taskService.toggleTaskCompletion(task.id);
-                        repo.notifyDataChanged();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            task.title,
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                              decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                            ),
-                          ),
-                          Text(
-                            '${task.category} • ${task.estimatedMinutes}m',
-                            style: AppTypography.bodySecondary,
-                          ),
-                        ],
+          else ...[
+            Builder(builder: (context) {
+              final frogTask = PlannerAlgorithm.pickEatTheFrog(todayTasks);
+              return Column(
+                children: todayTasks.take(3).map((task) {
+                  final isFrog = task.id == frogTask?.id;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface1,
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      border: Border.all(
+                        color: isFrog ? AppColors.accentLime : AppColors.border,
+                        width: isFrog ? 1.5 : 1.0,
                       ),
                     ),
-                  ],
-                ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+                            color: task.isCompleted ? AppColors.accentLime : AppColors.textSecondary,
+                          ),
+                          onPressed: () {
+                            repo.taskService.toggleTaskCompletion(task.id);
+                            repo.notifyDataChanged();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  if (isFrog) const Text('🐸 ', style: TextStyle(fontSize: 14)),
+                                  Expanded(
+                                    child: Text(
+                                      task.title,
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                '${task.category} • ${task.estimatedMinutes}m',
+                                style: AppTypography.bodySecondary,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
               );
             }),
+          ],
           const SizedBox(height: 24),
         ],
       ),
