@@ -18,3 +18,4 @@ DayBook stores deeply intimate personal data: daily journal pages, financial led
 - No unencrypted SQLite plaintext exists on device storage.
 - Even if device files are inspected via ADB or disk imaging, the database cannot be decrypted without the hardware-bound Keystore entry.
 - Minimal performance overhead (<3-5% query latency impact on SQLite operations).
+

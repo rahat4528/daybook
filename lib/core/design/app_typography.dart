@@ -85,3 +85,4 @@ class AppTypography {
     return spans;
   }
 }
+

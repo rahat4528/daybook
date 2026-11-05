@@ -29,3 +29,4 @@ We build a dedicated native Kotlin module in `android/app/src/main/kotlin/.../al
 ## Consequences
 - Guaranteed reliability on stock Android.
 - Requires explicit user guidance for OEM autostart settings (Xiaomi, Samsung, Realme), addressed in Part 4.
+

@@ -98,3 +98,4 @@ class AlarmPlatformChannel(private val context: Context) : MethodChannel.MethodC
         }
     }
 }
+

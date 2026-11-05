@@ -19,3 +19,4 @@ We set **`minSdk = 26` (Android 8.0 Oreo)** and **`targetSdk = 34` (Android 14)*
 - Supports >98% of active devices in Bangladesh.
 - Simplifies native Kotlin codebase by removing pre-Oreo notification and service workarounds.
 - Eliminates security vulnerabilities associated with legacy cryptographic providers on API <26.
+
