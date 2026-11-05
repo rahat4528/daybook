@@ -1,0 +1,11 @@
+{
+  "name": "vectis-ai-website",
+  "version": "1.0.0",
+  "description": "High-end luxury SaaS website for Vectis AI location intelligence",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node verify_website.js"
+  },
+  "author": "Vectis AI Engineering",
+  "license": "UNLICENSED"
+}
