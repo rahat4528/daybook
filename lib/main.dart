@@ -15,6 +15,8 @@ import 'presentation/screens/day_page_screen.dart';
 import 'presentation/widgets/sky_canvas.dart';
 import 'presentation/widgets/daily_progress_ring.dart';
 import 'presentation/widgets/briefing_sheets.dart';
+import 'presentation/widgets/universal_quick_capture_sheet.dart';
+import 'presentation/screens/inbox_screen.dart';
 import 'domain/services/briefing_service.dart';
 import 'domain/models/weather_info.dart';
 import 'domain/services/planner_algorithm.dart';
@@ -166,88 +168,14 @@ class _DayBookShellState extends State<DayBookShell> {
   }
 
   void _openQuickCaptureModal() {
-    final textController = TextEditingController();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.surface1,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
-        side: BorderSide(color: AppColors.border),
-      ),
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            top: AppSpacing.md,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + AppSpacing.md,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Universal Quick Capture', style: AppTypography.sectionHeader),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: AppColors.textSecondary),
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: textController,
-                autofocus: true,
-                style: const TextStyle(color: AppColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: 'Enter task, expense (e.g. 150 tk), or note...',
-                  hintStyle: const TextStyle(color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface2,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                    borderSide: const BorderSide(color: AppColors.accentLime),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accentLime,
-                    foregroundColor: AppColors.textOnLime,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
-                  ),
-                  onPressed: () {
-                    final text = textController.text.trim();
-                    if (text.isNotEmpty) {
-                      widget.repository.taskService.addTask(
-                        title: text,
-                        estimatedMinutes: 25,
-                      );
-                      widget.repository.notifyDataChanged();
-                      Navigator.of(ctx).pop();
-                    }
-                  },
-                  child: const Text('CAPTURE INTO DAY PAGE', style: AppTypography.buttonText),
-                ),
-              ),
-            ],
-          ),
-        );
+    UniversalQuickCaptureSheet.show(
+      context,
+      isBangla: widget.repository.isBangla,
+      inboxService: widget.repository.inboxService,
+      tasksRepo: widget.repository.tasksAndGoalsRepository,
+      entriesRepo: widget.repository.entriesRepository,
+      onSaved: () {
+        widget.repository.notifyDataChanged();
       },
     );
   }
@@ -384,6 +312,28 @@ class _DayBookShellState extends State<DayBookShell> {
                                     builder: (_) => MemoryScreen(
                                       vaultService: repo.memoryVaultService,
                                       onDataChanged: repo.notifyDataChanged,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: Badge(
+                                isLabelVisible: repo.inboxService.unprocessedCount > 0,
+                                label: Text('${repo.inboxService.unprocessedCount}'),
+                                backgroundColor: AppColors.accentLime,
+                                textColor: Colors.black,
+                                child: const Icon(Icons.inbox_outlined, color: AppColors.textPrimary),
+                              ),
+                              tooltip: 'Inbox Triage',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => InboxScreen(
+                                      isBangla: repo.isBangla,
+                                      inboxService: repo.inboxService,
+                                      tasksRepo: repo.tasksAndGoalsRepository,
+                                      entriesRepo: repo.entriesRepository,
                                     ),
                                   ),
                                 );
