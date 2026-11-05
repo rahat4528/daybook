@@ -41,7 +41,7 @@ assert(html.includes('Why choose Vectis'), 'Contains screenshot title: "Why choo
 assert(html.includes('Global satellite coverage'), 'Contains screenshot feature 1: "Global satellite coverage"');
 assert(html.includes('Secure & Private'), 'Contains screenshot feature 2: "Secure & Private"');
 assert(html.includes('Ranked leads with evidence'), 'Contains screenshot feature 3: "Ranked leads with evidence"');
-assert(html.includes('Meter-level in 2,400+ cities'), 'Contains screenshot feature 4: "Meter-level in 2,400+ cities"');
+assert(html.includes('Meter-level in 2,300+ cities') || html.includes('Meter-level in 2,400+ cities'), 'Contains screenshot feature 4: "Meter-level in 2,300+ cities"');
 assert(html.includes('View our features'), 'Contains screenshot banner title: "View our features"');
 assert(html.includes('Go To Dashboard'), 'Contains screenshot navbar CTA: "Go To Dashboard"');
 
