@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
-import 'core/constants/app_constants.dart';
-import 'core/localization/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/design/app_tokens.dart';
+import 'core/design/app_typography.dart';
+import 'core/design/component_gallery.dart';
 import 'data/app_repository.dart';
-import 'domain/services/briefing_service.dart';
-import 'presentation/widgets/sky_canvas.dart';
-import 'presentation/widgets/daily_progress_ring.dart';
-import 'presentation/widgets/briefing_sheets.dart';
 import 'presentation/screens/tasks_screen.dart';
 import 'presentation/screens/planner_screen.dart';
 import 'presentation/screens/alarm_screen.dart';
 import 'presentation/screens/assistant_screen.dart';
 import 'presentation/screens/memory_screen.dart';
 import 'presentation/screens/settings_screen.dart';
+import 'presentation/widgets/sky_canvas.dart';
+import 'presentation/widgets/daily_progress_ring.dart';
+import 'presentation/widgets/briefing_sheets.dart';
+import 'domain/services/briefing_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const DaybookRootApp());
+  runApp(const ProviderScope(child: DayBookApp()));
 }
 
-class DaybookRootApp extends StatefulWidget {
-  const DaybookRootApp({super.key});
+class DayBookApp extends StatefulWidget {
+  const DayBookApp({super.key});
 
   @override
-  State<DaybookRootApp> createState() => _DaybookRootAppState();
+  State<DayBookApp> createState() => _DayBookAppState();
 }
 
-class _DaybookRootAppState extends State<DaybookRootApp> {
+class _DayBookAppState extends State<DayBookApp> {
   late final AppRepository _repository;
 
   @override
@@ -47,57 +49,64 @@ class _DaybookRootAppState extends State<DaybookRootApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Part 1 Invariant: Pure OLED Black with Lime Accents
     return MaterialApp(
-      title: AppConstants.appName,
+      title: 'DayBook',
       debugShowCheckedModeBanner: false,
-      themeMode: _repository.themeMode,
+      themeMode: ThemeMode.dark, // Pure OLED black theme only
       theme: ThemeData(
         useMaterial3: true,
-        brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.light,
-          primary: const Color(0xFF6366F1),
-          secondary: const Color(0xFF10B981),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: false,
-        ),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
         brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.dark,
-          primary: const Color(0xFF818CF8),
-          secondary: const Color(0xFF34D399),
+        scaffoldBackgroundColor: AppColors.bg,
+        canvasColor: AppColors.bg,
+        cardColor: AppColors.surface1,
+        colorScheme: const ColorScheme.dark(
+          primary: AppColors.accentLime,
+          onPrimary: AppColors.textOnLime,
+          surface: AppColors.surface1,
+          onSurface: AppColors.textPrimary,
+          outline: AppColors.border,
+          error: AppColors.errorRed,
         ),
-        scaffoldBackgroundColor: const Color(0xFF0F172A),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.bg,
           elevation: 0,
-          centerTitle: false,
+          scrolledUnderElevation: 0,
+          titleTextStyle: AppTypography.screenTitle,
+          iconTheme: IconThemeData(color: AppColors.textPrimary),
+        ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: AppColors.surface1,
+          indicatorColor: AppColors.accentLime.withValues(alpha: 0.15),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const TextStyle(color: AppColors.accentLime, fontWeight: FontWeight.bold, fontSize: 11);
+            }
+            return const TextStyle(color: AppColors.textSecondary, fontSize: 11);
+          }),
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const IconThemeData(color: AppColors.accentLime);
+            }
+            return const IconThemeData(color: AppColors.textSecondary);
+          }),
         ),
       ),
-      home: DaybookShell(repository: _repository),
+      home: DayBookShell(repository: _repository),
     );
   }
 }
 
-class DaybookShell extends StatefulWidget {
+class DayBookShell extends StatefulWidget {
   final AppRepository repository;
 
-  const DaybookShell({super.key, required this.repository});
+  const DayBookShell({super.key, required this.repository});
 
   @override
-  State<DaybookShell> createState() => _DaybookShellState();
+  State<DayBookShell> createState() => _DayBookShellState();
 }
 
-class _DaybookShellState extends State<DaybookShell> {
+class _DayBookShellState extends State<DayBookShell> {
   int _currentIndex = 0;
 
   void _openMorningBriefing() {
@@ -111,8 +120,10 @@ class _DaybookShellState extends State<DaybookShell> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppColors.surface1,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        side: BorderSide(color: AppColors.border),
       ),
       builder: (ctx) => MorningBriefingSheet(
         briefing: briefing,
@@ -129,8 +140,10 @@ class _DaybookShellState extends State<DaybookShell> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppColors.surface1,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        side: BorderSide(color: AppColors.border),
       ),
       builder: (ctx) => EveningReviewSheet(
         completedCount: completed,
@@ -141,29 +154,112 @@ class _DaybookShellState extends State<DaybookShell> {
             moodScore: mood,
             notes: notes,
           );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Evening reflection recorded. Rest well!')),
-          );
         },
       ),
+    );
+  }
+
+  void _openQuickCaptureModal() {
+    final textController = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface1,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+        side: BorderSide(color: AppColors.border),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: AppSpacing.md,
+            right: AppSpacing.md,
+            top: AppSpacing.md,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + AppSpacing.md,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Universal Quick Capture', style: AppTypography.sectionHeader),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: textController,
+                autofocus: true,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'Enter task, expense (e.g. 150 tk), or note...',
+                  hintStyle: const TextStyle(color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface2,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    borderSide: const BorderSide(color: AppColors.accentLime),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accentLime,
+                    foregroundColor: AppColors.textOnLime,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+                  ),
+                  onPressed: () {
+                    final text = textController.text.trim();
+                    if (text.isNotEmpty) {
+                      widget.repository.taskService.addTask(
+                        title: text,
+                        estimatedMinutes: 25,
+                      );
+                      widget.repository.notifyDataChanged();
+                      Navigator.of(ctx).pop();
+                    }
+                  },
+                  child: const Text('CAPTURE INTO DAY PAGE', style: AppTypography.buttonText),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final repo = widget.repository;
-    final locale = AppLocale(isBangla: repo.isBangla);
 
     final screens = [
-      _buildHomeDashboard(repo, locale),
-      TasksScreen(
-        taskService: repo.taskService,
-        onDataChanged: repo.notifyDataChanged,
-      ),
+      _buildTodayHome(repo),
       PlannerScreen(
         planBlocks: repo.planBlocks,
         taskService: repo.taskService,
         onBlocksUpdated: repo.updatePlanBlocks,
+      ),
+      TasksScreen(
+        taskService: repo.taskService,
+        onDataChanged: repo.notifyDataChanged,
       ),
       AlarmScreen(
         alarms: repo.alarms,
@@ -177,42 +273,53 @@ class _DaybookShellState extends State<DaybookShell> {
     ];
 
     return Scaffold(
+      backgroundColor: AppColors.bg,
       body: screens[_currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (idx) => setState(() => _currentIndex = idx),
-        destinations: [
+        onDestinationSelected: (idx) {
+          if (idx == 2) {
+            _openQuickCaptureModal();
+          } else {
+            setState(() => _currentIndex = idx);
+          }
+        },
+        destinations: const [
           NavigationDestination(
-            icon: const Icon(Icons.wb_sunny_outlined),
-            selectedIcon: const Icon(Icons.wb_sunny),
-            label: locale.today,
+            icon: Icon(Icons.wb_sunny_outlined),
+            selectedIcon: Icon(Icons.wb_sunny),
+            label: 'Today',
           ),
           NavigationDestination(
-            icon: const Icon(Icons.checklist_outlined),
-            selectedIcon: const Icon(Icons.checklist),
-            label: locale.tasks,
+            icon: Icon(Icons.calendar_month_outlined),
+            selectedIcon: Icon(Icons.calendar_month),
+            label: 'Plan',
+          ),
+          // Part 1: Signature Center Lime Button
+          NavigationDestination(
+            icon: CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.accentLime,
+              child: Icon(Icons.add, color: AppColors.textOnLime, size: 22),
+            ),
+            label: 'Capture',
           ),
           NavigationDestination(
-            icon: const Icon(Icons.calendar_month_outlined),
-            selectedIcon: const Icon(Icons.calendar_month),
-            label: locale.planner,
+            icon: Icon(Icons.auto_stories_outlined),
+            selectedIcon: Icon(Icons.auto_stories),
+            label: 'Book',
           ),
           NavigationDestination(
-            icon: const Icon(Icons.alarm_outlined),
-            selectedIcon: const Icon(Icons.alarm),
-            label: locale.alarms,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.auto_awesome_outlined),
-            selectedIcon: const Icon(Icons.auto_awesome),
-            label: locale.assistant,
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'Ask',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHomeDashboard(AppRepository repo, AppLocale locale) {
+  Widget _buildTodayHome(AppRepository repo) {
     final todayTasks = repo.taskService.getTodayTasks();
     final completedCount = todayTasks.where((t) => t.isCompleted).length;
     final totalCount = todayTasks.length;
@@ -220,42 +327,36 @@ class _DaybookShellState extends State<DaybookShell> {
 
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Dynamic Living Sky Canvas
+          // 1. Dynamic Monochrome Sky Scene
           WeatherSkyBackground(
             phase: skyPhase,
             condition: repo.weatherState.condition,
             height: 220,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              locale.appTitle,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              '${repo.weatherState.cityName} • ${repo.weatherState.temperatureC.toStringAsFixed(1)}°C • ${skyPhase.name.toUpperCase()}',
-                              style: const TextStyle(fontSize: 12, color: Colors.white70),
-                            ),
-                          ],
-                        ),
+                        const Text('DAYBOOK', style: AppTypography.screenTitle),
                         Row(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.psychology, color: Colors.white),
+                              icon: const Icon(Icons.palette_outlined, color: AppColors.accentLime),
+                              tooltip: 'Component Gallery',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const ComponentGalleryScreen()),
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.psychology_outlined, color: AppColors.textPrimary),
                               tooltip: 'Memory Vault',
                               onPressed: () {
                                 Navigator.of(context).push(
@@ -269,7 +370,7 @@ class _DaybookShellState extends State<DaybookShell> {
                               },
                             ),
                             IconButton(
-                              icon: const Icon(Icons.settings, color: Colors.white),
+                              icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
                               tooltip: 'Settings',
                               onPressed: () {
                                 Navigator.of(context).push(
@@ -284,29 +385,28 @@ class _DaybookShellState extends State<DaybookShell> {
                       ],
                     ),
                     const Spacer(),
-                    // Morning Briefing / Evening Review Launch Button
                     Row(
                       children: [
                         ElevatedButton.icon(
                           onPressed: _openMorningBriefing,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.9),
-                            foregroundColor: const Color(0xFF0F172A),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            backgroundColor: AppColors.accentLime,
+                            foregroundColor: AppColors.textOnLime,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.chip)),
                           ),
-                          icon: const Icon(Icons.wb_sunny, size: 16, color: Color(0xFFD97706)),
-                          label: Text(locale.morningBriefing, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          icon: const Icon(Icons.wb_sunny, size: 16),
+                          label: const Text('MORNING BRIEFING', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
                         ),
                         const SizedBox(width: 8),
                         OutlinedButton.icon(
                           onPressed: _openEveningReview,
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: const BorderSide(color: Colors.white70),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            foregroundColor: AppColors.textPrimary,
+                            side: const BorderSide(color: AppColors.border),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.chip)),
                           ),
-                          icon: const Icon(Icons.nights_stay, size: 16),
-                          label: Text(locale.eveningReflection, style: const TextStyle(fontSize: 12)),
+                          icon: const Icon(Icons.nights_stay_outlined, size: 16),
+                          label: const Text('EVENING REVIEW', style: TextStyle(fontSize: 11)),
                         ),
                       ],
                     ),
@@ -316,7 +416,8 @@ class _DaybookShellState extends State<DaybookShell> {
             ),
           ),
           const SizedBox(height: 12),
-          // 2. Daily Progress Ring
+
+          // 2. Daily Trajectory Progress Ring
           DailyProgressRing(
             completedTasks: completedCount,
             totalTasks: totalCount,
@@ -325,78 +426,43 @@ class _DaybookShellState extends State<DaybookShell> {
             sleepHour: repo.sleepHour,
             sleepMinute: repo.sleepMinute,
           ),
-          // 3. Quick Action shortcuts
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6366F1),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    onPressed: () => setState(() => _currentIndex = 1), // Tasks
-                    icon: const Icon(Icons.add_task, size: 18),
-                    label: Text(locale.newTask),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    onPressed: () => setState(() => _currentIndex = 2), // Planner
-                    icon: const Icon(Icons.bolt, size: 18),
-                    label: Text(locale.autoPlan),
-                  ),
-                ),
-              ],
-            ),
+
+          // 3. Section Title
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
+            child: Text('TODAY\'S PRIORITIES', style: AppTypography.sectionHeader),
           ),
-          // 4. Focus Priorities Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Eisenhower Mission Tasks',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  onPressed: () => setState(() => _currentIndex = 1),
-                  child: const Text('View All'),
-                ),
-              ],
-            ),
-          ),
-          // 5. Top 3 Tasks preview
+
+          // 4. Tasks
           if (todayTasks.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Text('All tasks completed! Enjoy your day.'),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.surface1,
+                borderRadius: BorderRadius.circular(AppRadius.card),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: const Center(
+                child: Text('All tasks completed for today.', style: AppTypography.bodySecondary),
+              ),
             )
           else
             ...todayTasks.take(3).map((task) {
               return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                  color: AppColors.surface1,
+                  borderRadius: BorderRadius.circular(AppRadius.card),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Row(
                   children: [
                     IconButton(
                       icon: Icon(
                         task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-                        color: task.isCompleted ? Colors.green : const Color(0xFF6366F1),
+                        color: task.isCompleted ? AppColors.accentLime : AppColors.textSecondary,
                       ),
                       onPressed: () {
                         repo.taskService.toggleTaskCompletion(task.id);
@@ -411,13 +477,14 @@ class _DaybookShellState extends State<DaybookShell> {
                           Text(
                             task.title,
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
                               decoration: task.isCompleted ? TextDecoration.lineThrough : null,
                             ),
                           ),
                           Text(
-                            '${task.category} • ${task.estimatedMinutes}m • ${task.priority.label.split(':').first}',
-                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            '${task.category} • ${task.estimatedMinutes}m',
+                            style: AppTypography.bodySecondary,
                           ),
                         ],
                       ),
