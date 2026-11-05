@@ -4,6 +4,11 @@ enum TaskPriority {
   urgentNotImportant,
   neither;
 
+  static const TaskPriority p1 = TaskPriority.urgentImportant;
+  static const TaskPriority p2 = TaskPriority.importantNotUrgent;
+  static const TaskPriority p3 = TaskPriority.urgentNotImportant;
+  static const TaskPriority p4 = TaskPriority.neither;
+
   String get label {
     switch (this) {
       case TaskPriority.urgentImportant:

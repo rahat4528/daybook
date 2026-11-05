@@ -10,11 +10,15 @@ import '../domain/models/weather_and_briefing.dart';
 import '../domain/services/task_service.dart';
 import '../domain/services/memory_vault_service.dart';
 import 'repositories/entries_repository.dart';
+import 'repositories/tasks_and_goals_repository.dart';
+import '../domain/services/inbox_service.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
   final MemoryVaultService memoryVaultService = MemoryVaultService();
   final EntriesRepository entriesRepository = EntriesRepository();
+  final TasksAndGoalsRepository tasksAndGoalsRepository = TasksAndGoalsRepository();
+  final InboxService inboxService = InboxService();
 
   List<AlarmItem> alarms = [];
   List<DailyPlanBlock> planBlocks = [];
