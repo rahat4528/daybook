@@ -55,6 +55,11 @@ class TaskService {
     }).toList();
   }
 
+  /// Adds a new task directly.
+  void insertTask(TaskItem task) {
+    _tasks.add(task);
+  }
+
   /// Adds a new task.
   TaskItem addTask({
     required String title,

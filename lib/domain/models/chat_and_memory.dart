@@ -91,6 +91,9 @@ class ChatMessage {
   final String content;
   final DateTime timestamp;
   final AssistantToolInvocation? toolInvocation;
+  final String? toolRecordId;
+  final String? targetDayKey;
+  final String? undoDescription;
 
   const ChatMessage({
     required this.id,
@@ -98,6 +101,9 @@ class ChatMessage {
     required this.content,
     required this.timestamp,
     this.toolInvocation,
+    this.toolRecordId,
+    this.targetDayKey,
+    this.undoDescription,
   });
 
   bool get isUser => sender == MessageSender.user;
@@ -108,6 +114,9 @@ class ChatMessage {
         'content': content,
         'timestamp': timestamp.toIso8601String(),
         'toolInvocation': toolInvocation?.toJson(),
+        'toolRecordId': toolRecordId,
+        'targetDayKey': targetDayKey,
+        'undoDescription': undoDescription,
       };
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -119,6 +128,9 @@ class ChatMessage {
             ? AssistantToolInvocation.fromJson(
                 json['toolInvocation'] as Map<String, dynamic>)
             : null,
+        toolRecordId: json['toolRecordId'] as String?,
+        targetDayKey: json['targetDayKey'] as String?,
+        undoDescription: json['undoDescription'] as String?,
       );
 }
 

@@ -32,6 +32,17 @@ class InboxService extends ChangeNotifier {
   int _idCounter = 0;
 
   bool get canUndo => _triageUndoStack.isNotEmpty;
+  List<RichNote> get notes => _notes.values.toList();
+
+  void addNote(RichNote note, {EntriesRepository? entriesRepo}) {
+    createRichNote(note, entriesRepo: entriesRepo);
+  }
+
+  bool deleteNote(String noteId) {
+    final res = _notes.remove(noteId);
+    notifyListeners();
+    return res != null;
+  }
 
   int get unprocessedCount =>
       _captures.values.where((c) => !c.isProcessed).length;

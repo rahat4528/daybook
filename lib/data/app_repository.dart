@@ -16,6 +16,8 @@ import '../domain/services/inbox_service.dart';
 import '../domain/services/habit_service.dart';
 import '../domain/services/focus_service.dart';
 import '../domain/services/wellness_service.dart';
+import '../domain/services/assistant_tool_engine.dart';
+import '../domain/services/ai_assistant_service.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
@@ -26,6 +28,8 @@ class AppRepository extends ChangeNotifier {
   final HabitService habitService = HabitService();
   final FocusService focusService = FocusService();
   final WellnessService wellnessService = WellnessService();
+  late final AssistantToolEngine assistantToolEngine;
+  late final AIAssistantService aiAssistantService;
 
   List<AlarmItem> alarms = [];
   List<DailyPlanBlock> planBlocks = [];
@@ -42,6 +46,11 @@ class AppRepository extends ChangeNotifier {
   String selectedCity = 'Dhaka';
 
   AppRepository() {
+    assistantToolEngine = AssistantToolEngine(appRepository: this);
+    aiAssistantService = AIAssistantService(
+      appRepository: this,
+      toolEngine: assistantToolEngine,
+    );
     _initializeSeedData();
   }
 

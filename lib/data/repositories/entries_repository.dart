@@ -19,6 +19,7 @@ class EntriesRepository {
   final List<UndoAction> _undoStack = [];
 
   bool get canUndo => _undoStack.isNotEmpty;
+  List<JournalEntry> get entries => _entries.values.toList();
 
   // --- CRUD & UNDO ---
   void insertEntry(JournalEntry entry) {
