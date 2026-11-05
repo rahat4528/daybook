@@ -42,6 +42,27 @@ class AppTypography {
     fontFeatures: [FontFeature.tabularFigures()],
   );
 
+  static const TextStyle headingMedium = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle headingSmall = TextStyle(
+    color: AppColors.textPrimary,
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle bodyMedium = body;
+  static const TextStyle bodySmall = bodySecondary;
+
+  static const TextStyle caption = TextStyle(
+    color: AppColors.textSecondary,
+    fontSize: 11,
+    height: 1.3,
+  );
+
   static const TextStyle buttonText = TextStyle(
     color: AppColors.textOnLime,
     fontSize: 15,

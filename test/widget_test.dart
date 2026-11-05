@@ -20,6 +20,6 @@ void main() {
     // Switch to Ask Tab
     await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Daybook Assistant'), findsOneWidget);
+    expect(find.text('DayBook Assistant'), findsOneWidget);
   });
 }

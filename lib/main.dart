@@ -203,9 +203,12 @@ class _DayBookShellState extends State<DayBookShell> {
         isBangla: repo.isBangla,
       ),
       AssistantScreen(
-        messages: repo.chatMessages,
-        taskService: repo.taskService,
-        onSendMessage: repo.addChatMessage,
+        assistantService: repo.aiAssistantService,
+        toolEngine: repo.assistantToolEngine,
+        isBangla: repo.isBangla,
+        onNavigateToDayPage: (dayKey) {
+          setState(() => _currentIndex = 0);
+        },
       ),
     ];
 
@@ -313,8 +316,8 @@ class _DayBookShellState extends State<DayBookShell> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => MemoryScreen(
-                                      vaultService: repo.memoryVaultService,
-                                      onDataChanged: repo.notifyDataChanged,
+                                      assistantService: repo.aiAssistantService,
+                                      isBangla: repo.isBangla,
                                     ),
                                   ),
                                 );

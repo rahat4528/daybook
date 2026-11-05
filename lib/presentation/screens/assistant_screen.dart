@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import '../../core/design/app_tokens.dart';
+import '../../core/design/app_typography.dart';
 import '../../domain/models/chat_and_memory.dart';
-import '../../domain/services/task_service.dart';
+import '../../domain/services/ai_assistant_service.dart';
+import '../../domain/services/assistant_tool_engine.dart';
+import 'memory_screen.dart';
 
 class AssistantScreen extends StatefulWidget {
-  final List<ChatMessage> messages;
-  final TaskService taskService;
-  final Function(ChatMessage) onSendMessage;
+  final AIAssistantService assistantService;
+  final AssistantToolEngine toolEngine;
+  final bool isBangla;
+  final Function(String dayKey)? onNavigateToDayPage;
 
   const AssistantScreen({
     super.key,
-    required this.messages,
-    required this.taskService,
-    required this.onSendMessage,
+    required this.assistantService,
+    required this.toolEngine,
+    this.isBangla = false,
+    this.onNavigateToDayPage,
   });
 
   @override
@@ -19,117 +25,40 @@ class AssistantScreen extends StatefulWidget {
 }
 
 class _AssistantScreenState extends State<AssistantScreen> {
-  final _textController = TextEditingController();
-  final _scrollController = ScrollController();
-  bool _isListening = false;
+  final List<ChatMessage> _messages = [];
+  final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
 
-  final List<String> _quickPrompts = [
-    'আজকের পরিকল্পনা কি? (What is today\'s plan?)',
-    'Add task: Prepare project submission tomorrow at 5pm',
-    'সকালের অ্যালার্ম সেট করো (Set morning alarm for 6:30 AM)',
-    'Show my top priority focus tasks',
-    'আজকে সারাদিন কেমন গেলো? (Evening review)',
+  final List<String> _quickPills = [
+    'When did I last study networking?',
+    'Add task: Complete Flutter assignment p1',
+    'Start 25m focus with rain sound',
+    'Set alarm at 06:30 for Wake Quest',
+    'Remember that: Focus blocks work best at morning',
   ];
 
-  void _handleSend([String? presetText]) {
-    final text = (presetText ?? _textController.text).trim();
-    if (text.isEmpty) return;
+  @override
+  void initState() {
+    super.initState();
+    widget.assistantService.generateDailyProactiveSuggestions();
 
-    final userMsg = ChatMessage(
-      id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
-      sender: MessageSender.user,
-      content: text,
+    // Initial greeting
+    _messages.add(ChatMessage(
+      id: 'msg_greet',
+      sender: MessageSender.assistant,
+      content: widget.isBangla
+          ? 'স্বাগতম! আমি আপনার **DayBook Assistant**। কোনো প্রশ্ন থাকলে লিখুন অথবা অতীতে কী হয়েছিল তা জানতে **"Ask Your Past"** ব্যবহার করুন।'
+          : 'Welcome to **DayBook Assistant**. How can I help you today? Ask questions, create tasks, or query your past journal entries with **"Ask Your Past"**.',
       timestamp: DateTime.now(),
-    );
-    widget.onSendMessage(userMsg);
-    _textController.clear();
-
-    // Deterministic Assistant Response & Tool Calling simulation
-    Future.delayed(const Duration(milliseconds: 600), () {
-      final reply = _generateAssistantReply(text);
-      widget.onSendMessage(reply);
-      _scrollToBottom();
-    });
-
-    _scrollToBottom();
+    ));
   }
 
-  ChatMessage _generateAssistantReply(String input) {
-    final lower = input.toLowerCase();
-    final now = DateTime.now();
-
-    // 1. Task Creation Tool
-    if (lower.contains('add task') || lower.contains('টাস্ক যোগ') || lower.contains('create task')) {
-      final title = input
-          .replaceAll(RegExp(r'add task:?|create task:?|টাস্ক যোগ করো:?', caseSensitive: false), '')
-          .trim();
-      final taskTitle = title.isEmpty ? 'Follow up on important action' : title;
-
-      widget.taskService.addTask(
-        title: taskTitle,
-        estimatedMinutes: 30,
-        dueAt: now.add(const Duration(hours: 4)),
-      );
-
-      return ChatMessage(
-        id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
-        sender: MessageSender.assistant,
-        content: 'I have added "$taskTitle" to your daily task list.',
-        timestamp: DateTime.now(),
-        toolInvocation: AssistantToolInvocation(
-          toolName: 'create_task',
-          parameters: {'title': taskTitle, 'estimatedMinutes': 30},
-          resultSummary: 'Task added successfully to local database',
-          isExecuted: true,
-        ),
-      );
-    }
-
-    // 2. Schedule / Plan Day Tool
-    if (lower.contains('plan') || lower.contains('পরিকল্পনা') || lower.contains('schedule')) {
-      final todayTasks = widget.taskService.getTodayTasks();
-      return ChatMessage(
-        id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
-        sender: MessageSender.assistant,
-        content: 'You have ${todayTasks.length} active tasks for today. I have arranged them by urgency so you can knock out top priorities first!',
-        timestamp: DateTime.now(),
-        toolInvocation: const AssistantToolInvocation(
-          toolName: 'plan_day',
-          parameters: {'strategy': 'eisenhower_gap_fitting'},
-          resultSummary: 'Daily schedule generated and synchronized',
-          isExecuted: true,
-        ),
-      );
-    }
-
-    // 3. Alarm Tool
-    if (lower.contains('alarm') || lower.contains('অ্যালার্ম') || lower.contains('wake')) {
-      return ChatMessage(
-        id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
-        sender: MessageSender.assistant,
-        content: 'Alarm registered! Don\'t forget, your Math and QR challenges will be active to guarantee you wake up on time.',
-        timestamp: DateTime.now(),
-        toolInvocation: const AssistantToolInvocation(
-          toolName: 'set_alarm',
-          parameters: {'time': '06:30 AM', 'challenge': 'math'},
-          resultSummary: 'Scheduled in Android AlarmManager & Local Notifications',
-          isExecuted: true,
-        ),
-      );
-    }
-
-    // Bilingual General Response
-    final isBangla = RegExp(r'[\u0980-\u09FF]').hasMatch(input);
-    final responseText = isBangla
-        ? 'আমি আপনাকে সাহায্য করার জন্য প্রস্তুত। আপনি বলতে পারেন: "টাস্ক যোগ করো", "আজকের পরিকল্পনা", অথবা "অ্যালার্ম সেট করো"।'
-        : 'I am your Daybook companion. You can ask me to plan your day, schedule alarms with wake-up challenges, or organize your Eisenhower priorities.';
-
-    return ChatMessage(
-      id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
-      sender: MessageSender.assistant,
-      content: responseText,
-      timestamp: DateTime.now(),
-    );
+  @override
+  void dispose() {
+    _textController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _scrollToBottom() {
@@ -144,95 +73,376 @@ class _AssistantScreenState extends State<AssistantScreen> {
     });
   }
 
-  void _simulateVoicePushToTalk() {
-    setState(() => _isListening = true);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.mic, color: Colors.white),
-            SizedBox(width: 8),
-            Text('Listening in Bangla / English... Speak now!'),
-          ],
-        ),
-        duration: Duration(seconds: 2),
-      ),
+  Future<void> _handleSendMessage([String? presetText]) async {
+    final text = (presetText ?? _textController.text).trim();
+    if (text.isEmpty || _isLoading) return;
+
+    _textController.clear();
+    final userMsg = ChatMessage(
+      id: 'msg_u_${DateTime.now().microsecondsSinceEpoch}',
+      sender: MessageSender.user,
+      content: text,
+      timestamp: DateTime.now(),
     );
 
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() => _isListening = false);
-        _handleSend('আজকের সবচেয়ে গুরুত্বপূর্ণ ৩টি কাজ কি কি?');
-      }
+    setState(() {
+      _messages.add(userMsg);
+      _isLoading = true;
     });
+    _scrollToBottom();
+
+    // Process through Assistant Service
+    final reply = await widget.assistantService.processUserMessage(text, isBangla: widget.isBangla);
+
+    if (mounted) {
+      setState(() {
+        _messages.add(reply);
+        _isLoading = false;
+      });
+      _scrollToBottom();
+    }
+  }
+
+  Future<void> _confirmToolCall(String recordId) async {
+    final record = await widget.toolEngine.confirmAndExecute(recordId);
+    setState(() {
+      _messages.add(ChatMessage(
+        id: 'msg_conf_${DateTime.now().microsecondsSinceEpoch}',
+        sender: MessageSender.assistant,
+        content: "Action confirmed & executed: **${record.resultMessage ?? record.toolName}**",
+        toolRecordId: record.id,
+        undoDescription: record.undoDescription,
+        timestamp: DateTime.now(),
+      ));
+    });
+    _scrollToBottom();
+  }
+
+  void _rejectToolCall(String recordId) {
+    final record = widget.toolEngine.rejectToolCall(recordId);
+    setState(() {
+      _messages.add(ChatMessage(
+        id: 'msg_rej_${DateTime.now().microsecondsSinceEpoch}',
+        sender: MessageSender.assistant,
+        content: "Action rejected: ${record.resultMessage}",
+        timestamp: DateTime.now(),
+      ));
+    });
+    _scrollToBottom();
+  }
+
+  Future<void> _undoAction(String recordId) async {
+    final success = await widget.toolEngine.undoToolCall(recordId);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.isBangla ? 'অ্যাকশন সফলভাবে আনডু করা হয়েছে' : 'Action successfully reversed (Undo)',
+            style: const TextStyle(color: AppColors.bg, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: AppColors.accentLime,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final suggestions = widget.assistantService.activeSuggestions;
+    final pendingCalls = widget.toolEngine.pendingConfirmations;
 
     return Scaffold(
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        title: const Row(
+        backgroundColor: AppColors.surface1,
+        elevation: 0,
+        title: Row(
           children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Color(0xFF6366F1),
-              child: Icon(Icons.auto_awesome, size: 18, color: Colors.white),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: widget.assistantService.isAiEnabled ? AppColors.accentLime : AppColors.surface2,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.auto_awesome,
+                size: 16,
+                color: widget.assistantService.isAiEnabled ? AppColors.bg : AppColors.textSecondary,
+              ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Daybook Assistant', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('Bilingual (বাংলা / ENG) • Offline Ready', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                Text(
+                  widget.isBangla ? 'অ্যাসিস্ট্যান্ট' : 'DayBook Assistant',
+                  style: AppTypography.headingSmall.copyWith(color: AppColors.textPrimary),
+                ),
+                Text(
+                  widget.assistantService.isAiEnabled
+                      ? (widget.isBangla ? 'সক্রিয় • অফলাইন প্রস্তুত' : 'Active • 100% Offline Ready')
+                      : (widget.isBangla ? 'নিষ্ক্রিয় (ম্যানুয়াল)' : 'Turned Off (Manual Mode)'),
+                  style: AppTypography.caption.copyWith(
+                    color: widget.assistantService.isAiEnabled ? AppColors.accentLime : AppColors.textSecondary,
+                  ),
+                ),
               ],
             ),
           ],
         ),
+        actions: [
+          // Nav to Memory Screen
+          IconButton(
+            icon: const Icon(Icons.psychology_outlined, color: AppColors.accentLime),
+            tooltip: widget.isBangla ? 'স্মৃতি ভল্ট' : 'Memory Vault',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (ctx) => MemoryScreen(
+                    assistantService: widget.assistantService,
+                    isBangla: widget.isBangla,
+                  ),
+                ),
+              );
+            },
+          ),
+          // AI Master Switch
+          Switch(
+            value: widget.assistantService.isAiEnabled,
+            activeColor: AppColors.accentLime,
+            activeTrackColor: AppColors.surface2,
+            inactiveThumbColor: AppColors.textSecondary,
+            inactiveTrackColor: AppColors.surface2,
+            onChanged: (val) {
+              setState(() {
+                widget.assistantService.toggleAiMasterSwitch(val);
+              });
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          // Quick Prompts Carousel
+          // AI Disabled Warning Banner
+          if (!widget.assistantService.isAiEnabled)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: AppColors.surface2,
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, size: 16, color: AppColors.textSecondary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      widget.isBangla
+                          ? 'এআই বন্ধ রয়েছে। অ্যাপের সব ফিচার অফলাইনে সরাসরি ব্যবহারযোগ্য।'
+                          : 'AI is off. All manual tools, planning, and alarms remain fully functional.',
+                      style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Proactive Suggestions Bar (Max 3 per day)
+          if (suggestions.isNotEmpty && widget.assistantService.isAiEnabled)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: AppColors.surface1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.lightbulb_outline, size: 14, color: AppColors.accentLime),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.isBangla ? 'পরামর্শ (সর্বোচ্চ ৩টি/দিন)' : 'PROACTIVE SUGGESTIONS (MAX 3/DAY)',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.accentLime,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: suggestions.map((sug) {
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface2,
+                            border: Border.all(color: AppColors.border),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                sug.title,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () => _handleSendMessage(sug.message),
+                                child: Text(
+                                  widget.isBangla ? 'শুরু করুন' : 'Run',
+                                  style: const TextStyle(
+                                    color: AppColors.accentLime,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    widget.assistantService.dismissSuggestion(sug.id);
+                                  });
+                                },
+                                child: const Icon(Icons.close, size: 14, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Pending Tool Confirmation Cards
+          if (pendingCalls.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(12),
+              color: AppColors.surface2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: pendingCalls.map((call) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface1,
+                      border: Border.all(color: AppColors.accentLime, width: 1.5),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.shield_outlined, size: 16, color: AppColors.accentLime),
+                            const SizedBox(width: 6),
+                            Text(
+                              widget.isBangla ? 'অনুমোদন প্রয়োজন (টুল কল)' : 'CONFIRMATION REQUIRED',
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.accentLime,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Tool: ${call.toolName} • Arguments: ${call.arguments}",
+                          style: AppTypography.bodySmall.copyWith(color: AppColors.textPrimary),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.errorRed,
+                                side: const BorderSide(color: AppColors.errorRed),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              onPressed: () => _rejectToolCall(call.id),
+                              child: Text(widget.isBangla ? 'প্রত্যাখ্যান' : 'Reject'),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.accentLime,
+                                foregroundColor: AppColors.bg,
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              onPressed: () => _confirmToolCall(call.id),
+                              child: Text(
+                                widget.isBangla ? 'অনুমোদন করুন' : 'Confirm',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+          // Quick Pills Carousel
           Container(
             height: 44,
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: _quickPrompts.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _quickPills.length,
               itemBuilder: (ctx, i) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.only(right: 8),
                   child: ActionChip(
-                    label: Text(_quickPrompts[i], style: const TextStyle(fontSize: 11)),
-                    onPressed: () => _handleSend(_quickPrompts[i]),
+                    backgroundColor: AppColors.surface2,
+                    side: const BorderSide(color: AppColors.border),
+                    label: Text(
+                      _quickPills[i],
+                      style: const TextStyle(fontSize: 11, color: AppColors.textPrimary),
+                    ),
+                    onPressed: () => _handleSendMessage(_quickPills[i]),
                   ),
                 );
               },
             ),
           ),
-          const Divider(height: 1),
-          // Chat messages list
+          const Divider(height: 1, color: AppColors.border),
+
+          // Message Stream
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: widget.messages.length,
+              itemCount: _messages.length,
               itemBuilder: (ctx, i) {
-                final msg = widget.messages[i];
+                final msg = _messages[i];
                 final isUser = msg.isUser;
+
                 return Align(
                   alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 6),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-                    padding: const EdgeInsets.all(12),
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.85),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: isUser
-                          ? const Color(0xFF6366F1)
-                          : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9)),
+                      color: isUser ? AppColors.surface2 : AppColors.surface1,
+                      border: Border.all(
+                        color: isUser ? AppColors.border : AppColors.border,
+                      ),
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
                         topRight: const Radius.circular(16),
@@ -243,40 +453,65 @@ class _AssistantScreenState extends State<AssistantScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          msg.content,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isUser
-                                ? Colors.white
-                                : (isDark ? Colors.white : const Color(0xFF0F172A)),
-                          ),
-                        ),
-                        // Tool execution pill
-                        if (msg.toolInvocation != null) ...[
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF10B981).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: const Color(0xFF10B981), width: 0.8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.bolt, size: 12, color: Color(0xFF10B981)),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Tool: ${msg.toolInvocation!.toolName} ✓',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF10B981),
+                        // Rich Text with Lime Bold formatting
+                        _buildRichText(msg.content),
+
+                        // Tap-through Day Page Button if Ask Your Past matched a date
+                        if (msg.targetDayKey != null) ...[
+                          const SizedBox(height: 10),
+                          InkWell(
+                            onTap: () {
+                              if (widget.onNavigateToDayPage != null) {
+                                widget.onNavigateToDayPage!(msg.targetDayKey!);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Jump to Day Page: ${msg.targetDayKey}")),
+                                );
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppColors.surface2,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.accentLime),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.calendar_today, size: 14, color: AppColors.accentLime),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    widget.isBangla ? "দিনটি দেখুন: ${msg.targetDayKey}" : "View Day Page: ${msg.targetDayKey}",
+                                    style: const TextStyle(
+                                      color: AppColors.accentLime,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.arrow_forward_ios, size: 10, color: AppColors.accentLime),
+                                ],
+                              ),
                             ),
+                          ),
+                        ],
+
+                        // Undo Action Chip
+                        if (msg.undoDescription != null && msg.toolRecordId != null) ...[
+                          const SizedBox(height: 8),
+                          ActionChip(
+                            avatar: const Icon(Icons.undo, size: 14, color: AppColors.bg),
+                            backgroundColor: AppColors.accentLime,
+                            label: Text(
+                              widget.isBangla ? 'আনডু (Undo)' : 'Undo Action',
+                              style: const TextStyle(
+                                color: AppColors.bg,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                              ),
+                            ),
+                            onPressed: () => _undoAction(msg.toolRecordId!),
                           ),
                         ],
                       ],
@@ -286,36 +521,59 @@ class _AssistantScreenState extends State<AssistantScreen> {
               },
             ),
           ),
-          // Input bar with mic button
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : Colors.white,
-              border: Border(top: BorderSide(color: Colors.grey.shade300, width: 0.5)),
+
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accentLime),
+              ),
             ),
+
+          // Input Bar
+          Container(
+            padding: const EdgeInsets.all(12),
+            color: AppColors.surface1,
             child: Row(
               children: [
-                IconButton(
-                  icon: Icon(
-                    _isListening ? Icons.mic : Icons.mic_none,
-                    color: _isListening ? Colors.red : const Color(0xFF6366F1),
-                  ),
-                  onPressed: _simulateVoicePushToTalk,
-                ),
                 Expanded(
                   child: TextField(
                     controller: _textController,
-                    decoration: const InputDecoration(
-                      hintText: 'Type or speak in বাংলা or English...',
-                      border: InputBorder.none,
-                      isDense: true,
+                    style: const TextStyle(color: AppColors.textPrimary),
+                    decoration: InputDecoration(
+                      hintText: widget.isBangla ? 'প্রশ্ন বা কাজের নির্দেশ লিখুন...' : 'Ask question, create task, or query past...',
+                      hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      filled: true,
+                      fillColor: AppColors.surface2,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(color: AppColors.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(color: AppColors.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(color: AppColors.accentLime),
+                      ),
                     ),
-                    onSubmitted: (_) => _handleSend(),
+                    onSubmitted: (_) => _handleSendMessage(),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Color(0xFF6366F1)),
-                  onPressed: () => _handleSend(),
+                const SizedBox(width: 8),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.accentLime,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.send, color: AppColors.bg, size: 20),
+                    onPressed: _handleSendMessage,
+                  ),
                 ),
               ],
             ),
@@ -324,5 +582,37 @@ class _AssistantScreenState extends State<AssistantScreen> {
       ),
     );
   }
-}
 
+  /// Part 1 Rich text rule: Any **bold** word renders as Lime Bold
+  Widget _buildRichText(String text) {
+    final spans = <TextSpan>[];
+    final regex = RegExp(r'\*\*(.*?)\*\*');
+    int lastEnd = 0;
+
+    for (final match in regex.allMatches(text)) {
+      if (match.start > lastEnd) {
+        spans.add(TextSpan(
+          text: text.substring(lastEnd, match.start),
+          style: AppTypography.bodyMedium.copyWith(color: AppColors.textPrimary),
+        ));
+      }
+      spans.add(TextSpan(
+        text: match.group(1),
+        style: AppTypography.bodyMedium.copyWith(
+          color: AppColors.accentLime,
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+      lastEnd = match.end;
+    }
+
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(lastEnd),
+        style: AppTypography.bodyMedium.copyWith(color: AppColors.textPrimary),
+      ));
+    }
+
+    return RichText(text: TextSpan(children: spans));
+  }
+}
