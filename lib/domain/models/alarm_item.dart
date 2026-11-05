@@ -177,3 +177,4 @@ class AlarmHistoryEvent {
         attemptCount: json['attemptCount'] as int? ?? 1,
       );
 }
+

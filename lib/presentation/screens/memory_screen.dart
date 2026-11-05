@@ -216,7 +216,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     mem.value,
-                                    style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black80),
+                                    style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : Colors.black87),
                                   ),
                                 ],
                               ),

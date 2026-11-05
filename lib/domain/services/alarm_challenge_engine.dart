@@ -89,3 +89,4 @@ class AlarmChallengeEngine {
     return current.difference(firedAt).inMinutes >= 15;
   }
 }
+

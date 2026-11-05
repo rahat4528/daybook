@@ -263,3 +263,4 @@ class _DualRingPainter extends CustomPainter {
         oldDelegate.dayProgress != dayProgress;
   }
 }
+

@@ -418,3 +418,4 @@ class _QrScanChallengeDialogState extends State<_QrScanChallengeDialog> {
     );
   }
 }
+

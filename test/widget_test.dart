@@ -1,30 +1,35 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:daybook/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('DaybookRootApp smoke test and navigation flow', (WidgetTester tester) async {
+    await tester.pumpWidget(const DaybookRootApp());
+    await tester.pump(const Duration(milliseconds: 100));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify Dashboard shows Daybook title & Daily Trajectory
+    expect(find.text('Daybook'), findsWidgets);
+    expect(find.text('Daily Trajectory'), findsOneWidget);
+    expect(find.text('Eisenhower Mission Tasks'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Switch to Tasks Tab
+    await tester.tap(find.byIcon(Icons.checklist_outlined));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Task Command Center'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Switch to Planner Tab
+    await tester.tap(find.byIcon(Icons.calendar_month_outlined));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Daily Time-Block Planner'), findsOneWidget);
+
+    // Switch to Alarms Tab
+    await tester.tap(find.byIcon(Icons.alarm_outlined));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Smart Alarms & Challenges'), findsOneWidget);
+
+    // Switch to Assistant Tab
+    await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Daybook Assistant'), findsOneWidget);
   });
 }

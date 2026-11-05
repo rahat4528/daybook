@@ -167,3 +167,4 @@ void main() {
     expect(find.text('Test Challenge'), findsOneWidget);
   });
 }
+

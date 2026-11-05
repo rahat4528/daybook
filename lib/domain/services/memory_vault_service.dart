@@ -93,3 +93,4 @@ class MemoryVaultService {
     return candidates;
   }
 }
+

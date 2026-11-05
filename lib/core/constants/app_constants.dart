@@ -37,3 +37,4 @@ class AppConstants {
   static const int maxSnoozeCount = 3;
   static const int snoozeDurationMinutes = 5;
 }
+

@@ -56,3 +56,4 @@
 * **Offline Independence**: Core daily operations (planning, alarm challenges, task tracking, memories, briefings) work 100% offline.
 * **Bilingual Equality**: English and Bengali (বাংলা) receive first-class UX, typography, and numerical representations (`০-৯`).
 * **Privacy by Design**: Memories and journal entries reside strictly on the user's device unless explicitly synced.
+

@@ -1,121 +1,434 @@
 import 'package:flutter/material.dart';
+import 'core/constants/app_constants.dart';
+import 'core/enums/core_enums.dart';
+import 'core/localization/app_localizations.dart';
+import 'data/app_repository.dart';
+import 'domain/services/briefing_service.dart';
+import 'presentation/widgets/sky_canvas.dart';
+import 'presentation/widgets/daily_progress_ring.dart';
+import 'presentation/widgets/briefing_sheets.dart';
+import 'presentation/screens/tasks_screen.dart';
+import 'presentation/screens/planner_screen.dart';
+import 'presentation/screens/alarm_screen.dart';
+import 'presentation/screens/assistant_screen.dart';
+import 'presentation/screens/memory_screen.dart';
+import 'presentation/screens/settings_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const DaybookRootApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class DaybookRootApp extends StatefulWidget {
+  const DaybookRootApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<DaybookRootApp> createState() => _DaybookRootAppState();
+}
+
+class _DaybookRootAppState extends State<DaybookRootApp> {
+  late final AppRepository _repository;
+
+  @override
+  void initState() {
+    super.initState();
+    _repository = AppRepository()..addListener(_onRepositoryUpdated);
+  }
+
+  void _onRepositoryUpdated() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _repository.removeListener(_onRepositoryUpdated);
+    _repository.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: AppConstants.appName,
+      debugShowCheckedModeBanner: false,
+      themeMode: _repository.themeMode,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: Brightness.light,
+          primary: const Color(0xFF6366F1),
+          secondary: const Color(0xFF10B981),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: false,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: Brightness.dark,
+          primary: const Color(0xFF818CF8),
+          secondary: const Color(0xFF34D399),
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: false,
+        ),
+      ),
+      home: DaybookShell(repository: _repository),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class DaybookShell extends StatefulWidget {
+  final AppRepository repository;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const DaybookShell({super.key, required this.repository});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<DaybookShell> createState() => _DaybookShellState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _DaybookShellState extends State<DaybookShell> {
+  int _currentIndex = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void _openMorningBriefing() {
+    final briefing = BriefingService.generateMorningBriefing(
+      tasks: widget.repository.taskService.getTodayTasks(),
+      weather: widget.repository.weatherState,
+      firstAlarm: widget.repository.alarms.isNotEmpty ? widget.repository.alarms.first : null,
+      isBangla: widget.repository.isBangla,
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => MorningBriefingSheet(
+        briefing: briefing,
+        onDismiss: () => Navigator.of(ctx).pop(),
+      ),
+    );
+  }
+
+  void _openEveningReview() {
+    final todayTasks = widget.repository.taskService.getTodayTasks();
+    final completed = todayTasks.where((t) => t.isCompleted).length;
+    final pending = todayTasks.where((t) => !t.isCompleted).length;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => EveningReviewSheet(
+        completedCount: completed,
+        pendingCount: pending,
+        onSubmit: (mood, notes) {
+          BriefingService.generateEveningReview(
+            allTasks: todayTasks,
+            moodScore: mood,
+            notes: notes,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Evening reflection recorded. Rest well!')),
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final repo = widget.repository;
+    final locale = AppLocale(isBangla: repo.isBangla);
+
+    final screens = [
+      _buildHomeDashboard(repo, locale),
+      TasksScreen(
+        taskService: repo.taskService,
+        onDataChanged: repo.notifyDataChanged,
+      ),
+      PlannerScreen(
+        planBlocks: repo.planBlocks,
+        taskService: repo.taskService,
+        onBlocksUpdated: repo.updatePlanBlocks,
+      ),
+      AlarmScreen(
+        alarms: repo.alarms,
+        onAlarmsUpdated: repo.updateAlarms,
+      ),
+      AssistantScreen(
+        messages: repo.chatMessages,
+        taskService: repo.taskService,
+        onSendMessage: repo.addChatMessage,
+      ),
+    ];
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      body: screens[_currentIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (idx) => setState(() => _currentIndex = idx),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.wb_sunny_outlined),
+            selectedIcon: const Icon(Icons.wb_sunny),
+            label: locale.today,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.checklist_outlined),
+            selectedIcon: const Icon(Icons.checklist),
+            label: locale.tasks,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.calendar_month_outlined),
+            selectedIcon: const Icon(Icons.calendar_month),
+            label: locale.planner,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.alarm_outlined),
+            selectedIcon: const Icon(Icons.alarm),
+            label: locale.alarms,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.auto_awesome_outlined),
+            selectedIcon: const Icon(Icons.auto_awesome),
+            label: locale.assistant,
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    );
+  }
+
+  Widget _buildHomeDashboard(AppRepository repo, AppLocale locale) {
+    final todayTasks = repo.taskService.getTodayTasks();
+    final completedCount = todayTasks.where((t) => t.isCompleted).length;
+    final totalCount = todayTasks.length;
+    final skyPhase = repo.weatherState.getSkyPhase();
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // 1. Dynamic Living Sky Canvas
+          WeatherSkyBackground(
+            phase: skyPhase,
+            condition: repo.weatherState.condition,
+            height: 220,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              locale.appTitle,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              '${repo.weatherState.cityName} • ${repo.weatherState.temperatureC.toStringAsFixed(1)}°C • ${skyPhase.name.toUpperCase()}',
+                              style: const TextStyle(fontSize: 12, color: Colors.white70),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.psychology, color: Colors.white),
+                              tooltip: 'Memory Vault',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => MemoryScreen(
+                                      vaultService: repo.memoryVaultService,
+                                      onDataChanged: repo.notifyDataChanged,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.settings, color: Colors.white),
+                              tooltip: 'Settings',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => SettingsScreen(repository: repo),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    // Morning Briefing / Evening Review Launch Button
+                    Row(
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: _openMorningBriefing,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.9),
+                            foregroundColor: const Color(0xFF0F172A),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          icon: const Icon(Icons.wb_sunny, size: 16, color: Color(0xFFD97706)),
+                          label: Text(locale.morningBriefing, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          onPressed: _openEveningReview,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white70),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          icon: const Icon(Icons.nights_stay, size: 16),
+                          label: Text(locale.eveningReflection, style: const TextStyle(fontSize: 12)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 12),
+          // 2. Daily Progress Ring
+          DailyProgressRing(
+            completedTasks: completedCount,
+            totalTasks: totalCount,
+            wakeHour: repo.wakeHour,
+            wakeMinute: repo.wakeMinute,
+            sleepHour: repo.sleepHour,
+            sleepMinute: repo.sleepMinute,
+          ),
+          // 3. Quick Action shortcuts
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6366F1),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    onPressed: () => setState(() => _currentIndex = 1), // Tasks
+                    icon: const Icon(Icons.add_task, size: 18),
+                    label: Text(locale.newTask),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    onPressed: () => setState(() => _currentIndex = 2), // Planner
+                    icon: const Icon(Icons.bolt, size: 18),
+                    label: Text(locale.autoPlan),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 4. Focus Priorities Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Eisenhower Mission Tasks',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => _currentIndex = 1),
+                  child: const Text('View All'),
+                ),
+              ],
+            ),
+          ),
+          // 5. Top 3 Tasks preview
+          if (todayTasks.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(32),
+              child: Text('All tasks completed! Enjoy your day.'),
+            )
+          else
+            ...todayTasks.take(3).map((task) {
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+                        color: task.isCompleted ? Colors.green : const Color(0xFF6366F1),
+                      ),
+                      onPressed: () {
+                        repo.taskService.toggleTaskCompletion(task.id);
+                        repo.notifyDataChanged();
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            task.title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                            ),
+                          ),
+                          Text(
+                            '${task.category} • ${task.estimatedMinutes}m • ${task.priority.label.split(':').first}',
+                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
