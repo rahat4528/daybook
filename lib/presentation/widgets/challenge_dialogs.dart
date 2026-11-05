@@ -38,6 +38,9 @@ class ChallengeSimulator {
 
       case AlarmChallengeType.qrScan:
       case AlarmChallengeType.aiScan:
+      case AlarmChallengeType.typing:
+      case AlarmChallengeType.voicePhrase:
+      case AlarmChallengeType.intentionLine:
         return await showDialog<bool>(
               context: context,
               barrierDismissible: false,

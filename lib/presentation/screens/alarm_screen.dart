@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import '../../core/design/app_tokens.dart';
 import '../../core/enums/core_enums.dart';
 import '../../domain/models/alarm_item.dart';
-import '../widgets/challenge_dialogs.dart';
+import '../../domain/services/alarm_health_service.dart';
+import '../../domain/services/sleep_service.dart';
+import 'alarm_health_screen.dart';
+import 'sleep_tracker_screen.dart';
+import 'wake_quest_screen.dart';
 
 class AlarmScreen extends StatefulWidget {
   final List<AlarmItem> alarms;
   final Function(List<AlarmItem>) onAlarmsUpdated;
+  final bool isBangla;
 
   const AlarmScreen({
     super.key,
     required this.alarms,
     required this.onAlarmsUpdated,
+    this.isBangla = false,
   });
 
   @override
@@ -18,17 +25,24 @@ class AlarmScreen extends StatefulWidget {
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
+  final AlarmHealthService _healthService = AlarmHealthService();
+  final SleepService _sleepService = SleepService();
+
   void _showAddAlarmDialog() {
     int hour = 6;
     int minute = 30;
     String label = 'Morning Wake-up';
     AlarmChallengeType challenge = AlarmChallengeType.math;
     ChallengeDifficulty difficulty = ChallengeDifficulty.medium;
+    SoundPack soundPack = SoundPack.classicBell;
+    bool isStrictMode = false;
+    bool hasPreChime = false;
     final List<int> repeatDays = [1, 2, 3, 4, 5]; // Mon-Fri default
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppTokens.surface1,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -50,21 +64,30 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Set Smart Alarm',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text(
+                          widget.isBangla ? 'স্মার্ট ওয়েক কোয়েস্ট সেট করুন' : 'Set Smart Alarm',
+                          style: const TextStyle(
+                            color: AppTokens.accentLime,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         IconButton(
-                          icon: const Icon(Icons.close),
+                          icon: const Icon(Icons.close, color: AppTokens.textSecondary),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
+
                     // Time selector
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         DropdownButton<int>(
                           value: hour,
+                          dropdownColor: AppTokens.surface2,
+                          style: const TextStyle(color: AppTokens.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                           items: List.generate(24, (i) => i).map((h) {
                             final p = h >= 12 ? 'PM' : 'AM';
                             final d = h == 0 ? 12 : (h > 12 ? h - 12 : h);
@@ -74,9 +97,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
                             if (val != null) setModalState(() => hour = val);
                           },
                         ),
-                        const Text(' : ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                        const Text(' : ', style: TextStyle(color: AppTokens.accentLime, fontSize: 28, fontWeight: FontWeight.bold)),
                         DropdownButton<int>(
                           value: minute,
+                          dropdownColor: AppTokens.surface2,
+                          style: const TextStyle(color: AppTokens.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                           items: List.generate(12, (i) => i * 5).map((m) {
                             return DropdownMenuItem(
                               value: m,
@@ -90,97 +115,135 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
+
+                    // Label input
                     TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Alarm Label',
-                        border: OutlineInputBorder(),
+                      style: const TextStyle(color: AppTokens.textPrimary),
+                      decoration: InputDecoration(
+                        labelText: widget.isBangla ? 'অ্যালার্মের নাম' : 'Alarm Label',
+                        labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                        filled: true,
+                        fillColor: AppTokens.surface2,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       controller: TextEditingController(text: label),
                       onChanged: (val) => label = val,
                     ),
-                    const SizedBox(height: 16),
-                    const Text('Wake-Up Challenge', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    const SizedBox(height: 14),
+
+                    // Challenge Selector
+                    Text(
+                      widget.isBangla ? 'ওয়েক কোয়েস্ট চ্যালেঞ্জ' : 'Wake Challenge Type',
+                      style: const TextStyle(color: AppTokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
                     const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 8,
-                      children: AlarmChallengeType.values.map((c) {
-                        final isSel = challenge == c;
-                        return ChoiceChip(
-                          avatar: Icon(
-                            c == AlarmChallengeType.math
-                                ? Icons.calculate
-                                : (c == AlarmChallengeType.memorySequence
-                                    ? Icons.grid_view
-                                    : (c == AlarmChallengeType.movement
-                                        ? Icons.directions_walk
-                                        : Icons.qr_code_scanner)),
-                            size: 16,
-                          ),
-                          label: Text(c.displayName, style: const TextStyle(fontSize: 11)),
-                          selected: isSel,
-                          onSelected: (val) {
-                            if (val) setModalState(() => challenge = c);
-                          },
+                    DropdownButtonFormField<AlarmChallengeType>(
+                      value: challenge,
+                      dropdownColor: AppTokens.surface2,
+                      style: const TextStyle(color: AppTokens.textPrimary),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppTokens.surface2,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      items: AlarmChallengeType.values.map((c) {
+                        return DropdownMenuItem(
+                          value: c,
+                          child: Text(widget.isBangla ? c.banglaDisplayName : c.displayName),
                         );
                       }).toList(),
+                      onChanged: (val) {
+                        if (val != null) setModalState(() => challenge = val);
+                      },
                     ),
                     const SizedBox(height: 12),
-                    const Text('Challenge Difficulty', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+
+                    // Sound Pack Selector
+                    Text(
+                      widget.isBangla ? 'সাউন্ড প্যাক ও সুর' : 'Sound Pack Tone',
+                      style: const TextStyle(color: AppTokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
                     const SizedBox(height: 6),
+                    DropdownButtonFormField<SoundPack>(
+                      value: soundPack,
+                      dropdownColor: AppTokens.surface2,
+                      style: const TextStyle(color: AppTokens.textPrimary),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppTokens.surface2,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      items: SoundPack.values.map((s) {
+                        return DropdownMenuItem(
+                          value: s,
+                          child: Text(widget.isBangla ? s.banglaDisplayName : s.displayName),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) setModalState(() => soundPack = val);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Difficulty & Strict Mode Switches
                     Row(
-                      children: ChallengeDifficulty.values.map((d) {
-                        final isSel = difficulty == d;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(d.name.toUpperCase()),
-                            selected: isSel,
-                            onSelected: (val) {
-                              if (val) setModalState(() => difficulty = d);
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<ChallengeDifficulty>(
+                            value: difficulty,
+                            dropdownColor: AppTokens.surface2,
+                            style: const TextStyle(color: AppTokens.textPrimary),
+                            decoration: InputDecoration(
+                              labelText: widget.isBangla ? 'কঠিনতা' : 'Difficulty',
+                              labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                              filled: true,
+                              fillColor: AppTokens.surface2,
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            items: ChallengeDifficulty.values.map((d) {
+                              return DropdownMenuItem(
+                                value: d,
+                                child: Text(d.name.toUpperCase()),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setModalState(() => difficulty = val);
                             },
                           ),
-                        );
-                      }).toList(),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    const Text('Repeat Days', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    const SizedBox(height: 6),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        {'name': 'M', 'day': 1},
-                        {'name': 'T', 'day': 2},
-                        {'name': 'W', 'day': 3},
-                        {'name': 'T', 'day': 4},
-                        {'name': 'F', 'day': 5},
-                        {'name': 'S', 'day': 6},
-                        {'name': 'S', 'day': 7},
-                      ].map((item) {
-                        final d = item['day'] as int;
-                        final active = repeatDays.contains(d);
-                        return FilterChip(
-                          label: Text(item['name'] as String),
-                          selected: active,
-                          onSelected: (val) {
-                            setModalState(() {
-                              if (val) {
-                                repeatDays.add(d);
-                              } else {
-                                repeatDays.remove(d);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
+                    const SizedBox(height: 12),
+
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        widget.isBangla ? 'স্ট্রিক্ট মোড (স্নুজ নিষ্ক্রিয়)' : 'Strict Mode (No Snooze)',
+                        style: const TextStyle(color: AppTokens.textPrimary, fontSize: 13.5),
+                      ),
+                      activeColor: AppTokens.accentLime,
+                      value: isStrictMode,
+                      onChanged: (val) => setModalState(() => isStrictMode = val),
                     ),
-                    const SizedBox(height: 24),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        widget.isBangla ? 'নরম প্রাক-অ্যালার্ম চাইম (১৫ মিনিট আগে)' : 'Soft Pre-alarm Chime (15m before)',
+                        style: const TextStyle(color: AppTokens.textPrimary, fontSize: 13.5),
+                      ),
+                      activeColor: AppTokens.accentLime,
+                      value: hasPreChime,
+                      onChanged: (val) => setModalState(() => hasPreChime = val),
+                    ),
+
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6366F1),
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppTokens.accentLime,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: () {
@@ -188,16 +251,22 @@ class _AlarmScreenState extends State<AlarmScreen> {
                             id: 'alm_${DateTime.now().microsecondsSinceEpoch}',
                             hour: hour,
                             minute: minute,
-                            label: label.isEmpty ? 'Alarm' : label,
+                            label: label.isEmpty ? 'Wake Quest' : label,
                             repeatDays: repeatDays,
                             challengeType: challenge,
                             difficulty: difficulty,
+                            soundPack: soundPack,
+                            isStrictMode: isStrictMode,
+                            hasPreAlarmChime: hasPreChime,
                           );
                           final updated = List<AlarmItem>.from(widget.alarms)..add(newAlarm);
                           widget.onAlarmsUpdated(updated);
                           Navigator.of(ctx).pop();
                         },
-                        child: const Text('Save Alarm', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(
+                          widget.isBangla ? 'অ্যালার্ম সংরক্ষণ করুন' : 'Save Alarm',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ],
@@ -210,17 +279,74 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
+  void _launchWakeQuestPreview(AlarmItem alarm) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => WakeQuestScreen(
+          alarm: alarm,
+          isBangla: widget.isBangla,
+          onDismissed: () => Navigator.of(context).pop(),
+          onIntentionCaptured: (intention) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: AppTokens.surface2,
+                content: Text(
+                  widget.isBangla ? 'সংকল্প সংরক্ষিত: $intention' : 'Intention logged: $intention',
+                  style: const TextStyle(color: AppTokens.accentLime),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     return Scaffold(
+      backgroundColor: AppTokens.bg,
       appBar: AppBar(
-        title: const Text('Smart Alarms & Challenges', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppTokens.bg,
+        elevation: 0,
+        title: const Text(
+          'Smart Alarms & Challenges',
+          style: TextStyle(color: AppTokens.accentLime, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_alarm),
+            icon: const Icon(Icons.nightlight_round, color: AppTokens.accentLime),
+            tooltip: widget.isBangla ? 'ঘুম ট্র্যাকার' : 'Sleep Analytics',
+            onPressed: () {
+              final nextAlarm = widget.alarms.isNotEmpty ? widget.alarms.first : const AlarmItem(id: 'def', hour: 6, minute: 30);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SleepTrackerScreen(
+                    sleepService: _sleepService,
+                    isBangla: widget.isBangla,
+                    nextAlarmHour: nextAlarm.hour,
+                    nextAlarmMinute: nextAlarm.minute,
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.health_and_safety_outlined, color: AppTokens.accentLime),
+            tooltip: widget.isBangla ? 'অ্যালার্ম ডায়াগনস্টিক' : 'Alarm Diagnostics',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => AlarmHealthScreen(
+                    healthService: _healthService,
+                    isBangla: widget.isBangla,
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.add, color: AppTokens.accentLime),
             onPressed: _showAddAlarmDialog,
           ),
         ],
@@ -230,14 +356,25 @@ class _AlarmScreenState extends State<AlarmScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.alarm_off, size: 54, color: Colors.grey),
+                  const Icon(Icons.alarm_off, size: 54, color: AppTokens.textSecondary),
                   const SizedBox(height: 12),
-                  const Text('No alarms configured.'),
-                  const SizedBox(height: 8),
+                  Text(
+                    widget.isBangla ? 'কোনো অ্যালার্ম কনফিগার করা নেই।' : 'No alarms configured.',
+                    style: const TextStyle(color: AppTokens.textSecondary),
+                  ),
+                  const SizedBox(height: 14),
                   ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTokens.accentLime,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                     onPressed: _showAddAlarmDialog,
                     icon: const Icon(Icons.add),
-                    label: const Text('Create First Smart Alarm'),
+                    label: Text(
+                      widget.isBangla ? 'প্রথম স্মার্ট অ্যালার্ম তৈরি করুন' : 'Create First Smart Alarm',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -251,20 +388,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    borderRadius: BorderRadius.circular(18),
+                    color: AppTokens.surface1,
+                    borderRadius: BorderRadius.circular(AppTokens.radiusCard),
                     border: Border.all(
-                      color: alarm.isEnabled
-                          ? const Color(0xFF6366F1).withOpacity(0.4)
-                          : Colors.transparent,
+                      color: alarm.isEnabled ? AppTokens.accentLime.withValues(alpha: 0.6) : AppTokens.border,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
                   child: Column(
                     children: [
@@ -279,20 +407,21 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 style: TextStyle(
                                   fontSize: 26,
                                   fontWeight: FontWeight.bold,
-                                  color: alarm.isEnabled
-                                      ? (isDark ? Colors.white : const Color(0xFF0F172A))
-                                      : Colors.grey,
+                                  color: alarm.isEnabled ? AppTokens.textPrimary : AppTokens.textSecondary,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
                                 ),
                               ),
                               Text(
                                 alarm.label,
-                                style: const TextStyle(fontSize: 13, color: Colors.grey),
+                                style: const TextStyle(fontSize: 13, color: AppTokens.textSecondary),
                               ),
                             ],
                           ),
                           Switch(
                             value: alarm.isEnabled,
-                            activeColor: const Color(0xFF6366F1),
+                            activeColor: AppTokens.accentLime,
+                            activeTrackColor: AppTokens.accentLime.withValues(alpha: 0.3),
+                            inactiveTrackColor: AppTokens.surface2,
                             onChanged: (val) {
                               final updated = List<AlarmItem>.from(widget.alarms);
                               updated[i] = alarm.copyWith(isEnabled: val);
@@ -308,20 +437,21 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF8B5CF6).withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppTokens.surface2,
+                              borderRadius: BorderRadius.circular(AppTokens.radiusPill),
+                              border: Border.all(color: AppTokens.border),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.shield_outlined, size: 14, color: Color(0xFF8B5CF6)),
+                                const Icon(Icons.shield_outlined, size: 13, color: AppTokens.accentLime),
                                 const SizedBox(width: 4),
                                 Text(
                                   '${alarm.challengeType.displayName} (${alarm.difficulty.name})',
                                   style: const TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF8B5CF6),
+                                    color: AppTokens.accentLime,
                                   ),
                                 ),
                               ],
@@ -330,27 +460,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           const Spacer(),
                           // Interactive Test simulator button
                           TextButton.icon(
-                            onPressed: () async {
-                              final solved = await ChallengeSimulator.launchChallenge(
-                                context: context,
-                                type: alarm.challengeType,
-                                difficulty: alarm.difficulty,
-                                qrHash: alarm.qrHash,
-                              );
-                              if (context.mounted && solved) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('🎉 Challenge Solved! Alarm successfully dismissed.'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              }
-                            },
+                            style: TextButton.styleFrom(foregroundColor: AppTokens.accentLime),
+                            onPressed: () => _launchWakeQuestPreview(alarm),
                             icon: const Icon(Icons.play_circle_outline, size: 16),
-                            label: const Text('Test Challenge', style: TextStyle(fontSize: 12)),
+                            label: const Text('Test Challenge', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 18, color: Colors.grey),
+                            icon: const Icon(Icons.delete_outline, size: 18, color: AppTokens.textSecondary),
                             onPressed: () {
                               final updated = List<AlarmItem>.from(widget.alarms)..removeAt(i);
                               widget.onAlarmsUpdated(updated);
@@ -365,11 +481,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddAlarmDialog,
-        backgroundColor: const Color(0xFF6366F1),
-        foregroundColor: Colors.white,
+        backgroundColor: AppTokens.accentLime,
+        foregroundColor: Colors.black,
         child: const Icon(Icons.alarm_add),
       ),
     );
   }
 }
-

@@ -25,20 +25,50 @@ enum AlarmChallengeType {
   memorySequence,
   movement,
   qrScan,
-  aiScan;
+  aiScan,
+  typing,
+  voicePhrase,
+  intentionLine;
 
   String get displayName {
     switch (this) {
       case AlarmChallengeType.math:
         return 'Math Equations';
       case AlarmChallengeType.memorySequence:
-        return 'Memory Sequence';
+        return 'Memory Sequence (Simon)';
       case AlarmChallengeType.movement:
         return 'Movement (Walk)';
       case AlarmChallengeType.qrScan:
         return 'QR Code Scan';
       case AlarmChallengeType.aiScan:
         return 'AI Camera Vision';
+      case AlarmChallengeType.typing:
+        return 'Typing Affirmation';
+      case AlarmChallengeType.voicePhrase:
+        return 'Voice Affirmation';
+      case AlarmChallengeType.intentionLine:
+        return 'Daily Intention Line';
+    }
+  }
+
+  String get banglaDisplayName {
+    switch (this) {
+      case AlarmChallengeType.math:
+        return 'গণিত ধাঁধা';
+      case AlarmChallengeType.memorySequence:
+        return 'মেমোরি সিকোয়েন্স (সাইমন)';
+      case AlarmChallengeType.movement:
+        return 'হাঁটাচলা (কদম গণনা)';
+      case AlarmChallengeType.qrScan:
+        return 'কিউআর কোড স্ক্যান';
+      case AlarmChallengeType.aiScan:
+        return 'এআই ক্যামেরা দৃষ্টি';
+      case AlarmChallengeType.typing:
+        return 'টাইপিং চ্যালেঞ্জ';
+      case AlarmChallengeType.voicePhrase:
+        return 'কণ্ঠস্বর বাক্য চ্যালেঞ্জ';
+      case AlarmChallengeType.intentionLine:
+        return 'দৈনিক সংকল্প বা ফোকাস';
     }
   }
 
@@ -54,6 +84,50 @@ enum AlarmChallengeType {
         return 'qr_code_scanner';
       case AlarmChallengeType.aiScan:
         return 'camera_alt';
+      case AlarmChallengeType.typing:
+        return 'keyboard';
+      case AlarmChallengeType.voicePhrase:
+        return 'record_voice_over';
+      case AlarmChallengeType.intentionLine:
+        return 'edit_note';
+    }
+  }
+}
+
+enum SoundPack {
+  classicBell,
+  cosmicWaves,
+  bengaliFlute,
+  gentleHarp,
+  roaringThunder;
+
+  String get displayName {
+    switch (this) {
+      case SoundPack.classicBell:
+        return 'Classic Bell';
+      case SoundPack.cosmicWaves:
+        return 'Cosmic Waves';
+      case SoundPack.bengaliFlute:
+        return 'Bengali Bamboo Flute';
+      case SoundPack.gentleHarp:
+        return 'Gentle Harp';
+      case SoundPack.roaringThunder:
+        return 'Roaring Thunder';
+    }
+  }
+
+  String get banglaDisplayName {
+    switch (this) {
+      case SoundPack.classicBell:
+        return 'ক্লাসিক ঘণ্টা';
+      case SoundPack.cosmicWaves:
+        return 'কসমিক তরঙ্গ';
+      case SoundPack.bengaliFlute:
+        return 'বাংলার বাঁশি';
+      case SoundPack.gentleHarp:
+        return 'শান্ত হার্প';
+      case SoundPack.roaringThunder:
+        return 'গর্জনশীল মেঘ';
     }
   }
 }
