@@ -16,7 +16,10 @@ import 'presentation/widgets/sky_canvas.dart';
 import 'presentation/widgets/daily_progress_ring.dart';
 import 'presentation/widgets/briefing_sheets.dart';
 import 'presentation/widgets/universal_quick_capture_sheet.dart';
+import 'presentation/widgets/wellness_modal.dart';
 import 'presentation/screens/inbox_screen.dart';
+import 'presentation/screens/habits_screen.dart';
+import 'presentation/screens/focus_screen.dart';
 import 'domain/services/briefing_service.dart';
 import 'domain/models/weather_info.dart';
 import 'domain/services/planner_algorithm.dart';
@@ -340,6 +343,21 @@ class _DayBookShellState extends State<DayBookShell> {
                               },
                             ),
                             IconButton(
+                              icon: const Icon(Icons.center_focus_strong_outlined, color: AppColors.accentLime),
+                              tooltip: 'Focus Zone',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => FocusScreen(
+                                      isBangla: repo.isBangla,
+                                      focusService: repo.focusService,
+                                      entriesRepo: repo.entriesRepository,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            IconButton(
                               icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
                               tooltip: 'Settings',
                               onPressed: () {
@@ -526,10 +544,32 @@ class _DayBookShellState extends State<DayBookShell> {
 
           // Habit Quick-Tap Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
-            child: Text(
-              repo.isBangla ? 'দৈনিক অভ্যাস কুইক-ট্যাপ' : 'HABITS QUICK-TAP',
-              style: AppTypography.sectionHeader,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  repo.isBangla ? 'দৈনিক অভ্যাস কুইক-ট্যাপ' : 'HABITS QUICK-TAP',
+                  style: AppTypography.sectionHeader,
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => HabitsScreen(
+                          isBangla: repo.isBangla,
+                          habitService: repo.habitService,
+                          entriesRepo: repo.entriesRepository,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    repo.isBangla ? 'সব দেখুন →' : 'ALL HABITS →',
+                    style: const TextStyle(color: AppColors.accentLime, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
           ),
           SingleChildScrollView(
@@ -568,10 +608,29 @@ class _DayBookShellState extends State<DayBookShell> {
 
           // Mood & Energy Selector
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
-            child: Text(
-              repo.isBangla ? 'মন ও শক্তি স্তর' : 'MOOD & ENERGY',
-              style: AppTypography.sectionHeader,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  repo.isBangla ? 'মন ও শক্তি স্তর' : 'MOOD & ENERGY',
+                  style: AppTypography.sectionHeader,
+                ),
+                TextButton(
+                  onPressed: () {
+                    WellnessModal.show(
+                      context,
+                      isBangla: repo.isBangla,
+                      wellnessService: repo.wellnessService,
+                      entriesRepo: repo.entriesRepository,
+                    );
+                  },
+                  child: Text(
+                    repo.isBangla ? 'চেক-ইন →' : 'CHECK-IN →',
+                    style: const TextStyle(color: AppColors.accentLime, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
           ),
           SingleChildScrollView(
