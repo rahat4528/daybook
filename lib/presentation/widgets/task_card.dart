@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/enums/task_priority.dart';
-import '../../core/enums/core_enums.dart';
 import '../../domain/models/task_item.dart';
 
 class TaskCard extends StatefulWidget {

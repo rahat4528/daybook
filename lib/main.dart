@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'core/constants/app_constants.dart';
-import 'core/enums/core_enums.dart';
 import 'core/localization/app_localizations.dart';
 import 'data/app_repository.dart';
 import 'domain/services/briefing_service.dart';

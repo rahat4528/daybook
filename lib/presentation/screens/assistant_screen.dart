@@ -61,7 +61,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
     // 1. Task Creation Tool
     if (lower.contains('add task') || lower.contains('টাস্ক যোগ') || lower.contains('create task')) {
       final title = input
-          .replaceAll(RegExp(r'(?i)add task:?|create task:?|টাস্ক যোগ করো:?'), '')
+          .replaceAll(RegExp(r'add task:?|create task:?|টাস্ক যোগ করো:?', caseSensitive: false), '')
           .trim();
       final taskTitle = title.isEmpty ? 'Follow up on important action' : title;
 

@@ -82,12 +82,12 @@ void main() {
       // Friday Nov 6, 2026 at 10:00 AM (Friday is weekday 5)
       final fridayMorning = DateTime(2026, 11, 6, 10, 0);
 
-      final mondayWednesdayAlarm = AlarmItem(
+      const mondayWednesdayAlarm = AlarmItem(
         id: 'alm-1',
         hour: 7,
         minute: 30,
         label: 'Morning Workout',
-        repeatDays: const [1, 3], // Mon & Wed
+        repeatDays: [1, 3], // Mon & Wed
         challengeType: AlarmChallengeType.math,
         difficulty: ChallengeDifficulty.medium,
       );

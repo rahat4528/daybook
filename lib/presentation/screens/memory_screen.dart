@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/enums/core_enums.dart';
-import '../../domain/models/chat_and_memory.dart';
 import '../../domain/services/memory_vault_service.dart';
 
 class MemoryScreen extends StatefulWidget {
