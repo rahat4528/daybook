@@ -9,10 +9,12 @@ import '../domain/models/chat_and_memory.dart';
 import '../domain/models/weather_and_briefing.dart';
 import '../domain/services/task_service.dart';
 import '../domain/services/memory_vault_service.dart';
+import 'repositories/entries_repository.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
   final MemoryVaultService memoryVaultService = MemoryVaultService();
+  final EntriesRepository entriesRepository = EntriesRepository();
 
   List<AlarmItem> alarms = [];
   List<DailyPlanBlock> planBlocks = [];
@@ -74,99 +76,96 @@ class AppRepository extends ChangeNotifier {
         priority: TaskPriority.urgentImportant,
         estimatedMinutes: 45,
         dueAt: DateTime(now.year, now.month, now.day, 18, 0),
+        createdAt: now.subtract(const Duration(hours: 2)),
         subtasks: const [
           SubtaskItem(id: 'st_1', title: 'Check AlarmReceiver broadcast intent', isCompleted: true),
           SubtaskItem(id: 'st_2', title: 'Verify Wakelock foreground service', isCompleted: true),
           SubtaskItem(id: 'st_3', title: 'Unit test Math & Memory challenges', isCompleted: false),
         ],
-        createdAt: now.subtract(const Duration(hours: 3)),
       ),
       TaskItem(
         id: 'task_seed_2',
-        title: 'CSE246: Dynamic Programming Practice',
-        notes: 'Solve Longest Common Subsequence and Knapsack variants',
-        category: 'Study',
+        title: 'Complete 30-minute English or Bangla Journal Entry',
+        notes: 'Reflect on morning productivity and energy levels',
+        category: 'Personal',
         priority: TaskPriority.importantNotUrgent,
-        estimatedMinutes: 60,
+        estimatedMinutes: 30,
         dueAt: DateTime(now.year, now.month, now.day, 21, 0),
-        createdAt: now.subtract(const Duration(hours: 2)),
-      ),
-      TaskItem(
-        id: 'task_seed_3',
-        title: 'Brisk 5km Evening Jog & Hydration',
-        notes: 'Maintain 5-day fitness consistency streak',
-        category: 'Health',
-        priority: TaskPriority.urgentNotImportant,
-        estimatedMinutes: 35,
-        dueAt: DateTime(now.year, now.month, now.day, 17, 30),
         createdAt: now.subtract(const Duration(hours: 1)),
       ),
       TaskItem(
-        id: 'task_seed_4',
-        title: 'Buy Green Tea & Fresh Almonds',
-        category: 'Personal',
+        id: 'task_seed_3',
+        title: 'Drink 2.5 Liters of Water',
+        category: 'Health',
         priority: TaskPriority.neither,
-        estimatedMinutes: 15,
+        estimatedMinutes: 10,
         status: TaskStatus.completed,
-        completedAt: now.subtract(const Duration(minutes: 40)),
         createdAt: now.subtract(const Duration(hours: 5)),
       ),
     ]);
 
-    // 2. Seed Smart Alarms
+    // 2. Seed Alarms
     alarms = [
-      const AlarmItem(
-        id: 'alm_seed_1',
-        hour: 6,
-        minute: 30,
-        label: 'Sunrise Productivity Wake-Up',
+      AlarmItem(
+        id: 'alarm_primary',
+        label: 'Wake Quest: Focus Ascent',
+        hour: wakeHour,
+        minute: wakeMinute,
         isEnabled: true,
-        repeatDays: [1, 2, 3, 4, 5],
         challengeType: AlarmChallengeType.math,
-        difficulty: ChallengeDifficulty.medium,
-        ringtone: 'Sunrise Symphony',
+        difficulty: ChallengeDifficulty.hard,
+        minSteps: 30,
+        snoozeAllowed: true,
       ),
       const AlarmItem(
-        id: 'alm_seed_2',
-        hour: 7,
-        minute: 15,
-        label: 'Bathroom QR Code Verification',
-        isEnabled: true,
-        repeatDays: [1, 2, 3, 4, 5, 6, 7],
-        challengeType: AlarmChallengeType.qrScan,
-        difficulty: ChallengeDifficulty.hard,
-        qrHash: 'bathroom_sink_target',
+        id: 'alarm_power_nap',
+        label: 'Afternoon Recharge (20m)',
+        hour: 14,
+        minute: 30,
+        isEnabled: false,
+        challengeType: AlarmChallengeType.math,
+        difficulty: ChallengeDifficulty.easy,
+        snoozeAllowed: true,
       ),
     ];
 
     // 3. Seed Plan Blocks
-    planBlocks = [
-      const DailyPlanBlock(
-        id: 'dpb_seed_1',
-        title: 'Deep Engineering Session',
+    planBlocks = const [
+      DailyPlanBlock(
+        id: 'block_morning_routine',
+        title: 'Morning Awakening & Wake Quest',
+        startHour: 6,
+        startMinute: 30,
+        endHour: 7,
+        endMinute: 30,
+        category: 'Routine',
+      ),
+      DailyPlanBlock(
+        id: 'block_deep_work_1',
+        title: 'Deep Architecture & Kotlin Alarm Engine',
         startHour: 9,
         startMinute: 0,
-        endHour: 10,
-        endMinute: 30,
-        category: 'Work',
-      ),
-      const DailyPlanBlock(
-        id: 'dpb_seed_2',
-        title: 'Algorithms & Course Review',
-        startHour: 11,
-        startMinute: 0,
         endHour: 12,
-        endMinute: 15,
-        category: 'Study',
+        endMinute: 0,
+        category: 'Focus',
+      ),
+      DailyPlanBlock(
+        id: 'block_rest',
+        title: 'Lunch, Rest & Sunlight Walk',
+        startHour: 12,
+        startMinute: 30,
+        endHour: 13,
+        endMinute: 30,
+        category: 'Rest',
       ),
     ];
 
-    // 4. Seed Personal Memories
+    // 4. Seed Memory Vault
     memoryVaultService.loadMemories([
       PersonalMemory(
         id: 'mem_seed_1',
         key: 'preferred_wake_time',
-        value: '6:30 AM on weekdays, 7:30 AM on weekends',
+        value: '6:30 AM wake with Math challenge',
         kind: MemoryKind.preference,
         isPinned: true,
         createdAt: now.subtract(const Duration(days: 3)),
@@ -198,6 +197,8 @@ class AppRepository extends ChangeNotifier {
         timestamp: now.subtract(const Duration(minutes: 10)),
       ),
     ];
+
+    // 6. Seed Simulated Month for Part 2 Verification
+    entriesRepository.seedSimulatedMonth(now.year, now.month);
   }
 }
-

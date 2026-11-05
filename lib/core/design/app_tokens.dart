@@ -37,6 +37,7 @@ class AppRadius {
   static const double sheet = 24.0;
   static const double chip = 8.0;
   static const double button = 14.0;
+  static const double pill = 9999.0;
 }
 
 class AppSpacing {
@@ -47,3 +48,21 @@ class AppSpacing {
   static const double xl = 32.0;
 }
 
+/// Unified AppTokens alias combining Colors and Radii
+class AppTokens {
+  static const Color bg = AppColors.bg;
+  static const Color surface1 = AppColors.surface1;
+  static const Color surface2 = AppColors.surface2;
+  static const Color border = AppColors.border;
+  static const Color textPrimary = AppColors.textPrimary;
+  static const Color textSecondary = AppColors.textSecondary;
+  static const Color accentLime = AppColors.accentLime;
+  static const Color limePressed = AppColors.limePressed;
+  static const Color textOnLime = AppColors.textOnLime;
+  static const Color errorRed = AppColors.errorRed;
+
+  static const double radiusCard = AppRadius.card;
+  static const double radiusSheet = AppRadius.sheet;
+  static const double radiusChip = AppRadius.chip;
+  static const double radiusPill = AppRadius.pill;
+}

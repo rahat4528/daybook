@@ -27,7 +27,7 @@ class AppLocale {
   }
 
   // Common UI Strings
-  String get appTitle => isBangla ? 'ডেবুক (Daybook)' : 'Daybook';
+  String get appTitle => isBangla ? 'দিনবই' : 'DayBook';
   String get today => isBangla ? 'আজকের' : 'Today';
   String get tasks => isBangla ? 'টাস্ক' : 'Tasks';
   String get planner => isBangla ? 'পরিকল্পনা' : 'Planner';
@@ -41,5 +41,23 @@ class AppLocale {
   String get newTask => isBangla ? 'নতুন টাস্ক' : 'New Task';
   String get autoPlan => isBangla ? 'স্বয়ংক্রিয় দিন পরিকল্পনা' : 'Auto-Plan Day';
   String get batteryGuide => isBangla ? 'ব্যাটারি অপ্টিমাইজেশন গাইড' : 'Battery Saver Guide';
-}
 
+  // PART 2 Strings
+  String get dayPage => isBangla ? 'দিনের পৃষ্ঠা' : 'Day Page';
+  String get theBook => isBangla ? 'দিনবই' : 'Book';
+  String get onThisDay => isBangla ? 'এই দিনে (থ্রোব্যাক)' : 'On This Day';
+  String get timeCapsule => isBangla ? 'টাইম ক্যাপসুল' : 'Time Capsule';
+  String get nightlySummary => isBangla ? 'রাতের সারসংক্ষেপ' : 'Nightly Summary';
+  String get reflection => isBangla ? 'প্রতিফলন' : 'Daily Reflection';
+  String get gratitude => isBangla ? 'কৃতজ্ঞতা' : 'Gratitude';
+  String get dayScore => isBangla ? 'দিন স্কোর' : 'Day Score';
+  String get exportBook => isBangla ? 'বই রপ্তানি' : 'Export Book';
+  String get printFriendly => isBangla ? 'প্রিন্ট-বান্ধব' : 'Print Friendly';
+  String get starDay => isBangla ? 'স্টার দিন' : 'Star Day';
+  String get pinnedMoment => isBangla ? 'পিন করা মুহূর্ত' : 'Pinned Moment';
+  String get undoAction => isBangla ? 'পূর্বাবস্থায় ফেরান' : 'Undo';
+  String get addNote => isBangla ? 'নোট লিখুন' : 'Add Note';
+  String get searchEntries => isBangla ? 'এন্ট্রি খুঁজুন' : 'Search Entries';
+  String get monthShelf => isBangla ? 'মাসের তাক' : 'Month Shelf';
+  String get heatCalendar => isBangla ? 'হিটম্যাপ ক্যালেন্ডার' : 'Heatmap Calendar';
+}

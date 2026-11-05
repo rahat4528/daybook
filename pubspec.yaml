@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   intl: ^0.20.3
   flutter_riverpod: ^3.4.3
+  pdf: ^3.13.1
 
 dev_dependencies:
   flutter_test:

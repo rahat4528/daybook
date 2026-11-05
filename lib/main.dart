@@ -10,6 +10,8 @@ import 'presentation/screens/alarm_screen.dart';
 import 'presentation/screens/assistant_screen.dart';
 import 'presentation/screens/memory_screen.dart';
 import 'presentation/screens/settings_screen.dart';
+import 'presentation/screens/book_screen.dart';
+import 'presentation/screens/day_page_screen.dart';
 import 'presentation/widgets/sky_canvas.dart';
 import 'presentation/widgets/daily_progress_ring.dart';
 import 'presentation/widgets/briefing_sheets.dart';
@@ -261,9 +263,9 @@ class _DayBookShellState extends State<DayBookShell> {
         taskService: repo.taskService,
         onDataChanged: repo.notifyDataChanged,
       ),
-      AlarmScreen(
-        alarms: repo.alarms,
-        onAlarmsUpdated: repo.updateAlarms,
+      BookScreen(
+        repository: repo.entriesRepository,
+        isBangla: repo.isBangla,
       ),
       AssistantScreen(
         messages: repo.chatMessages,
@@ -356,6 +358,20 @@ class _DayBookShellState extends State<DayBookShell> {
                               },
                             ),
                             IconButton(
+                              icon: const Icon(Icons.alarm_outlined, color: AppColors.textPrimary),
+                              tooltip: 'Alarms',
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => AlarmScreen(
+                                      alarms: repo.alarms,
+                                      onAlarmsUpdated: repo.updateAlarms,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            IconButton(
                               icon: const Icon(Icons.psychology_outlined, color: AppColors.textPrimary),
                               tooltip: 'Memory Vault',
                               onPressed: () {
@@ -426,14 +442,74 @@ class _DayBookShellState extends State<DayBookShell> {
             sleepHour: repo.sleepHour,
             sleepMinute: repo.sleepMinute,
           ),
+          const SizedBox(height: 8),
 
-          // 3. Section Title
+          // 3. Signature Day Page Entry Card
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surface1,
+              borderRadius: BorderRadius.circular(AppRadius.card),
+              border: Border.all(color: AppColors.accentLime.withValues(alpha: 0.6)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        repo.isBangla ? 'আজকের দিনবই পৃষ্ঠা' : 'TODAY\'S DAY PAGE',
+                        style: const TextStyle(
+                          color: AppColors.accentLime,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        repo.isBangla ? 'স্বয়ংক্রিয় টাইমলাইন ও রাতের সারসংক্ষেপ' : 'Auto-filled timeline & nightly reflection',
+                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accentLime,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => DayPageScreen(
+                          repository: repo.entriesRepository,
+                          initialDate: DateTime.now(),
+                          isBangla: repo.isBangla,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    repo.isBangla ? 'পৃষ্ঠা খুলুন' : 'Open Page',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 4. Section Title
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
             child: Text('TODAY\'S PRIORITIES', style: AppTypography.sectionHeader),
           ),
 
-          // 4. Tasks
+          // 5. Tasks
           if (todayTasks.isEmpty)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
