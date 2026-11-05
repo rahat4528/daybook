@@ -45,3 +45,4 @@ The calendar heat view computes a daily score (0–100) based on task completion
 
 ## Status
 Accepted and verified for Part 2 implementation.
+

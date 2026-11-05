@@ -276,3 +276,4 @@ class EntriesRepository {
 final entriesRepositoryProvider = Provider<EntriesRepository>((ref) {
   return EntriesRepository();
 });
+

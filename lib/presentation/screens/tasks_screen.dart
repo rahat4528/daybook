@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_constants.dart';
+import '../../core/design/app_tokens.dart';
+import '../../core/enums/core_enums.dart';
 import '../../core/enums/task_priority.dart';
 import '../../domain/models/task_item.dart';
 import '../../domain/models/subtask_item.dart';
+import '../../domain/services/planner_algorithm.dart';
 import '../../domain/services/task_service.dart';
 import '../widgets/task_card.dart';
 
 class TasksScreen extends StatefulWidget {
   final TaskService taskService;
   final VoidCallback onDataChanged;
+  final bool isBangla;
 
   const TasksScreen({
     super.key,
     required this.taskService,
     required this.onDataChanged,
+    this.isBangla = false,
   });
 
   @override
@@ -22,9 +26,7 @@ class TasksScreen extends StatefulWidget {
 
 class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _selectedCategory = 'All';
-  String _searchQuery = '';
-  final _searchController = TextEditingController();
+  final String _selectedCategory = 'All';
 
   @override
   void initState() {
@@ -35,7 +37,6 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
   @override
   void dispose() {
     _tabController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -43,10 +44,7 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     return list.where((t) {
       final matchesCat = _selectedCategory == 'All' ||
           t.category.toLowerCase() == _selectedCategory.toLowerCase();
-      final matchesQuery = _searchQuery.isEmpty ||
-          t.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          t.notes.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesCat && matchesQuery;
+      return matchesCat;
     }).toList();
   }
 
@@ -57,14 +55,17 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     TaskPriority priority = TaskPriority.importantNotUrgent;
     String category = 'Work';
     int estimatedMinutes = 30;
+    RecurrenceType recurrence = RecurrenceType.none;
     DateTime? dueAt = DateTime.now().add(const Duration(hours: 4));
     final List<SubtaskItem> tempSubtasks = [];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: AppTokens.surface2,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppTokens.radiusSheet)),
+        side: BorderSide(color: AppTokens.border),
       ),
       builder: (ctx) {
         return StatefulBuilder(
@@ -84,12 +85,12 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Create New Task',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        Text(
+                          widget.isBangla ? 'নতুন টাস্ক তৈরি করুন' : 'Create New Task',
+                          style: const TextStyle(color: AppTokens.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close),
+                          icon: const Icon(Icons.close, color: AppTokens.textSecondary),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
@@ -98,120 +99,160 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
                     TextField(
                       controller: titleController,
                       autofocus: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Task Title',
-                        hintText: 'e.g., Finalize system blueprint',
-                        border: OutlineInputBorder(),
+                      style: const TextStyle(color: AppTokens.textPrimary),
+                      decoration: InputDecoration(
+                        labelText: widget.isBangla ? 'টাস্কের শিরোনাম' : 'Task Title',
+                        labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                        filled: true,
+                        fillColor: AppTokens.surface1,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: notesController,
-                      maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes (optional)',
-                        border: OutlineInputBorder(),
+                      style: const TextStyle(color: AppTokens.textPrimary),
+                      decoration: InputDecoration(
+                        labelText: widget.isBangla ? 'নোট বা বিবরণ' : 'Notes / Description',
+                        labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                        filled: true,
+                        fillColor: AppTokens.surface1,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    // Priority selector
-                    const Text('Priority (Eisenhower)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 8,
-                      children: TaskPriority.values.map((p) {
-                        final isSelected = priority == p;
-                        return ChoiceChip(
-                          label: Text(p.label.split(':').first, style: const TextStyle(fontSize: 11)),
-                          selected: isSelected,
-                          onSelected: (val) {
-                            if (val) setModalState(() => priority = p);
-                          },
-                        );
-                      }).toList(),
-                    ),
                     const SizedBox(height: 12),
-                    // Category & Duration
                     Row(
                       children: [
                         Expanded(
+                          child: DropdownButtonFormField<TaskPriority>(
+                            value: priority,
+                            dropdownColor: AppTokens.surface1,
+                            style: const TextStyle(color: AppTokens.textPrimary),
+                            decoration: InputDecoration(
+                              labelText: widget.isBangla ? 'আইজেনহাওয়ার অগ্রাধিকার' : 'Priority (Eisenhower)',
+                              labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            items: TaskPriority.values.map((p) {
+                              return DropdownMenuItem(value: p, child: Text(p.label));
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setModalState(() => priority = val);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: DropdownButtonFormField<RecurrenceType>(
+                            value: recurrence,
+                            dropdownColor: AppTokens.surface1,
+                            style: const TextStyle(color: AppTokens.textPrimary),
+                            decoration: InputDecoration(
+                              labelText: widget.isBangla ? 'পুনরাবৃত্তি' : 'Recurrence',
+                              labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            items: RecurrenceType.values.map((r) {
+                              return DropdownMenuItem(value: r, child: Text(r.name.toUpperCase()));
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setModalState(() => recurrence = val);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: estimatedMinutes,
+                            dropdownColor: AppTokens.surface1,
+                            style: const TextStyle(color: AppTokens.textPrimary),
+                            decoration: InputDecoration(
+                              labelText: widget.isBangla ? 'আনুমানিক সময়' : 'Estimate',
+                              labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            items: [15, 25, 30, 45, 60, 90, 120].map((m) {
+                              return DropdownMenuItem(value: m, child: Text('$m mins'));
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setModalState(() => estimatedMinutes = val);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
                           child: DropdownButtonFormField<String>(
                             value: category,
-                            decoration: const InputDecoration(
-                              labelText: 'Category',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            dropdownColor: AppTokens.surface1,
+                            style: const TextStyle(color: AppTokens.textPrimary),
+                            decoration: InputDecoration(
+                              labelText: widget.isBangla ? 'ক্যাটেগরি' : 'Category',
+                              labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                             ),
-                            items: AppConstants.taskCategories
-                                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                                .toList(),
+                            items: ['Work', 'Personal', 'Health', 'Finance', 'Growth'].map((c) {
+                              return DropdownMenuItem(value: c, child: Text(c));
+                            }).toList(),
                             onChanged: (val) {
                               if (val != null) setModalState(() => category = val);
                             },
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            initialValue: estimatedMinutes.toString(),
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Est. Minutes',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            ),
-                            onChanged: (val) {
-                              final parsed = int.tryParse(val);
-                              if (parsed != null) estimatedMinutes = parsed;
-                            },
-                          ),
-                        ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    // Subtask input
+                    const SizedBox(height: 14),
+
+                    // Subtasks section
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
                             controller: subtaskController,
-                            decoration: const InputDecoration(
-                              hintText: 'Add subtask step...',
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                              border: OutlineInputBorder(),
+                            style: const TextStyle(color: AppTokens.textPrimary),
+                            decoration: InputDecoration(
+                              labelText: widget.isBangla ? 'সাবটাস্ক যোগ করুন' : 'Add Subtask item',
+                              labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        ElevatedButton(
+                        IconButton(
+                          icon: const Icon(Icons.add_circle, color: AppTokens.accentLime),
                           onPressed: () {
-                            if (subtaskController.text.trim().isNotEmpty) {
+                            final text = subtaskController.text.trim();
+                            if (text.isNotEmpty) {
                               setModalState(() {
-                                tempSubtasks.add(SubtaskItem(
-                                  id: 'st_${DateTime.now().microsecondsSinceEpoch}',
-                                  title: subtaskController.text.trim(),
-                                ));
+                                tempSubtasks.add(
+                                  SubtaskItem(
+                                    id: 'st_${DateTime.now().microsecondsSinceEpoch}',
+                                    title: text,
+                                  ),
+                                );
                                 subtaskController.clear();
                               });
                             }
                           },
-                          child: const Text('Add'),
                         ),
                       ],
                     ),
                     if (tempSubtasks.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      ...tempSubtasks.map((st) => Text('• ${st.title}', style: const TextStyle(fontSize: 12))),
+                      ...tempSubtasks.map((st) => Text('• ${st.title}', style: const TextStyle(color: AppTokens.textSecondary, fontSize: 12))),
                     ],
                     const SizedBox(height: 20),
+
                     SizedBox(
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6366F1),
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppTokens.accentLime,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: () {
@@ -222,6 +263,7 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
                               category: category,
                               priority: priority,
                               estimatedMinutes: estimatedMinutes,
+                              recurrence: recurrence,
                               dueAt: dueAt,
                               subtasks: tempSubtasks,
                             );
@@ -229,7 +271,10 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
                             Navigator.of(ctx).pop();
                           }
                         },
-                        child: const Text('Save Task', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(
+                          widget.isBangla ? 'টাস্ক সংরক্ষণ করুন' : 'Save Task',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ],
@@ -248,118 +293,125 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     final upcomingTasks = _filter(widget.taskService.getUpcomingTasks());
     final allTasks = _filter(widget.taskService.tasks);
     final completedTasks = _filter(widget.taskService.getCompletedTasks());
+    final frogTask = PlannerAlgorithm.pickEatTheFrog(todayTasks);
 
     return Scaffold(
+      backgroundColor: AppTokens.bg,
       appBar: AppBar(
-        title: const Text('Task Command Center', style: TextStyle(fontWeight: FontWeight.bold)),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(108),
-          child: Column(
-            children: [
-              // Search & Category Chips
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: SizedBox(
-                  height: 38,
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search tasks...',
-                      prefixIcon: const Icon(Icons.search, size: 18),
-                      contentPadding: EdgeInsets.zero,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-                      isDense: true,
-                    ),
-                    onChanged: (val) => setState(() => _searchQuery = val),
-                  ),
-                ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  children: ['All', ...AppConstants.taskCategories].map((cat) {
-                    final isSelected = _selectedCategory == cat;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: FilterChip(
-                        label: Text(cat, style: const TextStyle(fontSize: 11)),
-                        selected: isSelected,
-                        onSelected: (_) => setState(() => _selectedCategory = cat),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(text: 'Today (${todayTasks.length})'),
-                  Tab(text: 'Upcoming (${upcomingTasks.length})'),
-                  Tab(text: 'All (${allTasks.length})'),
-                  Tab(text: 'Done (${completedTasks.length})'),
-                ],
-              ),
-            ],
-          ),
+        backgroundColor: AppTokens.bg,
+        elevation: 0,
+        title: Text(
+          widget.isBangla ? 'টাস্ক কমান্ড সেন্টার' : 'Task Command Center',
+          style: const TextStyle(color: AppTokens.accentLime, fontWeight: FontWeight.bold),
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildTaskList(todayTasks),
-          _buildTaskList(upcomingTasks),
-          _buildTaskList(allTasks),
-          _buildTaskList(completedTasks),
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: AppTokens.accentLime,
+          labelColor: AppTokens.accentLime,
+          unselectedLabelColor: AppTokens.textSecondary,
+          tabs: [
+            Tab(text: widget.isBangla ? 'আজকের' : 'Today'),
+            Tab(text: widget.isBangla ? 'আসন্ন' : 'Upcoming'),
+            Tab(text: widget.isBangla ? 'সকল' : 'All Tasks'),
+            Tab(text: widget.isBangla ? 'সম্পন্ন' : 'Done'),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: AppTokens.accentLime),
+            onPressed: _showAddTaskSheet,
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTokens.accentLime,
+        foregroundColor: Colors.black,
+        tooltip: widget.isBangla ? 'নতুন কাজ যোগ করুন' : 'Add Task',
         onPressed: _showAddTaskSheet,
-        backgroundColor: const Color(0xFF6366F1),
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: const Text('New Task'),
+        child: const Icon(Icons.add),
+      ),
+      body: Column(
+        children: [
+          // "Eat the Frog" Banner on Today View
+          if (frogTask != null)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppTokens.surface1,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTokens.accentLime),
+              ),
+              child: Row(
+                children: [
+                  const Text('🐸', style: TextStyle(fontSize: 22)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.isBangla ? 'আজকের সবচেয়ে গুরুত্বপূর্ণ কাজ (Frog)' : 'DAILY BIG FROG TARGET',
+                          style: const TextStyle(color: AppTokens.accentLime, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          frogTask.title,
+                          style: const TextStyle(color: AppTokens.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Tab Views
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildTaskList(todayTasks),
+                _buildTaskList(upcomingTasks),
+                _buildTaskList(allTasks),
+                _buildTaskList(completedTasks),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildTaskList(List<TaskItem> list) {
-    if (list.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.done_all, size: 48, color: Colors.grey),
-            SizedBox(height: 8),
-            Text('No tasks in this view', style: TextStyle(color: Colors.grey)),
-          ],
+  Widget _buildTaskList(List<TaskItem> tasks) {
+    if (tasks.isEmpty) {
+      return Center(
+        child: Text(
+          widget.isBangla ? 'কোনো কাজ নেই।' : 'No tasks in this view.',
+          style: const TextStyle(color: AppTokens.textSecondary),
         ),
       );
     }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: list.length,
-      itemBuilder: (ctx, i) {
-        final task = list[i];
+      itemCount: tasks.length,
+      itemBuilder: (ctx, index) {
+        final task = tasks[index];
         return TaskCard(
           task: task,
+          isBangla: widget.isBangla,
           onToggleComplete: () {
-            setState(() {
-              widget.taskService.toggleTaskCompletion(task.id);
-            });
+            widget.taskService.toggleTaskCompletion(task.id);
             widget.onDataChanged();
           },
           onToggleSubtask: (stId) {
-            setState(() {
-              widget.taskService.toggleSubtask(task.id, stId);
-            });
+            widget.taskService.toggleSubtask(task.id, stId);
             widget.onDataChanged();
           },
           onDelete: () {
-            setState(() {
-              widget.taskService.deleteTask(task.id);
-            });
+            widget.taskService.deleteTask(task.id);
             widget.onDataChanged();
           },
         );
@@ -367,4 +419,3 @@ class _TasksScreenState extends State<TasksScreen> with SingleTickerProviderStat
     );
   }
 }
-

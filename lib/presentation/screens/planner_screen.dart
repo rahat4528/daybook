@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import '../../core/design/app_tokens.dart';
 import '../../domain/models/daily_plan_block.dart';
-import '../../domain/services/planner_service.dart';
+import '../../domain/models/task_item.dart';
+import '../../domain/services/planner_algorithm.dart';
 import '../../domain/services/task_service.dart';
 
 class PlannerScreen extends StatefulWidget {
   final List<DailyPlanBlock> planBlocks;
   final TaskService taskService;
   final Function(List<DailyPlanBlock>) onBlocksUpdated;
+  final bool isBangla;
 
   const PlannerScreen({
     super.key,
     required this.planBlocks,
     required this.taskService,
     required this.onBlocksUpdated,
+    this.isBangla = false,
   });
 
   @override
@@ -20,37 +24,106 @@ class PlannerScreen extends StatefulWidget {
 }
 
 class _PlannerScreenState extends State<PlannerScreen> {
-  final _plannerService = PlannerService();
+  List<DailyPlanBlock>? _undoPlanSnapshot;
+  bool _isOverloaded = false;
+  int _deficitMinutes = 0;
+  TaskItem? _frogTask;
 
   void _autoPlanDay() {
     final candidateTasks = widget.taskService.getTodayTasks();
     if (candidateTasks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No active tasks to plan. Add some tasks first!')),
+        SnackBar(
+          backgroundColor: AppTokens.surface2,
+          content: Text(
+            widget.isBangla ? 'পরিকল্পনার জন্য কোনো সক্রিয় টাস্ক নেই।' : 'No active tasks to plan. Add some tasks first!',
+            style: const TextStyle(color: AppTokens.textPrimary),
+          ),
+        ),
       );
       return;
     }
 
-    final newPlan = _plannerService.generateDailyPlan(
+    _undoPlanSnapshot = List.from(widget.planBlocks);
+
+    final result = PlannerAlgorithm.fitTasksIntoDay(
       tasks: candidateTasks,
-      fixedBlocks: widget.planBlocks.where((b) => b.taskId == null).toList(), // keep custom blocks
       wakeHour: 7,
       wakeMinute: 0,
       sleepHour: 23,
       sleepMinute: 0,
+      fixedBlocks: widget.planBlocks.where((b) => b.taskId == null).toList(),
+      isBangla: widget.isBangla,
     );
 
-    widget.onBlocksUpdated(newPlan);
+    setState(() {
+      _isOverloaded = result.isOverloaded;
+      _deficitMinutes = result.deficitMinutes;
+      _frogTask = result.frogTask;
+    });
+
+    widget.onBlocksUpdated(result.blocks);
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Generated ${newPlan.length} optimized focus blocks for today!')),
+      SnackBar(
+        backgroundColor: AppTokens.surface2,
+        content: Text(
+          widget.isBangla
+              ? '${result.blocks.length}টি ফোকাস ব্লক নির্ধারিত হয়েছে!'
+              : 'Generated ${result.blocks.length} optimized focus blocks for today!',
+          style: const TextStyle(color: AppTokens.accentLime),
+        ),
+        action: SnackBarAction(
+          label: widget.isBangla ? 'পূর্বাবস্থায়' : 'Undo',
+          textColor: AppTokens.accentLime,
+          onPressed: _undoPlan,
+        ),
+      ),
     );
+  }
+
+  void _resetMyDay() {
+    if (widget.planBlocks.isEmpty) return;
+
+    _undoPlanSnapshot = List.from(widget.planBlocks);
+
+    final reshuffled = PlannerAlgorithm.resetMyDay(
+      currentBlocks: widget.planBlocks,
+      tasks: widget.taskService.getTodayTasks(),
+      now: DateTime.now(),
+      sleepHour: 23,
+      isBangla: widget.isBangla,
+    );
+
+    widget.onBlocksUpdated(reshuffled);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppTokens.surface2,
+        content: Text(
+          widget.isBangla ? 'দিনটি সফলভাবে রিশাফেল করা হয়েছে!' : 'Day schedule reshuffled realistically from now forward!',
+          style: const TextStyle(color: AppTokens.accentLime),
+        ),
+        action: SnackBarAction(
+          label: widget.isBangla ? 'পূর্বাবস্থায়' : 'Undo',
+          textColor: AppTokens.accentLime,
+          onPressed: _undoPlan,
+        ),
+      ),
+    );
+  }
+
+  void _undoPlan() {
+    if (_undoPlanSnapshot != null) {
+      widget.onBlocksUpdated(_undoPlanSnapshot!);
+      setState(() => _undoPlanSnapshot = null);
+    }
   }
 
   void _addCustomBlock() {
     final titleController = TextEditingController();
     int startHour = 14;
     int durationMinutes = 45;
-    String category = 'Focus';
 
     showDialog(
       context: context,
@@ -58,15 +131,29 @@ class _PlannerScreenState extends State<PlannerScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Add Focus Block'),
+              backgroundColor: AppTokens.surface2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+                side: const BorderSide(color: AppTokens.border),
+              ),
+              title: Text(
+                widget.isBangla ? 'নতুন ফোকাস ব্লক যোগ করুন' : 'Add Focus Block',
+                style: const TextStyle(color: AppTokens.textPrimary, fontWeight: FontWeight.bold),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Block Title',
-                      hintText: 'e.g., Deep Research & Reading',
+                    style: const TextStyle(color: AppTokens.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: widget.isBangla ? 'ব্লক শিরোনাম' : 'Block Title',
+                      labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                      hintText: widget.isBangla ? 'যেমন: গভীর গবেষণা ও পড়া' : 'e.g., Deep Architecture & Reading',
+                      hintStyle: const TextStyle(color: AppTokens.textSecondary),
+                      filled: true,
+                      fillColor: AppTokens.surface1,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -75,7 +162,13 @@ class _PlannerScreenState extends State<PlannerScreen> {
                       Expanded(
                         child: DropdownButtonFormField<int>(
                           value: startHour,
-                          decoration: const InputDecoration(labelText: 'Start Hour'),
+                          dropdownColor: AppTokens.surface1,
+                          style: const TextStyle(color: AppTokens.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: widget.isBangla ? 'শুরুর সময়' : 'Start Hour',
+                            labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
                           items: List.generate(18, (i) => i + 6)
                               .map((h) => DropdownMenuItem(value: h, child: Text('$h:00')))
                               .toList(),
@@ -88,7 +181,13 @@ class _PlannerScreenState extends State<PlannerScreen> {
                       Expanded(
                         child: DropdownButtonFormField<int>(
                           value: durationMinutes,
-                          decoration: const InputDecoration(labelText: 'Duration'),
+                          dropdownColor: AppTokens.surface1,
+                          style: const TextStyle(color: AppTokens.textPrimary),
+                          decoration: InputDecoration(
+                            labelText: widget.isBangla ? 'দৈর্ঘ্য' : 'Duration',
+                            labelStyle: const TextStyle(color: AppTokens.textSecondary),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
                           items: [25, 45, 60, 90]
                               .map((m) => DropdownMenuItem(value: m, child: Text('$m min')))
                               .toList(),
@@ -104,9 +203,10 @@ class _PlannerScreenState extends State<PlannerScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(widget.isBangla ? 'বাতিল' : 'Cancel', style: const TextStyle(color: AppTokens.textSecondary)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTokens.accentLime, foregroundColor: Colors.black),
                   onPressed: () {
                     if (titleController.text.trim().isNotEmpty) {
                       final endTotal = (startHour * 60) + durationMinutes;
@@ -117,14 +217,14 @@ class _PlannerScreenState extends State<PlannerScreen> {
                         startMinute: 0,
                         endHour: endTotal ~/ 60,
                         endMinute: endTotal % 60,
-                        category: category,
+                        category: 'Focus',
                       );
                       final updated = List<DailyPlanBlock>.from(widget.planBlocks)..add(block);
                       widget.onBlocksUpdated(updated);
                       Navigator.of(ctx).pop();
                     }
                   },
-                  child: const Text('Add Block'),
+                  child: Text(widget.isBangla ? 'সংযোজন' : 'Add Block', style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             );
@@ -136,9 +236,6 @@ class _PlannerScreenState extends State<PlannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     final sortedBlocks = List<DailyPlanBlock>.from(widget.planBlocks)
       ..sort((a, b) => (a.startHour * 60 + a.startMinute).compareTo(b.startHour * 60 + b.startMinute));
 
@@ -147,130 +244,179 @@ class _PlannerScreenState extends State<PlannerScreen> {
     final mins = totalPlannedMinutes % 60;
 
     return Scaffold(
+      backgroundColor: AppTokens.bg,
       appBar: AppBar(
-        title: const Text('Daily Time-Block Planner', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: AppTokens.bg,
+        elevation: 0,
+        title: Text(
+          widget.isBangla ? 'দৈনিক সময় পরিকল্পনা' : 'Daily Time-Block Planner',
+          style: const TextStyle(color: AppTokens.accentLime, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.auto_awesome),
-            tooltip: 'Auto-Plan Day with AI',
+            icon: const Icon(Icons.restart_alt, color: AppTokens.accentLime),
+            tooltip: widget.isBangla ? 'দিন রিশাফেল করুন (Reset Day)' : 'Reset My Day',
+            onPressed: _resetMyDay,
+          ),
+          IconButton(
+            icon: const Icon(Icons.auto_awesome, color: AppTokens.accentLime),
+            tooltip: widget.isBangla ? 'স্বয়ংক্রিয় পরিকল্পনা' : 'Auto-Plan Day',
             onPressed: _autoPlanDay,
           ),
           IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Add Custom Block',
+            icon: const Icon(Icons.add, color: AppTokens.textPrimary),
+            tooltip: widget.isBangla ? 'ব্লক যোগ করুন' : 'Add Custom Block',
             onPressed: _addCustomBlock,
           ),
         ],
       ),
       body: Column(
         children: [
-          // Header summary card
+          // Overload Warning Banner
+          if (_isOverloaded)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTokens.errorRed.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTokens.errorRed),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: AppTokens.errorRed, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      widget.isBangla
+                          ? 'সতর্কতা: পরিকল্পিত সময় কাজের সক্ষমতার চেয়ে $_deficitMinutes মিনিট বেশি।'
+                          : 'Overload Warning: Planned tasks exceed available work time by $_deficitMinutes mins.',
+                      style: const TextStyle(color: AppTokens.errorRed, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Header summary card (OLED Surface & Lime Bold)
           Container(
             margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDark
-                    ? [const Color(0xFF312E81), const Color(0xFF1E1B4B)]
-                    : [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF)],
-              ),
-              borderRadius: BorderRadius.circular(16),
+              color: AppTokens.surface1,
+              borderRadius: BorderRadius.circular(AppTokens.radiusCard),
+              border: Border.all(color: AppTokens.border),
             ),
             child: Row(
               children: [
-                const Icon(Icons.schedule, color: Color(0xFF6366F1), size: 32),
-                const SizedBox(width: 12),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppTokens.surface2,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTokens.accentLime),
+                  ),
+                  child: const Icon(Icons.schedule, color: AppTokens.accentLime, size: 24),
+                ),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Planned Time: ${hours}h ${mins}m',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        widget.isBangla ? 'মোট পরিকল্পিত সময়: $hoursঘ $minsমি' : 'Total Planned Time: ${hours}h ${mins}m',
+                        style: const TextStyle(color: AppTokens.textPrimary, fontWeight: FontWeight.bold, fontSize: 15),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
-                        'Deterministic time blocking protects your peak focus hours.',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      Text(
+                        widget.isBangla
+                            ? 'নির্ধারিত ফোকাস ব্লক আপনার সর্বোচ্চ শক্তি সময়কে সুরক্ষিত রাখে।'
+                            : 'Deterministic blocks protect your peak cognitive focus hours.',
+                        style: const TextStyle(fontSize: 12, color: AppTokens.textSecondary),
                       ),
                     ],
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _autoPlanDay,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  ),
-                  icon: const Icon(Icons.bolt, size: 16),
-                  label: const Text('Auto-Plan', style: TextStyle(fontSize: 12)),
-                ),
               ],
             ),
           ),
-          // Timeline list
+
+          // "Eat the Frog" Banner if designated
+          if (_frogTask != null)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppTokens.surface2,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTokens.accentLime.withValues(alpha: 0.6)),
+              ),
+              child: Row(
+                children: [
+                  const Text('🐸', style: TextStyle(fontSize: 20)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.isBangla ? 'আজকের ফ্রগ (Eat the Frog)' : 'TODAY\'S BIG FROG CHALLENGE',
+                          style: const TextStyle(color: AppTokens.accentLime, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          _frogTask!.title,
+                          style: const TextStyle(color: AppTokens.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 8),
+
+          // Plan Blocks Timeline
           Expanded(
             child: sortedBlocks.isEmpty
                 ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.calendar_today_outlined, size: 48, color: Colors.grey),
-                        const SizedBox(height: 12),
-                        const Text('No blocks scheduled today yet.'),
-                        const SizedBox(height: 8),
-                        ElevatedButton.icon(
-                          onPressed: _autoPlanDay,
-                          icon: const Icon(Icons.auto_awesome),
-                          label: const Text('Auto-Fit Today\'s Tasks'),
-                        ),
-                      ],
+                    child: Text(
+                      widget.isBangla ? 'কোনো ব্লক নেই। "স্বয়ংক্রিয় পরিকল্পনা" চাপুন।' : 'No blocks planned. Tap Auto-Plan to start.',
+                      style: const TextStyle(color: AppTokens.textSecondary),
                     ),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     itemCount: sortedBlocks.length,
-                    itemBuilder: (ctx, i) {
-                      final block = sortedBlocks[i];
+                    itemBuilder: (ctx, index) {
+                      final block = sortedBlocks[index];
+                      final isFrogBlock = block.taskId == _frogTask?.id;
+                      final isBuffer = block.category == 'Rest' || block.category == 'Routine';
+
                       return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                          color: AppTokens.surface1,
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: block.isCompleted
-                                ? Colors.transparent
-                                : const Color(0xFF6366F1).withOpacity(0.3),
+                            color: isFrogBlock ? AppTokens.accentLime : AppTokens.border,
+                            width: isFrogBlock ? 1.5 : 1.0,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
                         ),
                         child: Row(
                           children: [
-                            // Time indicator pill
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF6366F1).withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                block.timeRangeFormatted,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11,
-                                  color: Color(0xFF6366F1),
-                                ),
+                            Text(
+                              block.timeRangeFormatted,
+                              style: const TextStyle(
+                                color: AppTokens.textSecondary,
+                                fontFamily: 'monospace',
+                                fontSize: 12,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,41 +424,24 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                   Text(
                                     block.title,
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      decoration: block.isCompleted
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                      color: block.isCompleted ? Colors.grey : null,
+                                      color: isBuffer ? AppTokens.textSecondary : AppTokens.textPrimary,
+                                      fontWeight: isFrogBlock ? FontWeight.bold : FontWeight.w600,
+                                      fontSize: 13.5,
                                     ),
                                   ),
-                                  Text(
-                                    '${block.durationMinutes} mins • ${block.category}',
-                                    style: const TextStyle(fontSize: 11, color: Colors.grey),
-                                  ),
+                                  if (isFrogBlock)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        widget.isBangla ? 'শীর্ষ শক্তি সময় ব্লক' : 'Peak Energy Focus Block',
+                                        style: const TextStyle(color: AppTokens.accentLime, fontSize: 11),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
-                            // Toggle complete
                             IconButton(
-                              icon: Icon(
-                                block.isCompleted
-                                    ? Icons.check_circle
-                                    : Icons.radio_button_unchecked,
-                                color: block.isCompleted ? Colors.green : Colors.grey,
-                              ),
-                              onPressed: () {
-                                final updated = List<DailyPlanBlock>.from(widget.planBlocks);
-                                final idx = updated.indexWhere((b) => b.id == block.id);
-                                if (idx != -1) {
-                                  updated[idx] = block.copyWith(isCompleted: !block.isCompleted);
-                                  widget.onBlocksUpdated(updated);
-                                }
-                              },
-                            ),
-                            // Delete
-                            IconButton(
-                              icon: const Icon(Icons.close, size: 18, color: Colors.grey),
+                              icon: const Icon(Icons.close, color: AppTokens.textSecondary, size: 16),
                               onPressed: () {
                                 final updated = List<DailyPlanBlock>.from(widget.planBlocks)
                                   ..removeWhere((b) => b.id == block.id);
@@ -330,4 +459,3 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 }
-

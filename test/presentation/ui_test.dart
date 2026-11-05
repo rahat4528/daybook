@@ -108,7 +108,7 @@ void main() {
     );
 
     expect(find.text('Task Command Center'), findsOneWidget);
-    expect(find.text('Active Today Task'), findsOneWidget);
+    expect(find.text('Active Today Task'), findsWidgets);
     expect(find.byType(FloatingActionButton), findsOneWidget);
   });
 

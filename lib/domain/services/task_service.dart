@@ -171,6 +171,12 @@ class TaskService {
       case RecurrenceType.weekly:
         nextDue = baseDate.add(const Duration(days: 7));
         break;
+      case RecurrenceType.monthly:
+        nextDue = DateTime(baseDate.year, baseDate.month + 1, baseDate.day, baseDate.hour, baseDate.minute);
+        break;
+      case RecurrenceType.afterCompletion:
+        nextDue = completedAt.add(const Duration(days: 1));
+        break;
       case RecurrenceType.customDays:
         if (template.customDays.isEmpty) {
           nextDue = baseDate.add(const Duration(days: 1));

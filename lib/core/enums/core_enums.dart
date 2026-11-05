@@ -13,7 +13,9 @@ enum RecurrenceType {
   daily,
   weekdays,
   weekly,
-  customDays;
+  monthly,
+  customDays,
+  afterCompletion;
 
   bool get isRepeating => this != RecurrenceType.none;
 }
