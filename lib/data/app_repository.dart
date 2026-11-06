@@ -23,6 +23,7 @@ import '../domain/services/dhar_service.dart';
 import '../domain/services/people_service.dart';
 import '../domain/services/student_service.dart';
 import '../domain/services/insights_service.dart';
+import '../core/security/biometric_lock_service.dart';
 import '../domain/models/money_transaction.dart';
 import '../domain/models/dhar_record.dart';
 import '../domain/models/person_item.dart';
@@ -40,6 +41,7 @@ class AppRepository extends ChangeNotifier {
   final DharService dharService = DharService();
   final PeopleService peopleService = PeopleService();
   final StudentService studentService = StudentService();
+  final BiometricLockService lockService = BiometricLockService();
   late final InsightsService insightsService;
   late final AssistantToolEngine assistantToolEngine;
   late final AIAssistantService aiAssistantService;

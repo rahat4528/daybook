@@ -191,6 +191,29 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           const SizedBox(height: 12),
+          // App Lock & Biometrics (Part 12)
+          ListTile(
+            tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: const Icon(Icons.fingerprint, color: AppColors.accentLime),
+            title: const Text('App Lock & Biometrics'),
+            subtitle: Text(
+              repository.lockService.isBiometricEnabled
+                  ? 'Active (${repository.lockService.lockTimeoutSeconds}s timeout)'
+                  : 'Disabled • Tap to setup PIN or fingerprint',
+            ),
+            trailing: Switch(
+              value: repository.lockService.isBiometricEnabled,
+              activeColor: AppColors.accentLime,
+              onChanged: (val) {
+                if (val && !repository.lockService.hasPin) {
+                  repository.lockService.setPin('1234');
+                }
+                repository.lockService.setBiometricEnabled(val);
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
           // Battery Killers Onboarding Guide
           ListTile(
             tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
