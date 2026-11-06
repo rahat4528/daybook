@@ -53,18 +53,23 @@ class TaskItem {
     return done / subtasks.length;
   }
 
-  bool get isOverdue {
+  bool isOverdueAt([DateTime? referenceTime]) {
     if (isCompleted || dueAt == null) return false;
-    return DateTime.now().isAfter(dueAt!);
+    final now = referenceTime ?? DateTime.now();
+    return now.isAfter(dueAt!);
   }
 
-  bool get isDueToday {
+  bool get isOverdue => isOverdueAt();
+
+  bool isDueOn([DateTime? referenceTime]) {
     if (dueAt == null) return false;
-    final now = DateTime.now();
+    final now = referenceTime ?? DateTime.now();
     return dueAt!.year == now.year &&
         dueAt!.month == now.month &&
         dueAt!.day == now.day;
   }
+
+  bool get isDueToday => isDueOn();
 
   /// Calculates dynamic priority score based on Eisenhower weight, proximity to deadline,
   /// frog bonus, and short-duration bias.

@@ -52,3 +52,9 @@ app.*.map.json
 backend/dist/
 backend/tsconfig.tsbuildinfo
 website/node_modules/
+
+# Environment files
+.env
+*.env
+backend/.env
+

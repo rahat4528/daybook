@@ -27,6 +27,7 @@ import '../core/security/biometric_lock_service.dart';
 import '../domain/models/money_transaction.dart';
 import '../domain/models/dhar_record.dart';
 import '../domain/models/person_item.dart';
+import 'database/local_storage_service.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
@@ -101,7 +102,20 @@ class AppRepository extends ChangeNotifier {
   }
 
   void notifyDataChanged() {
+    savePersistedData();
     notifyListeners();
+  }
+
+  Future<void> loadPersistedData() async {
+    final loaded = await LocalStorageService.loadAppState(this);
+    if (!loaded) {
+      _initializeSeedData();
+      await LocalStorageService.saveAppState(this);
+    }
+  }
+
+  void savePersistedData() {
+    LocalStorageService.saveAppState(this);
   }
 
   void _initializeSeedData() {

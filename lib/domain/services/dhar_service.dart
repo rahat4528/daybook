@@ -37,6 +37,11 @@ class DharService extends ChangeNotifier {
   List<DharRecord> getRecordsForPerson(String personId) =>
       allRecords.where((r) => r.personId == personId).toList();
 
+  void restoreRecord(DharRecord record) {
+    _records[record.id] = record;
+    notifyListeners();
+  }
+
   DharRecord addRecord({
     required String personId,
     required String personName,

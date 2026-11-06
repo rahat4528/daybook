@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+
 export interface RateLimitStatus {
   allowed: boolean;
   remaining: number;
@@ -19,6 +21,7 @@ export interface GenerateResult {
   usage: { promptTokens: number; completionTokens: number };
 }
 
+@Injectable()
 export class LlmProxyService {
   private readonly apiKey: string;
   private readonly maxRequestsPerHour: number;

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { Injectable } from '@nestjs/common';
 
 export interface UserRecord {
   id: string;
@@ -15,14 +16,15 @@ export interface TokenPair {
   expiresIn: number;
 }
 
+@Injectable()
 export class AuthService {
   private users: Map<string, UserRecord> = new Map(); // In-memory/Postgres store
   private readonly jwtSecret: string;
   private readonly jwtRefreshSecret: string;
 
-  constructor(jwtSecret: string = 'daybook_production_jwt_secret_key_32bytes', jwtRefreshSecret: string = 'daybook_refresh_token_secret_key_32bytes') {
-    this.jwtSecret = jwtSecret;
-    this.jwtRefreshSecret = jwtRefreshSecret;
+  constructor(jwtSecret?: string, jwtRefreshSecret?: string) {
+    this.jwtSecret = jwtSecret || process.env.JWT_SECRET || 'daybook_production_jwt_secret_key_32bytes';
+    this.jwtRefreshSecret = jwtRefreshSecret || process.env.JWT_REFRESH_SECRET || 'daybook_refresh_token_secret_key_32bytes';
   }
 
   // SHA-256 password hash with salt (compatible without external C-bindings)

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { SyncService } from '../sync/sync.service';
 
 export interface JobExecutionReport {
@@ -8,6 +9,7 @@ export interface JobExecutionReport {
   message: string;
 }
 
+@Injectable()
 export class JobsService {
   constructor(private readonly syncService: SyncService) {}
 

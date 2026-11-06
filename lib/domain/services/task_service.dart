@@ -18,7 +18,7 @@ class TaskService {
     return _tasks.where((t) {
       if (t.isCompleted) return false;
       if (t.dueAt == null) return true; // Undated tasks appear in daily queue
-      return t.isDueToday || t.dueAt!.isBefore(now);
+      return t.isDueOn(now) || t.dueAt!.isBefore(now);
     }).toList()
       ..sort((a, b) => b.computeDynamicScore(now).compareTo(a.computeDynamicScore(now)));
   }

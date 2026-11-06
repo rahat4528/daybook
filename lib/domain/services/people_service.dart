@@ -22,6 +22,11 @@ class PeopleService extends ChangeNotifier {
 
   PersonItem? getPersonById(String id) => _people[id];
 
+  void restorePerson(PersonItem person) {
+    _people[person.id] = person;
+    notifyListeners();
+  }
+
   PersonItem addPerson({
     required String name,
     PersonRelationship relationship = PersonRelationship.friend,

@@ -129,6 +129,21 @@ class StudentService extends ChangeNotifier {
     notifyListeners();
   }
 
+  void restoreCourse(CourseItem course) {
+    _courses[course.id] = course;
+    notifyListeners();
+  }
+
+  void restoreExam(ExamItem exam) {
+    _exams[exam.id] = exam;
+    notifyListeners();
+  }
+
+  void restoreAssignment(AssignmentItem assignment) {
+    _assignments[assignment.id] = assignment;
+    notifyListeners();
+  }
+
   bool deleteCourse(String id) {
     final removed = _courses.remove(id);
     if (removed != null) {

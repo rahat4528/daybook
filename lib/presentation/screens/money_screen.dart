@@ -6,6 +6,7 @@ import '../../domain/models/money_transaction.dart';
 import '../../domain/services/dhar_service.dart';
 import '../../domain/services/money_service.dart';
 import '../../data/repositories/entries_repository.dart';
+import '../../data/database/local_storage_service.dart';
 
 class MoneyScreen extends StatefulWidget {
   final MoneyService moneyService;
@@ -478,14 +479,22 @@ class _MoneyScreenState extends State<MoneyScreen> with SingleTickerProviderStat
           IconButton(
             icon: const Icon(Icons.file_download_outlined, color: AppColors.accentLime),
             tooltip: 'Export CSV',
-            onPressed: () {
+            onPressed: () async {
               final csv = widget.moneyService.exportToCsv();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('CSV Exported (${csv.split('\n').length - 1} rows)'),
-                  backgroundColor: AppColors.accentLime,
-                ),
+              final rowCount = csv.split('\n').where((l) => l.trim().isNotEmpty).length - 1;
+              await LocalStorageService.shareTextFile(
+                fileName: 'daybook_transactions_${DateTime.now().millisecondsSinceEpoch}.csv',
+                content: csv,
+                mimeType: 'text/csv',
               );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('CSV Exported ($rowCount rows) & Ready to Share'),
+                    backgroundColor: AppColors.accentLime,
+                  ),
+                );
+              }
             },
           ),
         ],

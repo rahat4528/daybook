@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - JWT_SECRET=daybook_super_secret_production_key_32bytes_min!
+      - JWT_REFRESH_SECRET=daybook_refresh_super_secret_token_key_32bytes!
+      - ALLOWED_ORIGINS=*
+    restart: unless-stopped

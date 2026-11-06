@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+
 export interface SyncBlobDto {
   id: string;
   entityType: string;
@@ -27,6 +29,7 @@ export interface PullResult {
   hasMore: boolean;
 }
 
+@Injectable()
 export class SyncService {
   // Keyed by `${userId}:${entityId}`
   private store: Map<string, StoredSyncBlob> = new Map();

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { Injectable } from '@nestjs/common';
 
 export interface PairingCode {
   code: string;
@@ -19,6 +20,7 @@ export interface BuddyRelationship {
   pairedAt: number;
 }
 
+@Injectable()
 export class BuddyService {
   private activeCodes: Map<string, PairingCode> = new Map(); // Keyed by code
   private relationships: Map<string, string> = new Map(); // Keyed by userId -> buddyUserId

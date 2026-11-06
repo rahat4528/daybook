@@ -47,6 +47,7 @@ class _DayBookAppState extends State<DayBookApp> {
   void initState() {
     super.initState();
     _repository = AppRepository()..addListener(_onRepositoryUpdated);
+    _repository.loadPersistedData();
   }
 
   void _onRepositoryUpdated() {

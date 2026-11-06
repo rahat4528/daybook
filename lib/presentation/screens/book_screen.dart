@@ -6,6 +6,7 @@ import '../../data/repositories/entries_repository.dart';
 import '../../domain/models/day_page.dart';
 import '../../domain/models/time_capsule.dart';
 import '../../domain/services/book_export_service.dart';
+import '../../data/database/local_storage_service.dart';
 import 'day_page_screen.dart';
 
 class BookScreen extends StatefulWidget {
@@ -96,7 +97,12 @@ class _BookScreenState extends State<BookScreen> {
                     blackOnWhite: false,
                     isBangla: widget.isBangla,
                   );
-                  _showExportSuccess('PDF (Dark) ready (${bytes.lengthInBytes} bytes)');
+                  await LocalStorageService.shareBinaryFile(
+                    fileName: 'daybook_${_selectedMonth.year}_${_selectedMonth.month}_dark.pdf',
+                    bytes: bytes,
+                    mimeType: 'application/pdf',
+                  );
+                  _showExportSuccess('PDF (Dark) ready (${bytes.lengthInBytes} bytes) & shared');
                 },
               ),
               ListTile(
@@ -114,7 +120,12 @@ class _BookScreenState extends State<BookScreen> {
                     blackOnWhite: true,
                     isBangla: widget.isBangla,
                   );
-                  _showExportSuccess('PDF (Print-Friendly) ready (${bytes.lengthInBytes} bytes)');
+                  await LocalStorageService.shareBinaryFile(
+                    fileName: 'daybook_${_selectedMonth.year}_${_selectedMonth.month}_print.pdf',
+                    bytes: bytes,
+                    mimeType: 'application/pdf',
+                  );
+                  _showExportSuccess('PDF (Print-Friendly) ready (${bytes.lengthInBytes} bytes) & shared');
                 },
               ),
               ListTile(
@@ -123,7 +134,7 @@ class _BookScreenState extends State<BookScreen> {
                   widget.isBangla ? 'মার্কডাউন (.md)' : 'Markdown Export (.md)',
                   style: const TextStyle(color: AppTokens.textPrimary),
                 ),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(ctx);
                   final md = BookExportService.exportMonthToMarkdown(
                     _monthDays,
@@ -131,7 +142,12 @@ class _BookScreenState extends State<BookScreen> {
                     _selectedMonth.month,
                     isBangla: widget.isBangla,
                   );
-                  _showExportSuccess('Markdown export generated (${md.length} characters)');
+                  await LocalStorageService.shareTextFile(
+                    fileName: 'daybook_${_selectedMonth.year}_${_selectedMonth.month}.md',
+                    content: md,
+                    mimeType: 'text/markdown',
+                  );
+                  _showExportSuccess('Markdown export generated (${md.length} characters) & shared');
                 },
               ),
               ListTile(
@@ -140,14 +156,19 @@ class _BookScreenState extends State<BookScreen> {
                   widget.isBangla ? 'স্ট্রাকচার্ড জেএসওএন (.json)' : 'Structured JSON Backup (.json)',
                   style: const TextStyle(color: AppTokens.textPrimary),
                 ),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(ctx);
                   final json = BookExportService.exportMonthToJson(
                     _monthDays,
                     _selectedMonth.year,
                     _selectedMonth.month,
                   );
-                  _showExportSuccess('JSON volume created (${json.length} characters)');
+                  await LocalStorageService.shareTextFile(
+                    fileName: 'daybook_${_selectedMonth.year}_${_selectedMonth.month}.json',
+                    content: json,
+                    mimeType: 'application/json',
+                  );
+                  _showExportSuccess('JSON volume created (${json.length} characters) & shared');
                 },
               ),
             ],
