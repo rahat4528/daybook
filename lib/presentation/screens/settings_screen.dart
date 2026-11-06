@@ -4,6 +4,7 @@ import '../../data/app_repository.dart';
 import 'money_screen.dart';
 import 'people_screen.dart';
 import 'student_screen.dart';
+import 'insights_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   final AppRepository repository;
@@ -164,6 +165,26 @@ class SettingsScreen extends StatelessWidget {
                     isBangla: repository.isBangla,
                     studentService: repository.studentService,
                     entriesRepo: repository.entriesRepository,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          // Day Score & Insights
+          ListTile(
+            tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: const Icon(Icons.analytics_outlined, color: AppColors.accentLime),
+            title: const Text('Day Score & Weekly Insights'),
+            subtitle: const Text('5-pillar score breakdown and 7-day trajectory chart'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => InsightsScreen(
+                    isBangla: repository.isBangla,
+                    insightsService: repository.insightsService,
                   ),
                 ),
               );

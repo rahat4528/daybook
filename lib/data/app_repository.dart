@@ -22,6 +22,7 @@ import '../domain/services/money_service.dart';
 import '../domain/services/dhar_service.dart';
 import '../domain/services/people_service.dart';
 import '../domain/services/student_service.dart';
+import '../domain/services/insights_service.dart';
 import '../domain/models/money_transaction.dart';
 import '../domain/models/dhar_record.dart';
 import '../domain/models/person_item.dart';
@@ -39,6 +40,7 @@ class AppRepository extends ChangeNotifier {
   final DharService dharService = DharService();
   final PeopleService peopleService = PeopleService();
   final StudentService studentService = StudentService();
+  late final InsightsService insightsService;
   late final AssistantToolEngine assistantToolEngine;
   late final AIAssistantService aiAssistantService;
 
@@ -61,6 +63,12 @@ class AppRepository extends ChangeNotifier {
     aiAssistantService = AIAssistantService(
       appRepository: this,
       toolEngine: assistantToolEngine,
+    );
+    insightsService = InsightsService(
+      entriesRepo: entriesRepository,
+      tasksRepo: tasksAndGoalsRepository,
+      focusService: focusService,
+      habitService: habitService,
     );
     _initializeSeedData();
   }

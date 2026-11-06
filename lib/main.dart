@@ -23,6 +23,7 @@ import 'presentation/screens/focus_screen.dart';
 import 'presentation/screens/money_screen.dart';
 import 'presentation/screens/people_screen.dart';
 import 'presentation/screens/student_screen.dart';
+import 'presentation/screens/insights_screen.dart';
 import 'domain/services/briefing_service.dart';
 import 'domain/models/weather_info.dart';
 import 'domain/services/planner_algorithm.dart';
@@ -444,14 +445,26 @@ class _DayBookShellState extends State<DayBookShell> {
             ),
           ),
 
-          // 2. Daily Trajectory Progress Ring
-          DailyProgressRing(
-            completedTasks: completedCount,
-            totalTasks: totalCount,
-            wakeHour: repo.wakeHour,
-            wakeMinute: repo.wakeMinute,
-            sleepHour: repo.sleepHour,
-            sleepMinute: repo.sleepMinute,
+          // 2. Daily Trajectory Progress Ring (Tap to open Day Score & Insights)
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => InsightsScreen(
+                    isBangla: repo.isBangla,
+                    insightsService: repo.insightsService,
+                  ),
+                ),
+              );
+            },
+            child: DailyProgressRing(
+              completedTasks: completedCount,
+              totalTasks: totalCount,
+              wakeHour: repo.wakeHour,
+              wakeMinute: repo.wakeMinute,
+              sleepHour: repo.sleepHour,
+              sleepMinute: repo.sleepMinute,
+            ),
           ),
           const SizedBox(height: 8),
 
