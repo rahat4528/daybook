@@ -45,3 +45,4 @@ export class SyncController {
     return { count: this.syncService.getBlobCount(userId) };
   }
 }
+

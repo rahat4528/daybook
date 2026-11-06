@@ -14,3 +14,4 @@ services:
       - JWT_REFRESH_SECRET=daybook_refresh_super_secret_token_key_32bytes!
       - ALLOWED_ORIGINS=*
     restart: unless-stopped
+
