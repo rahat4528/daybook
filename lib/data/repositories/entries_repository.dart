@@ -21,6 +21,12 @@ class EntriesRepository {
   bool get canUndo => _undoStack.isNotEmpty;
   List<JournalEntry> get entries => _entries.values.toList();
 
+  List<JournalEntry> getEntriesForDay(String dayKey) {
+    final list = _entries.values.where((e) => e.dayKey == dayKey).toList();
+    list.sort((a, b) => a.ts.compareTo(b.ts));
+    return list;
+  }
+
   // --- CRUD & UNDO ---
   void insertEntry(JournalEntry entry) {
     _entries[entry.id] = entry;

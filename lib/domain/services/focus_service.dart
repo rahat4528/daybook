@@ -28,6 +28,7 @@ class FocusService extends ChangeNotifier {
   String get currentTaskTitle => _currentTaskTitle;
   FocusSoundscape get soundscape => _soundscape;
   bool get isFaceDown => _isFaceDown;
+  int get totalFocusMinutesToday => (_targetSeconds - _secondsRemaining) ~/ 60;
 
   double get progressFraction {
     if (_targetSeconds == 0) return 0.0;
