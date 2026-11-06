@@ -20,6 +20,8 @@ import 'presentation/widgets/wellness_modal.dart';
 import 'presentation/screens/inbox_screen.dart';
 import 'presentation/screens/habits_screen.dart';
 import 'presentation/screens/focus_screen.dart';
+import 'presentation/screens/money_screen.dart';
+import 'presentation/screens/people_screen.dart';
 import 'domain/services/briefing_service.dart';
 import 'domain/models/weather_info.dart';
 import 'domain/services/planner_algorithm.dart';
@@ -662,6 +664,147 @@ class _DayBookShellState extends State<DayBookShell> {
             ),
           ),
           const SizedBox(height: 8),
+
+          // Life Ledger & Circles Card (Part 9)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.surface1,
+              borderRadius: BorderRadius.circular(AppRadius.card),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                // Money & Dhar
+                Expanded(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => MoneyScreen(
+                            isBangla: repo.isBangla,
+                            moneyService: repo.moneyService,
+                            dharService: repo.dharService,
+                            entriesRepo: repo.entriesRepository,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.account_balance_wallet_outlined, size: 16, color: AppColors.accentLime),
+                              const SizedBox(width: 6),
+                              Text(
+                                repo.isBangla ? 'টাকা ও ধার' : 'MONEY & DHAR',
+                                style: const TextStyle(
+                                  color: AppColors.accentLime,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            repo.moneyService.formatBdt(repo.moneyService.netBalancePaisa),
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            repo.isBangla
+                                ? 'ধার বাকি: ${repo.dharService.formatBdt(repo.dharService.totalReceivablePaisa)}'
+                                : 'Receivable: ${repo.dharService.formatBdt(repo.dharService.totalReceivablePaisa)}',
+                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 10),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(width: 1, height: 48, color: AppColors.border),
+                // People & Circles
+                Expanded(
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PeopleScreen(
+                            isBangla: repo.isBangla,
+                            peopleService: repo.peopleService,
+                            dharService: repo.dharService,
+                            entriesRepo: repo.entriesRepository,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.people_outline, size: 16, color: AppColors.accentLime),
+                              const SizedBox(width: 6),
+                              Text(
+                                repo.isBangla ? 'মানুষ ও সম্পর্ক' : 'PEOPLE & CIRCLES',
+                                style: const TextStyle(
+                                  color: AppColors.accentLime,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${repo.peopleService.allPeople.length} Contacts',
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            repo.peopleService.overduePeople.isNotEmpty
+                                ? '${repo.peopleService.overduePeople.length} due for catch-up'
+                                : 'All connections fresh',
+                            style: TextStyle(
+                              color: repo.peopleService.overduePeople.isNotEmpty
+                                  ? AppColors.accentLime
+                                  : AppColors.textSecondary,
+                              fontSize: 10,
+                              fontWeight: repo.peopleService.overduePeople.isNotEmpty
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           // 4. Section Title
           const Padding(

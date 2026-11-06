@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/app_repository.dart';
+import 'money_screen.dart';
+import 'people_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   final AppRepository repository;
@@ -99,6 +101,50 @@ class SettingsScreen extends StatelessWidget {
                 if (val != null) repository.setThemeMode(val);
               },
             ),
+          ),
+          const SizedBox(height: 12),
+          // Money & Dhar
+          ListTile(
+            tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF10B981)),
+            title: const Text('Money & Dhar Ledger'),
+            subtitle: const Text('Track BDT transactions, accounts, and loan balances'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MoneyScreen(
+                    isBangla: repository.isBangla,
+                    moneyService: repository.moneyService,
+                    dharService: repository.dharService,
+                    entriesRepo: repository.entriesRepository,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          // People & Circles
+          ListTile(
+            tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: const Icon(Icons.people_outline, color: Color(0xFF38BDF8)),
+            title: const Text('People & Circles CRM'),
+            subtitle: const Text('Keep-in-touch cadence and birthday reminders'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => PeopleScreen(
+                    isBangla: repository.isBangla,
+                    peopleService: repository.peopleService,
+                    dharService: repository.dharService,
+                    entriesRepo: repository.entriesRepository,
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 12),
           // Battery Killers Onboarding Guide

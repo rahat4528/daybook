@@ -18,6 +18,12 @@ import '../domain/services/focus_service.dart';
 import '../domain/services/wellness_service.dart';
 import '../domain/services/assistant_tool_engine.dart';
 import '../domain/services/ai_assistant_service.dart';
+import '../domain/services/money_service.dart';
+import '../domain/services/dhar_service.dart';
+import '../domain/services/people_service.dart';
+import '../domain/models/money_transaction.dart';
+import '../domain/models/dhar_record.dart';
+import '../domain/models/person_item.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
@@ -28,6 +34,9 @@ class AppRepository extends ChangeNotifier {
   final HabitService habitService = HabitService();
   final FocusService focusService = FocusService();
   final WellnessService wellnessService = WellnessService();
+  final MoneyService moneyService = MoneyService();
+  final DharService dharService = DharService();
+  final PeopleService peopleService = PeopleService();
   late final AssistantToolEngine assistantToolEngine;
   late final AIAssistantService aiAssistantService;
 
@@ -263,6 +272,97 @@ class AppRepository extends ChangeNotifier {
         freezeTokens: 0,
         createdAt: now.subtract(const Duration(days: 15)),
       ),
+    );
+
+    // 8. Seed Money & Dhar & People for Part 9
+    // People
+    final ammu = peopleService.addPerson(
+      name: 'Ammu',
+      relationship: PersonRelationship.family,
+      phone: '+8801711000001',
+      cadenceDays: 1,
+      lastContactedAt: now,
+      birthday: DateTime(now.year, now.month, (now.day + 5) % 28 + 1),
+      notes: 'Remember to ask about her health and morning tea.',
+    );
+
+    final tanvir = peopleService.addPerson(
+      name: 'Tanvir Ahmed',
+      relationship: PersonRelationship.friend,
+      phone: '+8801812000002',
+      cadenceDays: 14,
+      lastContactedAt: now.subtract(const Duration(days: 4)),
+      giftIdeas: ['Flutter Architecture Book', 'Mechanical Keyboard switch puller'],
+      notes: 'Colleague on mobile app project.',
+    );
+
+    peopleService.addPerson(
+      name: 'Dr. Hasan',
+      relationship: PersonRelationship.mentor,
+      phone: '+8801913000003',
+      cadenceDays: 30,
+      lastContactedAt: now.subtract(const Duration(days: 35)),
+      notes: 'Academic supervisor and tech advisor. Follow up on thesis publication.',
+    );
+
+    // Money Transactions (Paisa precision)
+    moneyService.recordTransaction(
+      amountPaisa: 4500000, // ৳45,000.00
+      type: TransactionType.income,
+      category: ExpenseCategory.salary,
+      account: AccountLabel.bank,
+      notes: 'Monthly Software Consulting Retainer',
+      date: now.subtract(const Duration(days: 3)),
+      entriesRepo: entriesRepository,
+    );
+
+    moneyService.recordTransaction(
+      amountPaisa: 185050, // ৳1,850.50
+      type: TransactionType.expense,
+      category: ExpenseCategory.food,
+      account: AccountLabel.bkash,
+      notes: 'Bazaar & Fresh produce grocery',
+      date: now.subtract(const Duration(days: 1)),
+      entriesRepo: entriesRepository,
+    );
+
+    moneyService.recordTransaction(
+      amountPaisa: 62000, // ৳620.00
+      type: TransactionType.expense,
+      category: ExpenseCategory.education,
+      account: AccountLabel.cash,
+      notes: 'Reference books & stationery',
+      date: now,
+      entriesRepo: entriesRepository,
+    );
+
+    // Dhar Records
+    final dharTanvir = dharService.addRecord(
+      personId: tanvir.id,
+      personName: tanvir.name,
+      amountPaisa: 500000, // ৳5,000 lent to Tanvir
+      direction: DharDirection.theyOweMe,
+      dueDate: now.add(const Duration(days: 10)),
+      notes: 'Emergency medical expense advance',
+      entriesRepo: entriesRepository,
+    );
+
+    // Partial repayment of ৳2,000 from Tanvir
+    dharService.recordRepayment(
+      recordId: dharTanvir.id,
+      amountPaisa: 200000, // ৳2,000.00 repaid
+      note: 'bKash cash-in installment',
+      entriesRepo: entriesRepository,
+    );
+
+    dharService.addRecord(
+      personId: ammu.id,
+      personName: 'Uncle Karim',
+      amountPaisa: 150000, // ৳1,500 borrowed from Uncle Karim
+      direction: DharDirection.iOweThem,
+      dueDate: now.add(const Duration(days: 7)),
+      notes: 'Hardware component delivery cash',
+      entriesRepo: entriesRepository,
     );
   }
 }
