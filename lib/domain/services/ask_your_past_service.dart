@@ -114,8 +114,8 @@ class AskYourPastService {
         final wordRegex = RegExp(r'\b' + RegExp.escape(token) + r'\b', caseSensitive: false);
         if (wordRegex.hasMatch(textToMatch)) {
           matchScore += 2;
-        } else {
-          // Check n-gram overlap for Bangla conjuncts / inflections
+        } else if (RegExp(r'[\u0980-\u09FF]').hasMatch(token)) {
+          // Check n-gram overlap for Bangla conjuncts / inflections only
           final tokenGrams = generateNGrams(token);
           for (final gram in tokenGrams) {
             if (textToMatch.contains(gram)) {
