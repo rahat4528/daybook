@@ -8,13 +8,27 @@
 [![Encryption](https://img.shields.io/badge/Security-AES--256%20%7C%20SQLCipher-green.svg)](docs/threat-model.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests Passing](https://img.shields.io/badge/Tests-225%20Passing%20(100%25)-brightgreen.svg)](#-empirical-measured-benchmarks)
+[![Download Android APK](https://img.shields.io/badge/Download%20APK-v1.0.0%20(54.2MB)-22C55E?logo=android&logoColor=white)](https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk)
 
 **A portfolio-grade Android application and zero-knowledge backend where every day is a single page in a life book.**  
 *Engineered for Bengali and bilingual users on Android with OLED black aesthetics, exact native alarms, and local-first memory.*
 
-[Key Innovations](#-signature-architectural-innovations) • [Architecture](#-system-architecture) • [Design System](#-design-system--wcag-compliance) • [Measured Benchmarks](#-empirical-measured-benchmarks) • [ADR Index](#-architecture-decision-records-adrs) • [CV Impact](#-senior-mobile--backend-tech-lead-cv-bullet-points) • [Quickstart](#-quickstart--local-development)
+[Direct APK Download](#-direct-app-install--apk-download) • [Key Innovations](#-signature-architectural-innovations) • [Architecture](#-system-architecture) • [Design System](#-design-system--wcag-compliance) • [Measured Benchmarks](#-empirical-measured-benchmarks) • [ADR Index](#-architecture-decision-records-adrs) • [CV Impact](#-senior-mobile--backend-tech-lead-cv-bullet-points) • [Quickstart](#-quickstart--local-development)
 
 </div>
+
+---
+
+## 📲 Direct App Install & APK Download
+
+> **Official Release**: [**DayBook v1.0.0 Android Release**](https://github.com/rahat4528/daybook/releases/tag/v1.0.0)  
+> **Direct Download Link**: [**Download DayBook-v1.0.0.apk (54.2 MB)**](https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk)  
+> *Target OS: Android 8.0+ (API 26+) • Universal ARM64/ARMv7/x86_64 • Signed Standalone Binary*
+
+### Quick Installation:
+1. Tap the [**Direct Download Link**](https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk) on your Android phone.
+2. When downloaded, tap **Install** (if prompted, allow *"Install from this source"* in your Android Settings).
+3. Open **DayBook** and start organizing your day.
 
 ---
 
