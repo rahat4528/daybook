@@ -21,6 +21,7 @@ import '../domain/services/ai_assistant_service.dart';
 import '../domain/services/money_service.dart';
 import '../domain/services/dhar_service.dart';
 import '../domain/services/people_service.dart';
+import '../domain/services/student_service.dart';
 import '../domain/models/money_transaction.dart';
 import '../domain/models/dhar_record.dart';
 import '../domain/models/person_item.dart';
@@ -37,6 +38,7 @@ class AppRepository extends ChangeNotifier {
   final MoneyService moneyService = MoneyService();
   final DharService dharService = DharService();
   final PeopleService peopleService = PeopleService();
+  final StudentService studentService = StudentService();
   late final AssistantToolEngine assistantToolEngine;
   late final AIAssistantService aiAssistantService;
 
@@ -363,6 +365,66 @@ class AppRepository extends ChangeNotifier {
       dueDate: now.add(const Duration(days: 7)),
       notes: 'Hardware component delivery cash',
       entriesRepo: entriesRepository,
+    );
+
+    // 9. Seed Student Mode & Flashcards for Part 10
+    final cse411 = studentService.addCourse(
+      code: 'CSE 411',
+      title: 'Compiler Design',
+      creditHours: 3.0,
+      instructor: 'Dr. Hasan',
+      room: 'UB 704',
+      semester: 'Spring 2026',
+    );
+
+    studentService.addCourse(
+      code: 'CSE 321',
+      title: 'Operating Systems',
+      creditHours: 3.0,
+      instructor: 'Dr. Ahmed',
+      room: 'UB 802',
+      semester: 'Spring 2026',
+    );
+
+    // Upcoming urgent exam (in 4 days)
+    studentService.addExam(
+      courseId: cse411.id,
+      courseCode: cse411.code,
+      title: 'Midterm Examination',
+      examDate: now.add(const Duration(days: 4)),
+      room: 'Exam Hall 2',
+      seatNumber: 'Row 4, Seat 12',
+      syllabus: 'Lexical analysis, CFG, LL(1) and LR(0) parsing tables',
+      entriesRepo: entriesRepository,
+    );
+
+    studentService.addAssignment(
+      courseId: cse411.id,
+      title: 'LL(1) Parser Implementation in Dart/C++',
+      dueAt: now.add(const Duration(days: 2)),
+      weightPercentage: 15.0,
+      notes: 'Submit zipped source code with test grammar cases on LMS.',
+    );
+
+    // Flashcard Deck with SM-2 spaced repetition cards
+    final deck = studentService.createDeck(
+      title: 'OS & Concurrency Concepts',
+      courseId: cse411.id,
+      description: 'Core concepts for technical interview & semester exam',
+    );
+
+    studentService.addFlashcard(
+      deckId: deck.id,
+      front: 'What is the critical section problem?',
+      back: 'A code segment that accesses shared resources (variables, files) that must not be concurrently executed by more than one process.',
+      hint: 'মিউটেক্স ও সেমাফোর দিয়ে সমাধান নিশ্চিত করা হয়',
+    );
+
+    studentService.addFlashcard(
+      deckId: deck.id,
+      front: 'List the 4 Coffman conditions required for Deadlock.',
+      back: '1. Mutual Exclusion\n2. Hold and Wait\n3. No Preemption\n4. Circular Wait',
+      hint: 'চারটি শর্ত পূরণ হলেই কেবল ডেডলক সৃষ্টি হতে পারে',
     );
   }
 }

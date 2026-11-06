@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/design/app_tokens.dart';
 import '../../data/app_repository.dart';
 import 'money_screen.dart';
 import 'people_screen.dart';
+import 'student_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   final AppRepository repository;
@@ -140,6 +142,27 @@ class SettingsScreen extends StatelessWidget {
                     isBangla: repository.isBangla,
                     peopleService: repository.peopleService,
                     dharService: repository.dharService,
+                    entriesRepo: repository.entriesRepository,
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          // Student Mode & Academics
+          ListTile(
+            tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: const Icon(Icons.school_outlined, color: AppColors.accentLime),
+            title: const Text('Student Mode & Academics'),
+            subtitle: const Text('Courses, exams countdown, and SM-2 flashcard decks'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => StudentScreen(
+                    isBangla: repository.isBangla,
+                    studentService: repository.studentService,
                     entriesRepo: repository.entriesRepository,
                   ),
                 ),

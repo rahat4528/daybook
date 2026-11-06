@@ -22,6 +22,7 @@ import 'presentation/screens/habits_screen.dart';
 import 'presentation/screens/focus_screen.dart';
 import 'presentation/screens/money_screen.dart';
 import 'presentation/screens/people_screen.dart';
+import 'presentation/screens/student_screen.dart';
 import 'domain/services/briefing_service.dart';
 import 'domain/models/weather_info.dart';
 import 'domain/services/planner_algorithm.dart';
@@ -486,6 +487,65 @@ class _DayBookShellState extends State<DayBookShell> {
                 ],
               ),
             ),
+          ],
+
+          // Urgent Exam Countdown Card (Part 10 Student Mode)
+          if (repo.studentService.urgentExams.isNotEmpty) ...[
+            Builder(builder: (context) {
+              final exam = repo.studentService.urgentExams.first;
+              final daysLeft = exam.daysUntil(DateTime.now());
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.surface1,
+                  borderRadius: BorderRadius.circular(AppRadius.card),
+                  border: Border.all(color: AppColors.accentLime),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.school, color: AppColors.accentLime, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            repo.isBangla ? 'আসন্ন পরীক্ষা কাউন্টডাউন' : 'UPCOMING EXAM COUNTDOWN',
+                            style: const TextStyle(color: AppColors.accentLime, fontSize: 10.5, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '${exam.courseCode}: ${exam.title} (${daysLeft == 0 ? "TODAY" : "$daysLeft days left"})',
+                            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => StudentScreen(
+                              isBangla: repo.isBangla,
+                              studentService: repo.studentService,
+                              entriesRepo: repo.entriesRepository,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        repo.isBangla ? 'দেখুন' : 'VIEW',
+                        style: const TextStyle(color: AppColors.accentLime, fontWeight: FontWeight.bold, fontSize: 11),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
           ],
 
           // 3. Signature Day Page Entry Card
