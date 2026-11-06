@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: daybook_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: daybook_admin
+      POSTGRES_PASSWORD: secure_dev_password_change_in_prod
+      POSTGRES_DB: daybook_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daybook_admin -d daybook_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: daybook_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: daybook_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgres://daybook_admin:secure_dev_password_change_in_prod@postgres:5432/daybook_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: production_daybook_jwt_secret_change_in_prod
+      JWT_REFRESH_SECRET: production_daybook_jwt_refresh_secret_change_in_prod
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-sandbox_gemini_key}
+    ports:
+      - "4000:4000"
+
+volumes:
+  pgdata:
+  redisdata:

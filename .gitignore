@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Node / Backend
+**/node_modules/
+backend/dist/
+backend/tsconfig.tsbuildinfo
+website/node_modules/

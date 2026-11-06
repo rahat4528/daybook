@@ -1,0 +1,91 @@
+name: DayBook Comprehensive CI Quality Gate
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. FLUTTER QUALITY & TEST PIPELINE
+  # ============================================================================
+  flutter-ci:
+    name: Flutter Lint & Automated Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter Engine
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dart & Flutter Dependencies
+        run: flutter pub get
+
+      - name: Static Code Analysis (Zero Tolerance Lint Gate)
+        run: flutter analyze --no-fatal-infos
+
+      - name: Execute Flutter Test Suite (159+ Unit, Widget, Domain Tests)
+        run: flutter test --coverage
+
+  # ============================================================================
+  # 2. NESTJS BACKEND QUALITY & SECURITY PIPELINE
+  # ============================================================================
+  backend-ci:
+    name: NestJS Backend Build & Security Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run Backend Automated Verification Tests (Auth, ZK-Sync, LWW, LLM)
+        working-directory: backend
+        run: npm test
+
+      - name: Compile Backend TypeScript
+        working-directory: backend
+        run: npm run build
+
+  # ============================================================================
+  # 3. LUXURY WEBSITE VERIFICATION PIPELINE
+  # ============================================================================
+  website-ci:
+    name: Luxury Website Verification & Layout Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Automated Website Visual & Component Verifications (40/40 Tests)
+        run: node website/verify_website.js
