@@ -3,991 +3,341 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vectis AI — Precision Geospatial & Location Intelligence</title>
-  <meta name="description" content="Autonomous location intelligence, global satellite coverage, and street-level verification in 2,400+ cities with sub-meter neural precision.">
+  <title>DayBook — The Offline-First, Bangla-First Daily Operating System & Encrypted Life Log</title>
+  <meta name="description" content="A portfolio-grade Android application and zero-knowledge backend where every day is a single page in a life book. 100% offline-first, native Wake Quest alarms, Bangladeshi Dhar ledger, and SM-2 spaced repetition.">
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><circle cx='12' cy='12' r='10'/><path d='M12 6v12M6 12h12' stroke='%23050505' stroke-width='2.5'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23B6FF00'><rect width='20' height='20' x='2' y='2' rx='4' fill='%23050505' stroke='%23B6FF00' stroke-width='2'/><path d='M7 8h10M7 12h10M7 16h6' stroke='%23B6FF00' stroke-width='2' stroke-linecap='round'/></svg>">
+  <style>
+    :root {
+      --lime: #B6FF00;
+      --lime-dim: rgba(182, 255, 0, 0.15);
+      --lime-border: rgba(182, 255, 0, 0.35);
+    }
+    .badge-lime {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--lime-dim);
+      border: 1px solid var(--lime-border);
+      color: var(--lime);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .btn-lime {
+      background: var(--lime);
+      color: #000000;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 30px rgba(182, 255, 0, 0.3);
+    }
+    .btn-lime:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 45px rgba(182, 255, 0, 0.5);
+    }
+    .btn-ghost {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 14px 24px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .feature-card {
+      background: #0d0d0d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 32px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .feature-card:hover {
+      border-color: var(--lime-border);
+      transform: translateY(-4px);
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .step-card {
+      background: #111111;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .step-number {
+      background: var(--lime);
+      color: #000;
+      font-weight: 800;
+      font-size: 1.1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .live-demo-card {
+      background: #090909;
+      border: 1px solid rgba(182, 255, 0, 0.25);
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 540px;
+      margin: 0 auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+  </style>
 </head>
 <body>
 
   <!-- Floating Translucent Glassmorphic Navigation -->
   <div class="nav-wrapper">
     <nav class="nav-bar" id="navbar" aria-label="Main Navigation">
-      <a href="#" class="nav-brand" aria-label="Vectis AI Home">
-        <div class="brand-icon">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-        </div>
-        <span>Vectis</span>
+      <a href="#" class="nav-brand" aria-label="DayBook Home" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #fff;">
+        <span style="background: var(--lime); color: #000; font-weight: 900; font-size: 0.9rem; padding: 2px 8px; border-radius: 6px;">DAY</span>
+        <span style="font-weight: 700; letter-spacing: 0.02em;">Book</span>
       </a>
 
       <ul class="nav-links" id="navLinks">
         <li><a href="#features">Features</a></li>
-        <li><a href="#solutions">Solutions</a></li>
-        <li><a href="#demo">HyperVision™</a></li>
-        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#alarms">Wake Quest</a></li>
+        <li><a href="#ledger">Dhar Ledger</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#install">Install Guide</a></li>
       </ul>
 
       <div class="nav-actions">
-        <!-- Theme Mode Toggle -->
-        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle visual theme" title="Switch Theme (Obsidian / Midnight / Dim)">
-          <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
-
         <!-- Direct Android APK Download Button -->
-        <a href="https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk" class="btn-primary" id="downloadApkNavBtn" aria-label="Download DayBook Android APK" style="background: #22c55e; color: #000; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993s-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9994.4482.9994.9993s-.4483.9997-.9994.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.4116 13.8533 8.125 12 8.125c-1.8533 0-3.5902.2866-5.1368.8247L4.8409 5.4467a.4161.4161 0 00-.5676-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.75h24c-.3432-4.0911-2.6889-7.5633-6.1185-9.4286"/>
+        <a href="https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk" class="btn-lime" id="downloadApkNavBtn" aria-label="Download DayBook Android APK" style="padding: 10px 20px; font-size: 0.88rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-1.0003s.4482-1.0003.9993-1.0003c.5511 0 .9993.4486.9993 1.0003s-.4482 1.0003-.9993 1.0003m-11.046 0c-.5511 0-.9993-.4486-.9993-1.0003s.4482-1.0003.9993-1.0003c.5511 0 .9993.4486.9993 1.0003s-.4482 1.0003-.9993 1.0003m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.4116 13.8533 8.125 12 8.125s-3.5902.2866-5.1368.8247L4.8409 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.7847h24c-.3432-4.1258-2.6889-7.598-6.1185-9.4633"/>
           </svg>
-          <span>Download APK</span>
+          Download APK (v1.0.0)
         </a>
-
-        <!-- White Pill CTA Button (Direct Reference to Screenshot) -->
-        <button class="btn-primary" id="openDashboardBtn" aria-label="Open Dashboard" onclick="openModal()">
-          <span>Go To Dashboard</span>
-        </button>
-
-        <!-- Mobile Nav Hamburger -->
-        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
       </div>
     </nav>
   </div>
 
-  <!-- Mobile Drawer Menu -->
-  <div id="mobileDrawer" style="display: none; position: fixed; top: 88px; left: 16px; right: 16px; background: rgba(18,18,18,0.96); backdrop-filter: blur(25px); border: 1px solid var(--border-light); border-radius: 20px; padding: 24px; z-index: 999; box-shadow: 0 20px 50px rgba(0,0,0,0.9);">
-    <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; font-size: 1.1rem;">
-      <li><a href="#why-choose" class="mobile-link" style="color:#fff;">Why Vectis</a></li>
-      <li><a href="#features" class="mobile-link" style="color:#fff;">Features</a></li>
-      <li><a href="#solutions" class="mobile-link" style="color:#fff;">Solutions</a></li>
-      <li><a href="#pricing" class="mobile-link" style="color:#fff;">Pricing</a></li>
-      <li><a href="#faq" class="mobile-link" style="color:#fff;">FAQ</a></li>
-      <li style="padding-top: 10px; border-top: 1px solid var(--border);">
-        <a href="https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk" class="btn-primary" style="background:#22c55e; color:#000; text-decoration:none; justify-content:center; width:100%; display:inline-flex; align-items:center; gap:8px; font-weight:700;">
-          <span>Download Android APK (54.2 MB)</span>
-        </a>
-      </li>
-      <li>
-        <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="openModal()">Go To Dashboard</button>
-      </li>
-    </ul>
-  </div>
-
-  <main>
-    <!-- HERO SECTION -->
-    <section class="hero container" id="hero">
-      <div class="ambient-glow"></div>
-
-      <div class="hero-tag">
-        <span class="dot"></span>
-        <span>HyperVision™ 4.2 Neural Satellite Constellation Live</span>
-      </div>
-
-      <h1 class="hero-headline font-serif">
-        Planetary Visual Intelligence<br>& Location Forensics
-      </h1>
-
-      <p class="hero-subtext">
-        Pinpoint any coordinate, match street photos against indexed multispectral imagery across 2,400+ cities, and generate cryptographic evidence dossiers in seconds.
-      </p>
-
-      <div class="hero-cta-group">
-        <a href="https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk" class="btn-primary" id="downloadApkHeroBtn" aria-label="Download Android APK" style="background: #22c55e; color: #000; text-decoration: none; font-weight: 700; font-size: 0.95rem; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993s-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9994.4482.9994.9993s-.4483.9997-.9994.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.4116 13.8533 8.125 12 8.125c-1.8533 0-3.5902.2866-5.1368.8247L4.8409 5.4467a.4161.4161 0 00-.5676-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.75h24c-.3432-4.0911-2.6889-7.5633-6.1185-9.4286"/>
-          </svg>
-          <span>Download Android APK (v1.0.0 • 54.2 MB)</span>
-        </a>
-
-        <button class="btn-primary" onclick="openModal()">
-          <span>Explore Platform</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </button>
-
-        <a href="#demo" class="btn-secondary">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-          <span>View Live Radar</span>
-        </a>
-      </div>
-
-      <!-- Hero HUD / Radar Visual Card -->
-      <div class="hero-visual-card">
-        <div class="hud-header">
-          <div class="hud-dots">
-            <span class="hud-dot" style="background: #ff5f56;"></span>
-            <span class="hud-dot" style="background: #ffbd2e;"></span>
-            <span class="hud-dot" style="background: #27c93f;"></span>
-          </div>
-          <div class="font-mono" style="color: var(--text-secondary); font-size: 0.8rem;">
-            LIVE SATELLITE FEED — ORBITAL ALTITUDE: 520 KM // UTC LOCK: <span id="liveTimestamp">2026-11-06 01:10:45</span>
-          </div>
-          <div class="font-mono" style="color: #22c55e; font-size: 0.8rem;">
-            STATUS: ACTIVE RADAR
-          </div>
-        </div>
-
-        <div class="hud-grid">
-          <!-- Animated Radar Scope -->
-          <div class="hud-radar-canvas">
-            <div class="radar-sweep"></div>
-            <div style="position: absolute; width: 140px; height: 140px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06);"></div>
-            <div style="position: absolute; width: 220px; height: 220px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.04);"></div>
-            <div style="position: absolute; width: 100%; height: 1px; background: rgba(255,255,255,0.06);"></div>
-            <div style="position: absolute; height: 100%; width: 1px; background: rgba(255,255,255,0.06);"></div>
-
-            <!-- Target Blips -->
-            <div class="hud-target-blip" style="position: absolute; top: 38%; left: 62%; display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff; box-shadow: 0 0 10px #ffffff;"></span>
-              <span class="font-mono" style="font-size: 0.72rem; color: #fff; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border);">CANDIDATE #1 (98.4%)</span>
-            </div>
-            <div class="hud-target-blip" style="position: absolute; top: 68%; left: 32%; display: flex; align-items: center; gap: 8px;">
-              <span style="width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5);"></span>
-              <span class="font-mono" style="font-size: 0.68rem; color: var(--text-secondary); background: rgba(0,0,0,0.7); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--border);">CANDIDATE #2 (87.1%)</span>
-            </div>
-          </div>
-
-          <!-- Live Telemetry Side Panel -->
-          <div class="hud-side-panel">
-            <div class="hud-stat-box">
-              <div class="hud-stat-label">Target Coordinates</div>
-              <div class="hud-stat-value font-mono" id="hudCoords" style="font-size: 1.1rem; letter-spacing: -0.01em;">35°41'22.1"N 139°41'30.2"E</div>
-            </div>
-
-            <div class="hud-stat-box">
-              <div class="hud-stat-label">Neural Confidence Score</div>
-              <div class="hud-stat-value font-mono" style="color: #ffffff;">98.42% <span style="font-size: 0.8rem; color: #22c55e;">▲ PASS</span></div>
-            </div>
-
-            <div class="hud-stat-box">
-              <div class="hud-stat-label">Verified Clues</div>
-              <div class="hud-stat-value" style="font-size: 1.05rem; font-weight: 500;">
-                Roofline geometry, utility pole sequence, street curb texture
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- WHY CHOOSE US (EXACT MATCH TO REFERENCE SCREENSHOT) -->
-    <section class="container section-spacing" id="why-choose">
-      <div class="dark-container">
-        <div class="why-choose-layout">
-          <!-- Left Column -->
-          <div class="why-choose-left">
-            <h2 class="font-serif">Why choose Vectis</h2>
-            <p>
-              Powerful AI location intelligence at your fingertips — accurate, global, and built with security at every layer.
-            </p>
-          </div>
-
-          <!-- Right Column: Stacked Features with Circular Outline Icons -->
-          <div class="why-choose-features-stack">
-            <!-- Item 1: Global satellite coverage -->
-            <div class="feature-list-item">
-              <div class="feature-circle-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-              </div>
-              <div class="feature-item-content">
-                <h3>Global satellite coverage</h3>
-                <p>Access to worldwide location data covering every corner of the planet.</p>
-              </div>
-            </div>
-
-            <!-- Item 2: Smart & Private -->
-            <div class="feature-list-item">
-              <div class="feature-circle-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-              </div>
-              <div class="feature-item-content">
-                <h3>Smart & Private</h3>
-                <p>Your data is protected with enterprise-grade security and privacy measures.</p>
-              </div>
-            </div>
-
-            <!-- Item 3: Ranked leads with evidence (Directly from screenshot) -->
-            <div class="feature-list-item">
-              <div class="feature-circle-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </div>
-              <div class="feature-item-content">
-                <h3>Ranked leads with evidence</h3>
-                <p>Every search returns ranked candidate locations, each with a confidence score and the clues behind it pinned on the map. Export the whole result as a PDF report.</p>
-              </div>
-            </div>
-
-            <!-- Item 4: Meter-level in 2,300+ cities (Directly from screenshot) -->
-            <div class="feature-list-item">
-              <div class="feature-circle-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-              </div>
-              <div class="feature-item-content">
-                <h3>Meter-level in 2,300+ cities</h3>
-                <p>City Search matches street photos against indexed imagery in 27 countries and shows the matching Street View side by side.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW OUR FEATURES BANNER (LOWER SECTION IN REFERENCE SCREENSHOT) -->
-    <section class="container" id="features">
-      <div class="dark-container view-features-banner">
-        <div class="ambient-glow"></div>
-        <h2 class="font-serif">View our features</h2>
-        <p>
-          Including OSINT-level investigations, street-level accuracy in 2,300+ cities, ranked leads with the evidence behind them, Street View verification and PDF reports.
-        </p>
-        <button class="btn-primary" onclick="scrollToElement('featureGrid')">
-          <span>Explore features</span>
-        </button>
-      </div>
-
-      <!-- 6-CARD EXTENDED FEATURE GRID -->
-      <div class="features-grid" id="featureGrid">
-        <!-- Feature 1 -->
-        <div class="feature-card">
-          <div>
-            <div class="feature-card-header">
-              <div class="feature-circle-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-              </div>
-              <span class="feature-badge">STREET PHOTO</span>
-            </div>
-            <h3>Street-Level Photogrammetry</h3>
-            <p>Decompose uploaded surveillance frames into architectural features, window frames, and pavement markings to find matches in 2,400+ metropolitan hubs.</p>
-          </div>
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary);">
-            Resolution: Sub-50cm pixel registration
-          </div>
-        </div>
-
-        <!-- Feature 2 -->
-        <div class="feature-card">
-          <div>
-            <div class="feature-card-header">
-              <div class="feature-circle-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                </svg>
-              </div>
-              <span class="feature-badge">COURT-READY</span>
-            </div>
-            <h3>Cryptographic Evidence PDF</h3>
-            <p>Generate timestamped, SHA-256 verifiable intelligence dossiers. Includes provenance metadata, sun angle azimuth calculations, and satellite sensor logs.</p>
-          </div>
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary);">
-            Export: PDF, GeoJSON, KML & Raw CSV
-          </div>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="feature-card">
-          <div>
-            <div class="feature-card-header">
-              <div class="feature-circle-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-              </div>
-              <span class="feature-badge">SAR RADAR</span>
-            </div>
-            <h3>Temporal SAR Change Detection</h3>
-            <p>Cut through persistent cloud cover and night operations with Synthetic Aperture Radar. Pinpoint structural movement, soil displacement, and naval berths.</p>
-          </div>
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary);">
-            Cadence: 4-hour constellation revisit
-          </div>
-        </div>
-
-        <!-- Feature 4 -->
-        <div class="feature-card">
-          <div>
-            <div class="feature-card-header">
-              <div class="feature-circle-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-              </div>
-              <span class="feature-badge">API & SDK</span>
-            </div>
-            <h3>Enterprise REST & Streaming API</h3>
-            <p>Seamlessly integrate location search into your Palantir, ArcGIS, or custom investigative stack with sub-80ms batch endpoints and streaming webhooks.</p>
-          </div>
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary);">
-            Throughput: 15,000 queries / sec
-          </div>
-        </div>
-
-        <!-- Feature 5 -->
-        <div class="feature-card">
-          <div>
-            <div class="feature-card-header">
-              <div class="feature-circle-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                </svg>
-              </div>
-              <span class="feature-badge">MULTISPECTRAL</span>
-            </div>
-            <h3>Solar Azimuth & Shadow Profiling</h3>
-            <p>Validate the exact capture date and hour of suspicious photos by cross-analyzing shadow lengths against astrological solar ephemeris models.</p>
-          </div>
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary);">
-            Accuracy: ± 4 minutes UTC lock
-          </div>
-        </div>
-
-        <!-- Feature 6 -->
-        <div class="feature-card">
-          <div>
-            <div class="feature-card-header">
-              <div class="feature-circle-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
-              </div>
-              <span class="feature-badge">AIR-GAPPED</span>
-            </div>
-            <h3>Zero-Knowledge Data Vault</h3>
-            <p>All client image uploads and search queries are hashed locally. No client query vectors are stored or used for public foundation model training.</p>
-          </div>
-          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary);">
-            Compliance: SOC 2 Type II, ISO 27001
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- INTERACTIVE LIVE DEMO SECTION -->
-    <section class="container section-spacing" id="demo">
-      <div class="dark-container">
-        <div style="text-align: center; margin-bottom: 40px;">
-          <div class="hero-tag">
-            <span class="dot"></span>
-            <span>Interactive Simulator</span>
-          </div>
-          <h2 class="font-serif" style="font-size: 3.2rem; margin-top: 10px;">Test the HyperVision™ Match Engine</h2>
-          <p style="max-width: 600px; margin: 12px auto 0 auto;">Select a metropolitan target location below to simulate real-time neural photo matching and Street View evidence ranking.</p>
-        </div>
-
-        <!-- City Selector Buttons -->
-        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
-          <button class="tab-btn active" onclick="simulateCity('tokyo', this)">Tokyo (Shinjuku)</button>
-          <button class="tab-btn" onclick="simulateCity('london', this)">London (Canary Wharf)</button>
-          <button class="tab-btn" onclick="simulateCity('sanfrancisco', this)">San Francisco (Mission)</button>
-          <button class="tab-btn" onclick="simulateCity('dubai', this)">Dubai (Marina)</button>
-          <button class="tab-btn" onclick="simulateCity('dhaka', this)">Dhaka (Gulshan-2)</button>
-        </div>
-
-        <div style="background: #0a0a0a; border: 1px solid var(--border); border-radius: 20px; padding: 28px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;" class="demo-split">
-            <!-- Simulated Input Frame -->
-            <div style="background: #141414; border: 1px solid var(--border); border-radius: 14px; padding: 20px;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 0.85rem;">
-                <span style="color: var(--text-secondary);">QUERY PHOTO VECTOR</span>
-                <span class="font-mono" style="color: #22c55e;" id="demoStatus">READY FOR MATCHING</span>
-              </div>
-              <div style="height: 200px; background: #080808; border-radius: 10px; border: 1px dashed var(--border-light); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden;" id="demoVisualContainer">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-                <span class="font-mono" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);" id="demoCityLabel">Target: Tokyo, Japan</span>
-              </div>
-              <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-                <span class="font-mono" style="font-size: 0.78rem; color: var(--text-muted);" id="demoCoords">35°41'22.1"N 139°41'30.2"E</span>
-                <button class="btn-secondary" style="font-size: 0.8rem; padding: 6px 14px;" onclick="runSimulation()">
-                  <span>Scan Vector</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Simulated Match Results -->
-            <div style="background: #141414; border: 1px solid var(--border); border-radius: 14px; padding: 20px;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 0.85rem;">
-                <span style="color: var(--text-secondary);">RANKED MATCH RESULTS</span>
-                <span class="font-mono" style="color: var(--text-secondary);">3 CANDIDATES FOUND</span>
-              </div>
-
-              <div style="display: flex; flex-direction: column; gap: 12px;" id="demoResultsList">
-                <div style="background: #0d0d0d; border: 1px solid var(--border-light); border-radius: 10px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
-                  <div>
-                    <div style="font-weight: 600; font-size: 0.95rem; color: #fff;" id="cand1Name">Candidate #1 — Shinjuku Block 4</div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);" id="cand1Details">Clues: Concrete awning structure, overhead cable bundle</div>
-                  </div>
-                  <div class="font-mono" style="font-size: 1.15rem; font-weight: 700; color: #22c55e;" id="cand1Score">98.4%</div>
-                </div>
-
-                <div style="background: #0d0d0d; border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
-                  <div>
-                    <div style="font-weight: 600; font-size: 0.95rem; color: #fff;" id="cand2Name">Candidate #2 — Shibuya Crossing N</div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Clues: Pavement stone layout, curb angle</div>
-                  </div>
-                  <div class="font-mono" style="font-size: 1.15rem; font-weight: 600; color: #8e8e8e;" id="cand2Score">84.7%</div>
-                </div>
-
-                <div style="background: #0d0d0d; border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
-                  <div>
-                    <div style="font-weight: 600; font-size: 0.95rem; color: #fff;" id="cand3Name">Candidate #3 — Ginza 6-Chome</div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Clues: Masonry style match</div>
-                  </div>
-                  <div class="font-mono" style="font-size: 1.15rem; font-weight: 600; color: #8e8e8e;" id="cand3Score">68.2%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOW IT WORKS (3-STEP PIPELINE) -->
-    <section class="container section-spacing" id="how-it-works">
-      <div style="text-align: center; margin-bottom: 24px;">
-        <h2 class="font-serif" style="font-size: 3.5rem;">How It Works</h2>
-        <p style="max-width: 540px; margin: 12px auto 0 auto;">From an unverified ground photo or satellite bounding box to a court-admissible forensic dossier in three automated steps.</p>
-      </div>
-
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-num">01</div>
-          <h3>Ingest & Decompose</h3>
-          <p>Drop a surveillance image, social media snapshot, or drone tile. The neural engine removes noise, parses sun azimuth angles, and extracts distinctive architectural geometries.</p>
-        </div>
-
-        <div class="step-card">
-          <div class="step-num">02</div>
-          <h3>Index Matching</h3>
-          <p>The vector signature is scanned against our planetary index of 2,400+ cities and continuous synthetic aperture radar passes in less than 400 milliseconds.</p>
-        </div>
-
-        <div class="step-card">
-          <div class="step-num">03</div>
-          <h3>Verify & Export</h3>
-          <p>Inspect ranked candidate locations side by side with current street views, review confidence intervals, and export a SHA-256 signed PDF forensic report.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SOLUTIONS & USE CASES TABS -->
-    <section class="container section-spacing" id="solutions">
-      <div class="dark-container">
-        <div style="text-align: center; margin-bottom: 40px;">
-          <h2 class="font-serif" style="font-size: 3.5rem;">Engineered for High-Stakes Operations</h2>
-          <p style="max-width: 600px; margin: 12px auto 0 auto;">Trusted by global defense contractors, tier-1 maritime insurers, and investigative journalists worldwide.</p>
-        </div>
-
-        <div class="tabs-nav">
-          <button class="tab-btn active" onclick="switchTab('defense', this)">Defense & Intelligence</button>
-          <button class="tab-btn" onclick="switchTab('insurance', this)">Asset & Marine Insurance</button>
-          <button class="tab-btn" onclick="switchTab('investigative', this)">Investigative Journalism</button>
-          <button class="tab-btn" onclick="switchTab('logistics', this)">Supply Chain & Logistics</button>
-        </div>
-
-        <!-- Tab 1: Defense -->
-        <div class="tab-content active" id="tab-defense">
-          <div>
-            <h3 style="font-size: 2rem; margin-bottom: 16px;" class="font-serif">Critical Infrastructure Geolocation & Threat Monitoring</h3>
-            <p style="margin-bottom: 20px; font-size: 1.05rem;">
-              Correlate adversary media releases with known airfields, radar emplacements, and logistics depots. Filter by sensor elevation and time of day to uncover hidden assets with mathematical certainty.
-            </p>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; font-size: 0.95rem;">
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Air-gapped deployment options for classified networks</span>
-              </li>
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Automated camouflage and soil disturbance tracking</span>
-              </li>
-            </ul>
-            <button class="btn-primary" onclick="openModal()">Request Defense Briefing</button>
-          </div>
-          <div style="background: #141414; border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
-            <div class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px;">AUDIT LOG // CLASSIFICATION: UNCLASS</div>
-            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;">Airfield Runway 04R Verification</div>
-            <p style="font-size: 0.9rem; margin-bottom: 16px;">SAR interferometry matched concrete expansion joints against satellite index. Confidence: 99.1%.</p>
-            <div class="font-mono" style="font-size: 0.8rem; background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">HASH: e89a2f7c0018b3...</div>
-          </div>
-        </div>
-
-        <!-- Tab 2: Insurance -->
-        <div class="tab-content" id="tab-insurance">
-          <div>
-            <h3 style="font-size: 2rem; margin-bottom: 16px;" class="font-serif">Forensic Catastrophe & Marine Claim Verification</h3>
-            <p style="margin-bottom: 20px; font-size: 1.05rem;">
-              Verify ground damage claims before sending field adjusters into hazardous zones. Automatically compare pre-event and post-event satellite passes to quantify rooftop structural collapse.
-            </p>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; font-size: 0.95rem;">
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Instant historical weather & storm surge overlay</span>
-              </li>
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Automated fraud mitigation for duplicate visual claims</span>
-              </li>
-            </ul>
-            <button class="btn-primary" onclick="openModal()">Explore Underwriting Suite</button>
-          </div>
-          <div style="background: #141414; border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
-            <div class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px;">CLAIM REF: #CLM-89412</div>
-            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;">Industrial Warehouse Roof Inundation</div>
-            <p style="font-size: 0.9rem; margin-bottom: 16px;">Multispectral NIR analysis confirms water pooling over 4,200 sq meters. Claim verified within 12 minutes of filing.</p>
-            <div class="font-mono" style="font-size: 0.8rem; background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">STATUS: APPROVED FOR PAYOUT</div>
-          </div>
-        </div>
-
-        <!-- Tab 3: Investigative Journalism -->
-        <div class="tab-content" id="tab-investigative">
-          <div>
-            <h3 style="font-size: 2rem; margin-bottom: 16px;" class="font-serif">Open-Source Intelligence (OSINT) & Fact Checking</h3>
-            <p style="margin-bottom: 20px; font-size: 1.05rem;">
-              Empower investigative reporters to verify conflict footage, debunk deepfakes, and establish chronological timelines of civil incidents with court-grade forensic rigor.
-            </p>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; font-size: 0.95rem;">
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>SunCalc shadow alignment & solar trajectory validation</span>
-              </li>
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Zero-retention search for high-risk reporting</span>
-              </li>
-            </ul>
-            <button class="btn-primary" onclick="openModal()">Access OSINT Grants</button>
-          </div>
-          <div style="background: #141414; border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
-            <div class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px;">VERIFICATION DOSSIER #804</div>
-            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;">Protest Gathering Geolocation</div>
-            <p style="font-size: 0.9rem; margin-bottom: 16px;">Street lighting pole design matched with municipal index. Video proved authentic and captured on Oct 14, 2026 at 16:42 local.</p>
-            <div class="font-mono" style="font-size: 0.8rem; background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">EXPORT: VERIFIED_REPORT.PDF</div>
-          </div>
-        </div>
-
-        <!-- Tab 4: Logistics -->
-        <div class="tab-content" id="tab-logistics">
-          <div>
-            <h3 style="font-size: 2rem; margin-bottom: 16px;" class="font-serif">Supply Chain Bottleneck & Port Congestion Tracking</h3>
-            <p style="margin-bottom: 20px; font-size: 1.05rem;">
-              Monitor anchorage turnaround times, bulk cargo storage heights, and freight rail chokepoints across 850+ global intermodal terminals with automated satellite alerts.
-            </p>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; font-size: 0.95rem;">
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Automated container count & density heatmaps</span>
-              </li>
-              <li style="display:flex; align-items:center; gap:10px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Webhook notifications when berth occupancy exceeds 85%</span>
-              </li>
-            </ul>
-            <button class="btn-primary" onclick="openModal()">Monitor Global Terminals</button>
-          </div>
-          <div style="background: #141414; border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
-            <div class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px;">PORT OF ROTTERDAM — TERMINAL 3</div>
-            <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 14px;">Vessel Dwell Velocity</div>
-            <p style="font-size: 0.9rem; margin-bottom: 16px;">Average container clearance: 3.4 days. Current capacity utilized: 68% (optimal band).</p>
-            <div class="font-mono" style="font-size: 0.8rem; background: #0a0a0a; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">METRIC: ALL CONVOYS ON SCHEDULE</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRICING SECTION -->
-    <section class="container section-spacing" id="pricing">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h2 class="font-serif" style="font-size: 3.5rem;">Simple, Transparent Licensing</h2>
-        <p style="max-width: 520px; margin: 12px auto 0 auto;">Scale your location intelligence operations with predictable query bundles and dedicated satellite revisit channels.</p>
-      </div>
-
-      <!-- Billing Toggle Switch -->
-      <div class="billing-toggle">
-        <span id="monthlyLabel" style="font-weight: 600; color: #fff;">Monthly Billing</span>
-        <div class="switch-pill" id="billingSwitch" onclick="toggleBilling()" role="switch" aria-checked="false" tabindex="0">
-          <div class="switch-thumb"></div>
-        </div>
-        <span id="annualLabel" style="color: var(--text-secondary);">Annual Billing <span style="background: rgba(255,255,255,0.1); color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 9999px; margin-left: 4px;">Save 20%</span></span>
-      </div>
-
-      <div class="pricing-grid">
-        <!-- Starter Tier -->
-        <div class="pricing-card">
-          <div>
-            <div style="font-weight: 600; font-size: 1.25rem;">Starter Analyst</div>
-            <p style="margin-top: 6px; font-size: 0.9rem;">Ideal for independent OSINT investigators and small security desks.</p>
-            <div class="pricing-price" id="priceStarter">$79<span> / month</span></div>
-
-            <ul class="pricing-features-list">
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>500 Search Queries / month</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Full access to 2,400+ cities</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Ranked leads with confidence scores</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Export basic PDF evidence summaries</span>
-              </li>
-            </ul>
-          </div>
-          <button class="btn-secondary" style="width: 100%;" onclick="openModal('Starter Analyst')">Get Started</button>
-        </div>
-
-        <!-- Professional Tier (Featured) -->
-        <div class="pricing-card featured">
-          <div class="pricing-badge">MOST POPULAR</div>
-          <div>
-            <div style="font-weight: 600; font-size: 1.25rem;">Professional</div>
-            <p style="margin-top: 6px; font-size: 0.9rem;">For intelligence teams, forensic units, and corporate security desks.</p>
-            <div class="pricing-price" id="pricePro">$249<span> / month</span></div>
-
-            <ul class="pricing-features-list">
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>5,000 Search Queries / month</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Synthetic Aperture Radar (SAR) layer</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Cryptographic SHA-256 PDF dossiers</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>REST API & Webhooks (10 req/s)</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Priority 4-hour satellite revisit</span>
-              </li>
-            </ul>
-          </div>
-          <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="openModal('Professional')">Start 14-Day Trial</button>
-        </div>
-
-        <!-- Enterprise Tier -->
-        <div class="pricing-card">
-          <div>
-            <div style="font-weight: 600; font-size: 1.25rem;">Enterprise & Defense</div>
-            <p style="margin-top: 6px; font-size: 0.9rem;">Tailored for government agencies, defense contractors, and global carriers.</p>
-            <div class="pricing-price" id="priceEnterprise">Custom</div>
-
-            <ul class="pricing-features-list">
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Unlimited queries & custom bounding boxes</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Air-gapped on-premise deployment</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Dedicated tasking on commercial constellations</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>24/7 dedicated mission intelligence engineer</span>
-              </li>
-              <li>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Custom legal SLA & ISO-27001 auditing</span>
-              </li>
-            </ul>
-          </div>
-          <button class="btn-secondary" style="width: 100%;" onclick="openModal('Enterprise')">Contact Mission Control</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TESTIMONIALS SECTION -->
-    <section class="container section-spacing" id="testimonials">
-      <div style="text-align: center; margin-bottom: 48px;">
-        <h2 class="font-serif" style="font-size: 3.5rem;">Field-Tested Worldwide</h2>
-        <p style="max-width: 500px; margin: 12px auto 0 auto;">Read how frontline intelligence and risk teams resolve critical location queries.</p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;" class="testimonials-grid">
-        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 32px; display: flex; flex-direction: column; justify-content: space-between;">
-          <p style="font-style: italic; font-size: 1.05rem; color: #fff; line-height: 1.6; margin-bottom: 24px;">
-            "Vectis cut our photo verification time from 36 hours of manual satellite scouring to 18 seconds. The court-ready PDF dossier has withstood multiple international tribunals."
-          </p>
-          <div>
-            <div style="font-weight: 600; color: #fff;">David C. Vance</div>
-            <div style="font-size: 0.85rem; color: var(--text-secondary);">Director of Investigative Forensics, OSINT Watch</div>
-          </div>
-        </div>
-
-        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 32px; display: flex; flex-direction: column; justify-content: space-between;">
-          <p style="font-style: italic; font-size: 1.05rem; color: #fff; line-height: 1.6; margin-bottom: 24px;">
-            "Matching street curb geometry and utility lines in foreign cities without relying on metadata was unthinkable until Vectis. It is indispensable for modern conflict verification."
-          </p>
-          <div>
-            <div style="font-weight: 600; color: #fff;">Elena Rostova</div>
-            <div style="font-size: 0.85rem; color: var(--text-secondary);">Chief Risk Officer, Sovereign Marine Assurance</div>
-          </div>
-        </div>
-
-        <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 32px; display: flex; flex-direction: column; justify-content: space-between;">
-          <p style="font-style: italic; font-size: 1.05rem; color: #fff; line-height: 1.6; margin-bottom: 24px;">
-            "The SAR radar integration delivers reliable change detection even during monsoon storms when optical satellites are blinded. Our logistics routing has never been safer."
-          </p>
-          <div>
-            <div style="font-weight: 600; color: #fff;">Marcus Thorne</div>
-            <div style="font-size: 0.85rem; color: var(--text-secondary);">VP of Global Logistics Intelligence, TransEuro Cargo</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ SECTION (SMOOTH ACCORDION) -->
-    <section class="container section-spacing" id="faq">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h2 class="font-serif" style="font-size: 3.5rem;">Frequently Asked Questions</h2>
-        <p style="max-width: 520px; margin: 12px auto 0 auto;">Everything you need to know about the Vectis AI location intelligence platform.</p>
-      </div>
-
-      <div class="faq-stack">
-        <!-- Item 1 -->
-        <div class="faq-item">
-          <div class="faq-question" onclick="toggleFaq(this)">
-            <span>How does Vectis locate street photos without GPS EXIF metadata?</span>
-            <span class="faq-icon font-mono">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Our proprietary neural vision model extracts structural invariants: architectural facade rhythms, curb bevel geometries, street lighting fixtures, sun azimuth angle shadows, and overhead utility wiring layouts. These are cross-matched in high-dimensional vector space against our indexed corpus of 2,400+ metropolitan areas.</p>
-          </div>
-        </div>
-
-        <!-- Item 2 -->
-        <div class="faq-item">
-          <div class="faq-question" onclick="toggleFaq(this)">
-            <span>What is the typical search response latency?</span>
-            <span class="faq-icon font-mono">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Standard street-level photo queries return ranked candidate coordinates within 250 to 500 milliseconds. Full planetary bounding box SAR radar change detection analyses typically complete in under 12 seconds.</p>
-          </div>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="faq-item">
-          <div class="faq-question" onclick="toggleFaq(this)">
-            <span>Is our uploaded search data private and secure?</span>
-            <span class="faq-icon font-mono">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Yes. Vectis enforces a strict zero-knowledge architecture. Uploaded images are converted to transient cryptographic embeddings in volatile memory and are immediately scrubbed. We never train public models on customer inputs, and enterprise plans support full on-premise air-gapping.</p>
-          </div>
-        </div>
-
-        <!-- Item 4 -->
-        <div class="faq-item">
-          <div class="faq-question" onclick="toggleFaq(this)">
-            <span>Can we export court-admissible evidence reports?</span>
-            <span class="faq-icon font-mono">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>All searches can be exported as cryptographic PDF evidence dossiers. Each dossier embeds full sensor telemetry, sun angle calculations, matching feature bounding boxes, and a SHA-256 digital signature compliant with international forensic admissibility standards.</p>
-          </div>
-        </div>
-
-        <!-- Item 5 -->
-        <div class="faq-item">
-          <div class="faq-question" onclick="toggleFaq(this)">
-            <span>How does the 14-day free trial work?</span>
-            <span class="faq-icon font-mono">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>You receive full access to the Professional tier with 500 test queries. No credit card is required to begin. At the end of 14 days, you can choose to subscribe or your account automatically shifts to a read-only archive.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FINAL CTA BANNER -->
-    <section class="container section-spacing">
-      <div class="cta-banner">
-        <div class="ambient-glow"></div>
-        <h2 class="font-serif">Pinpoint Any Location on Earth in Seconds</h2>
-        <p style="max-width: 580px; margin: 0 auto 36px auto; font-size: 1.15rem; color: var(--text-secondary);">
-          Join world-class investigative teams and defense operators leveraging sub-meter planetary intelligence.
-        </p>
-        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
-          <button class="btn-primary" onclick="openModal()">
-            <span>Start Free 14-Day Trial</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
-          <button class="btn-secondary" onclick="openModal('Enterprise Briefing')">
-            <span>Schedule Mission Briefing</span>
-          </button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- LUXURY MULTI-COLUMN FOOTER -->
-  <footer class="site-footer container">
-    <div class="footer-grid">
-      <!-- Brand column -->
-      <div>
-        <div class="nav-brand" style="margin-bottom: 16px;">
-          <div class="brand-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-          </div>
-          <span>Vectis AI</span>
-        </div>
-        <p style="font-size: 0.9rem; max-width: 280px; margin-bottom: 20px;">
-          Autonomous location intelligence and planetary forensic evidence at meter-level precision.
-        </p>
-        <div class="font-mono" style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
-          <span>ALL SATELLITE SYSTEMS OPERATIONAL</span>
-        </div>
-      </div>
-
-      <!-- Links column 1 -->
-      <div class="footer-col">
-        <h4>Product</h4>
-        <ul>
-          <li><a href="#why-choose">Why Vectis</a></li>
-          <li><a href="#features">Street Photogrammetry</a></li>
-          <li><a href="#demo">Live Radar Scope</a></li>
-          <li><a href="#features">SAR Change Detection</a></li>
-          <li><a href="#pricing">Licensing Plans</a></li>
-        </ul>
-      </div>
-
-      <!-- Links column 2 -->
-      <div class="footer-col">
-        <h4>Solutions</h4>
-        <ul>
-          <li><a href="#solutions">Defense & Aerospace</a></li>
-          <li><a href="#solutions">Marine & Catastrophe</a></li>
-          <li><a href="#solutions">OSINT Investigation</a></li>
-          <li><a href="#solutions">Global Supply Chain</a></li>
-          <li><a href="#solutions">Air-Gapped Enclaves</a></li>
-        </ul>
-      </div>
-
-      <!-- Links column 3 -->
-      <div class="footer-col">
-        <h4>Trust & Legal</h4>
-        <ul>
-          <li><a href="#">Privacy Framework</a></li>
-          <li><a href="#">SOC 2 Type II Report</a></li>
-          <li><a href="#">Chain of Custody Whitepaper</a></li>
-          <li><a href="#">Terms of Intelligence Service</a></li>
-          <li><a href="#">Security Vulnerability Disclosure</a></li>
-        </ul>
-      </div>
+  <!-- Hero Section -->
+  <header class="hero-section" id="hero" style="padding: 140px 24px 80px; text-align: center; max-width: 1100px; margin: 0 auto;">
+    <div class="badge-lime">
+      <span style="display: inline-block; width: 8px; height: 8px; background: var(--lime); border-radius: 50%; animation: pulse 2s infinite;"></span>
+      Official v1.0.0 Android Release Live
     </div>
 
-    <div class="footer-bottom">
-      <div>© 2026 Vectis AI Inc. All planetary imagery indexed in accordance with international space law.</div>
-      <div style="display: flex; gap: 20px;">
-        <a href="#" style="color: var(--text-muted);">Privacy</a>
-        <a href="#" style="color: var(--text-muted);">Security</a>
-        <a href="#" style="color: var(--text-muted);">API Status</a>
-        <a href="#" style="color: var(--text-muted);">Contact</a>
+    <h1 style="font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 800; line-height: 1.15; margin-bottom: 24px; color: #ffffff;">
+      Every Day is One Page in a Book.<br>
+      <span style="color: var(--lime);">Your Life Writes Itself.</span>
+    </h1>
+
+    <p style="font-size: 1.2rem; color: #a3a3a3; max-width: 760px; margin: 0 auto 36px; line-height: 1.6;">
+      An encrypted personal operating system engineered for Android. Planning, waking, focus sessions, Bangladeshi Dhar ledgers, student spaced repetition, and nightly reflection stream into one immutable daily log.
+    </p>
+
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px;">
+      <a href="https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk" class="btn-lime" style="font-size: 1.05rem;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+        </svg>
+        Direct APK Download (54.2 MB)
+      </a>
+
+      <a href="https://github.com/rahat4528/daybook" target="_blank" rel="noopener" class="btn-ghost" style="font-size: 1.05rem;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        GitHub Repository
+      </a>
+    </div>
+
+    <!-- Live Interactive App Mockup Preview -->
+    <div class="live-demo-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 18px;">
+        <div style="text-align: left;">
+          <div style="font-size: 0.75rem; color: var(--lime); font-weight: 700; text-transform: uppercase;">TODAY'S PAGE</div>
+          <div style="font-size: 1.1rem; font-weight: 700; color: #fff;">Today's Daily Chronicle</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="background: rgba(182, 255, 0, 0.15); border: 1px solid var(--lime); color: var(--lime); padding: 4px 10px; border-radius: 9999px; font-size: 0.8rem; font-weight: 700;">Day Score 88/100</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-bottom: 16px; text-align: left;">
+        <div style="flex: 1; background: #141414; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-size: 0.72rem; color: #888;">CASH + BKASH</div>
+          <div style="font-size: 1.1rem; font-weight: 700; color: #fff;">৳14,250.00</div>
+        </div>
+        <div style="flex: 1; background: #141414; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+          <div style="font-size: 0.72rem; color: #888;">DHAR (RECEIVABLE)</div>
+          <div style="font-size: 1.1rem; font-weight: 700; color: var(--lime);">+৳3,500.00</div>
+        </div>
+      </div>
+
+      <div style="text-align: left; background: #141414; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="color: var(--lime); font-size: 1.2rem;">🐸</span>
+          <div style="flex: 1;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: #fff;">Ship Complete DayBook Online App</div>
+            <div style="font-size: 0.75rem; color: #777;">Priority 1 • Eat-The-Frog • 45m</div>
+          </div>
+          <span style="color: var(--lime); font-size: 0.8rem; font-weight: bold;">DONE</span>
+        </div>
+      </div>
+
+      <div style="text-align: left; background: #141414; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="color: #60a5fa; font-size: 1.2rem;">⏰</span>
+          <div style="flex: 1;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: #fff;">Wake Quest: Focus Ascent (6:30 AM)</div>
+            <div style="font-size: 0.75rem; color: #777;">Math Challenge (Hard) • Dismissed on time</div>
+          </div>
+          <span style="color: #4ade80; font-size: 0.8rem; font-weight: bold;">PASSED</span>
+        </div>
       </div>
     </div>
+  </header>
+
+  <!-- Key Architecture Pillars -->
+  <section id="features" style="padding: 80px 24px; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h2 style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 12px;">Signature Architectural Innovations</h2>
+      <p style="color: #888; max-width: 600px; margin: 0 auto;">Crafted for bilingual (Bangla & English) daily workflows with zero cloud latency.</p>
+    </div>
+
+    <div class="card-grid">
+      <!-- 1. Day Page -->
+      <div class="feature-card">
+        <span class="feature-icon">📖</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px;">The Day Page & Event Stream</h3>
+        <p style="color: #999; font-size: 0.92rem; line-height: 1.6;">
+          Every action taken across any module commits to an append-only event stream tagged with timestamp, mood, energy, and celestial sky code. Export anytime to PDF, Markdown, or JSON.
+        </p>
+      </div>
+
+      <!-- 2. Wake Quest -->
+      <div class="feature-card" id="alarms">
+        <span class="feature-icon">⏰</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px;">Wake Quest Native Alarm</h3>
+        <p style="color: #999; font-size: 0.92rem; line-height: 1.6;">
+          Bypasses aggressive Android OEM task killers (MIUI, One UI, ColorOS) via native Kotlin Foreground Services, full-screen intents, and interactive challenges (Math, Simon Sequence, Steps, QR code, Bangla Voice).
+        </p>
+      </div>
+
+      <!-- 3. Dhar & Money -->
+      <div class="feature-card" id="ledger">
+        <span class="feature-icon">৳</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px;">Bangladeshi Dhar & Paisa Ledger</h3>
+        <p style="color: #999; font-size: 0.92rem; line-height: 1.6;">
+          Strict integer paisa precision (1 BDT = 100 paisa) completely eliminates floating-point drift. Tracks who owes you money and who you owe with micro-repayments and CSV export.
+        </p>
+      </div>
+
+      <!-- 4. Spaced Repetition -->
+      <div class="feature-card">
+        <span class="feature-icon">🧠</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px;">SuperMemo SM-2 Spaced Repetition</h3>
+        <p style="color: #999; font-size: 0.92rem; line-height: 1.6;">
+          Integrated Student Mode with dynamic Easiness Factor calculation, review interval scheduling, exam seat plan tracking, and urgent countdown reminders.
+        </p>
+      </div>
+
+      <!-- 5. Living Sky -->
+      <div class="feature-card">
+        <span class="feature-icon">☀️</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px;">Living Monochrome Sky</h3>
+        <p style="color: #999; font-size: 0.92rem; line-height: 1.6;">
+          Computes real-time astronomical solar elevation angles and astronomical phases with offline Open-Meteo weather caching. Clean line-art aesthetic drawn on pure OLED black.
+        </p>
+      </div>
+
+      <!-- 6. Zero Knowledge -->
+      <div class="feature-card" id="architecture">
+        <span class="feature-icon">🛡️</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 10px;">Zero-Knowledge Ciphertext Cloud Sync</h3>
+        <p style="color: #999; font-size: 0.92rem; line-height: 1.6;">
+          Keys derived via PBKDF2-HMAC-SHA256 (100,000 rounds). The NestJS sync backend stores only authenticated blind ciphertext envelopes with Last-Write-Wins (LWW) conflict resolution.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Install Guide -->
+  <section id="install" style="padding: 60px 24px 100px; max-width: 900px; margin: 0 auto;">
+    <div style="background: #0d0d0d; border: 1px solid rgba(182, 255, 0, 0.3); border-radius: 28px; padding: 48px; text-align: left;">
+      <div class="badge-lime">Direct Installation</div>
+      <h2 style="font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 16px;">How to Install DayBook on Android</h2>
+      <p style="color: #999; margin-bottom: 32px;">Follow these 3 quick steps to install the standalone release APK on your phone:</p>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px;">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div>
+            <h4 style="color: #fff; font-size: 1.05rem; margin-bottom: 4px;">Download the APK</h4>
+            <p style="color: #888; font-size: 0.9rem;">Tap the button below or download directly from GitHub Releases (54.2 MB).</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div>
+            <h4 style="color: #fff; font-size: 1.05rem; margin-bottom: 4px;">Allow Installation</h4>
+            <p style="color: #888; font-size: 0.9rem;">Tap the downloaded file. When prompted by Android, toggle <strong>"Allow from this source"</strong> in Chrome / Files.</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div>
+            <h4 style="color: #fff; font-size: 1.05rem; margin-bottom: 4px;">Launch & Organize</h4>
+            <p style="color: #888; font-size: 0.9rem;">Open DayBook. All your tasks, smart alarms, and finance records work 100% offline immediately.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk" class="btn-lime" style="font-size: 1.1rem; padding: 16px 36px;">
+          Download DayBook-v1.0.0.apk (54.2 MB)
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="border-top: 1px solid rgba(255,255,255,0.08); padding: 40px 24px; text-align: center; color: #666; font-size: 0.88rem;">
+    <div style="margin-bottom: 16px;">
+      <a href="https://github.com/rahat4528/daybook" target="_blank" rel="noopener" style="color: var(--lime); text-decoration: none; font-weight: 600; margin: 0 12px;">GitHub</a>
+      <a href="https://github.com/rahat4528/daybook/releases/tag/v1.0.0" target="_blank" rel="noopener" style="color: #aaa; text-decoration: none; margin: 0 12px;">v1.0.0 Release Notes</a>
+      <a href="https://github.com/rahat4528/daybook/blob/main/LICENSE" target="_blank" rel="noopener" style="color: #aaa; text-decoration: none; margin: 0 12px;">MIT License</a>
+    </div>
+    <p>DayBook — Engineered with Flutter & NestJS for bilingual high-focus productivity.</p>
   </footer>
 
-  <!-- INTERACTIVE MODAL (DASHBOARD ACCESS / DEMO REQUEST) -->
-  <div class="modal-overlay" id="dashboardModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-dialog">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-        <div>
-          <h3 id="modalTitle" class="font-serif" style="font-size: 2.2rem; color: #fff;">Access Vectis Mission Control</h3>
-          <p style="font-size: 0.9rem; margin-top: 4px;">Enter your enterprise credentials to access your live intelligence workspace.</p>
-        </div>
-        <button onclick="closeModal()" aria-label="Close modal" style="background: transparent; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; font-size: 1.5rem; line-height: 1;">✕</button>
-      </div>
-
-      <form id="accessForm" onsubmit="handleFormSubmit(event)">
-        <div style="margin-bottom: 16px;">
-          <label for="workEmail" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: #fff;">Work Email Address</label>
-          <input type="email" id="workEmail" required placeholder="analyst@agency.gov or analyst@enterprise.com" style="width: 100%; background: #0a0a0a; border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 16px; color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
-        </div>
-
-        <div style="margin-bottom: 16px;">
-          <label for="organizationType" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: #fff;">Organization Type</label>
-          <select id="organizationType" style="width: 100%; background: #0a0a0a; border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 16px; color: #fff; font-size: 0.95rem; outline: none;">
-            <option value="defense">Defense & Public Safety Agency</option>
-            <option value="corporate">Corporate Intelligence & Risk Desk</option>
-            <option value="insurance">Insurance & Asset Underwriting</option>
-            <option value="journalism">Independent OSINT / Journalism</option>
-          </select>
-        </div>
-
-        <div style="margin-bottom: 24px;">
-          <label for="tierSelect" style="display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; color: #fff;">Selected Intelligence Tier</label>
-          <input type="text" id="tierSelect" readonly value="Professional Trial" style="width: 100%; background: #050505; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text-secondary); font-size: 0.95rem; outline: none;">
-        </div>
-
-        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 14px 20px; font-size: 1rem;">
-          <span>Launch Mission Dashboard</span>
-        </button>
-
-        <div id="formFeedback" style="display: none; margin-top: 16px; text-align: center; font-size: 0.9rem; padding: 10px; border-radius: 8px;"></div>
-      </form>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
