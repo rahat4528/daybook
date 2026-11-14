@@ -10,7 +10,6 @@ import 'package:daybook/domain/services/link_saver_service.dart';
 import 'package:daybook/domain/models/habit_item.dart';
 import 'package:daybook/domain/services/habit_service.dart';
 import 'package:daybook/domain/services/habit_notification_service.dart';
-import 'package:daybook/domain/models/nfc_routine_item.dart';
 import 'package:daybook/domain/services/nfc_routine_service.dart';
 import 'package:daybook/domain/models/heart_rate_session.dart';
 import 'package:daybook/domain/services/heart_rate_service.dart';
