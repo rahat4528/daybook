@@ -5,6 +5,8 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.29.0-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.7.0-0175C2?logo=dart)](https://dart.dev)
 [![NestJS](https://img.shields.io/badge/Backend-NestJS%2010-E0234E?logo=nestjs)](https://nestjs.com)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Web%20Showcase-black?logo=vercel)](https://daybook-app.vercel.app)
+[![Render Deployment](https://img.shields.io/badge/Render-Backend%20API-46E3B7?logo=render)](https://daybook-backend.onrender.com)
 [![Encryption](https://img.shields.io/badge/Security-AES--256%20%7C%20SQLCipher-green.svg)](docs/threat-model.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Tests Passing](https://img.shields.io/badge/Tests-225%20Passing%20(100%25)-brightgreen.svg)](#-empirical-measured-benchmarks)
@@ -13,7 +15,7 @@
 **A portfolio-grade Android application and zero-knowledge backend where every day is a single page in a life book.**  
 *Engineered for Bengali and bilingual users on Android with OLED black aesthetics, exact native alarms, and local-first memory.*
 
-[Direct APK Download](#-direct-app-install--apk-download) • [Key Innovations](#-signature-architectural-innovations) • [Architecture](#-system-architecture) • [Design System](#-design-system--wcag-compliance) • [Measured Benchmarks](#-empirical-measured-benchmarks) • [ADR Index](#-architecture-decision-records-adrs) • [CV Impact](#-senior-mobile--backend-tech-lead-cv-bullet-points) • [Quickstart](#-quickstart--local-development)
+[Direct APK Download](#-direct-app-install--apk-download) • [Vercel & Render Cloud](#-vercel--render-cloud-deployment) • [Key Innovations](#-signature-architectural-innovations) • [Architecture](#-system-architecture) • [Design System](#-design-system--wcag-compliance) • [Measured Benchmarks](#-empirical-measured-benchmarks) • [ADR Index](#-architecture-decision-records-adrs) • [CV Impact](#-senior-mobile--backend-tech-lead-cv-bullet-points) • [Quickstart](#-quickstart--local-development)
 
 </div>
 
@@ -235,6 +237,51 @@ These quantified bullet points highlight technical leadership, architecture, and
 - **Implemented a sandboxed AI assistant runtime** executing across **14 allowlisted tools with 100% schema validation precision**, multi-round confirmation gates for destructive actions, and full undo stack support.
 - **Built a mathematically verified SuperMemo SM-2 spaced repetition engine** and integer-paisa financial ledger, eliminating floating-point rounding errors across multi-currency debts (*dhar*) and academic flashcard reviews.
 - **Enforced strict OLED black design tokens (#000000 / #B6FF00)** achieving **WCAG 2.1 AAA contrast compliance (16.2:1 / 21.0:1)** and an empirical **35%–42% display power reduction** on AMOLED panels.
+
+---
+
+## 🌐 Vercel & Render Cloud Deployment
+
+DayBook features a dual-cloud hosting topology separating high-speed edge static delivery from authenticated, zero-knowledge microservices. Full step-by-step operations runbooks are documented in [`docs/deployment-guide.md`](docs/deployment-guide.md).
+
+```
+┌────────────────────────────────────────────────────────┐
+│                   DAYBOOK TOPOLOGY                     │
+├──────────────────────────┬─────────────────────────────┤
+│   VERCEL (Edge CDN)      │   RENDER (Managed Services) │
+│   • Web Showcase Portal  │   • Zero-Knowledge Sync API │
+│   • Architecture Docs    │   • LLM Proxy & Rate Limits │
+│   • Direct APK Download  │   • Managed PostgreSQL 16   │
+│   • Clean URLs & Headers │   • Managed Redis 7 Cache   │
+└──────────────────────────┴─────────────────────────────┘
+```
+
+### 🚀 Production Deployment Links & Status
+| Platform | Workload | Live Production URL | Health Check / Protocol |
+| :--- | :--- | :--- | :--- |
+| **Vercel** | Luxury Web Showcase & Case Study | [**daybook-app.vercel.app**](https://daybook-app.vercel.app) | HTTPS Edge Global CDN (Brotli/Gzip) |
+| **Render** | NestJS Zero-Knowledge Sync Engine | [**daybook-backend.onrender.com**](https://daybook-backend.onrender.com) | TLS 1.3 / JSON REST (`/api/v1`) |
+| **Render** | Backend Liveness & Readiness Probe | [**.../api/v1/health**](https://daybook-backend.onrender.com/api/v1/health) | Automated HTTP 200 Health Probe |
+
+### 🔑 Environment Variables Configuration
+> **Security Notice**: Never expose secret values in Git repositories. Values are securely injected via cloud provider dashboards.
+
+- **Vercel Dashboard (`website/`)**:
+  - `NEXT_PUBLIC_API_URL`: `https://daybook-backend.onrender.com` (target API service)
+- **Render Dashboard (`backend/`)**:
+  - `NODE_ENV`: `production`
+  - `PORT`: `4000`
+  - `ALLOWED_ORIGINS`: `https://daybook-app.vercel.app,https://daybook.vercel.app` (CORS protection)
+  - `JWT_SECRET`: *Auto-generated 64-char key for access tokens (15m expiration)*
+  - `JWT_REFRESH_SECRET`: *Auto-generated 64-char key for single-use rotated tokens (7d expiration)*
+  - `DATABASE_URL`: `postgres://...` (Render managed database reference)
+  - `REDIS_URL`: `redis://...` (Render managed Redis cache reference)
+  - `GEMINI_API_KEY`: *Google AI Studio API key for server-side Bangla NLP parsing*
+
+### 🛠️ Infrastructure as Code (IaC) Files
+- **Vercel Edge Config**: [`vercel.json`](vercel.json) & [`website/vercel.json`](website/vercel.json) — clean URLs, security headers (`nosniff`, `DENY`), and static routing.
+- **Render Blueprint**: [`render.yaml`](render.yaml) — declarative declaration of the Web Service, Managed PostgreSQL database, and Redis cache.
+- **Full Runbook**: Review [`docs/deployment-guide.md`](docs/deployment-guide.md) for cold start mitigation, token rotation, and zero-downtime rolling deploys.
 
 ---
 

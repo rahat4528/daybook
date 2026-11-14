@@ -1,0 +1,55 @@
+services:
+  # ---------------------------------------------------------------------------
+  # DayBook Zero-Knowledge Sync Store & LLM Proxy Backend (Render Web Service)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: daybook-backend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: ALLOWED_ORIGINS
+        value: "https://daybook-app.vercel.app,https://daybook.vercel.app,http://localhost:3000,http://localhost:4000"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: daybook-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: daybook-redis
+          property: connectionString
+
+  # ---------------------------------------------------------------------------
+  # DayBook Redis In-Memory Cache & Rate Limiting
+  # ---------------------------------------------------------------------------
+  - type: redis
+    name: daybook-redis
+    plan: free
+    region: oregon
+    ipAllowList: []
+
+databases:
+  # ---------------------------------------------------------------------------
+  # DayBook Managed PostgreSQL Database (Encrypted Envelopes & User Store)
+  # ---------------------------------------------------------------------------
+  - name: daybook-postgres
+    databaseName: daybook
+    user: daybook_admin
+    plan: free
+    region: oregon

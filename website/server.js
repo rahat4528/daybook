@@ -1,5 +1,5 @@
 /**
- * Lightweight static preview server for Vectis AI website.
+ * Lightweight static preview server for DayBook website.
  * Zero external dependencies.
  */
 const http = require('http');
@@ -47,5 +47,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Vectis AI Website preview running at: http://localhost:${PORT}`);
+  console.log(`DayBook Website preview running at: http://localhost:${PORT}`);
 });

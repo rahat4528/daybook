@@ -1,11 +1,11 @@
 {
-  "name": "vectis-ai-website",
+  "name": "daybook-website",
   "version": "1.0.0",
-  "description": "High-end luxury SaaS website for Vectis AI location intelligence",
+  "description": "High-end luxury showcase website for DayBook — Offline-First, Bangla-First Daily Operating System & Encrypted Life Log",
   "scripts": {
     "start": "node server.js",
     "test": "node verify_website.js"
   },
-  "author": "Vectis AI Engineering",
-  "license": "UNLICENSED"
+  "author": "DayBook Engineering Team",
+  "license": "MIT"
 }
