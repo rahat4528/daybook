@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "DayBook",
+    "slug": "daybook",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "daybook",
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.daybook.app",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.org.daybook.app"],
+        "com.apple.developer.nfc.readersession.formats": ["TAG", "NDEF"]
+      },
+      "infoPlist": {
+        "NFCReaderUsageDescription": "DayBook uses NFC to scan physical routine tags.",
+        "NSBluetoothAlwaysUsageDescription": "DayBook connects to Bluetooth heart rate chest straps."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      },
+      "package": "org.daybook.app",
+      "permissions": [
+        "android.permission.NFC",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "@bacons/apple-targets",
+        {
+          "appleTargets": [
+            {
+              "type": "widget",
+              "name": "DayBookWidgets",
+              "bundleIdentifier": "org.daybook.app.DayBookWidgets"
+            }
+          ]
+        }
+      ],
+      [
+        "expo-share-intent",
+        {
+          "ios": { "AppGroup": "group.org.daybook.app" },
+          "android": { "packageNames": ["org.daybook.app"] }
+        }
+      ],
+      "react-native-nfc-manager",
+      "react-native-ble-plx"
+    ]
+  }
+}

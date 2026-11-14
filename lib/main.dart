@@ -24,6 +24,10 @@ import 'presentation/screens/money_screen.dart';
 import 'presentation/screens/people_screen.dart';
 import 'presentation/screens/student_screen.dart';
 import 'presentation/screens/insights_screen.dart';
+import 'presentation/screens/trips_screen.dart';
+import 'presentation/screens/links_screen.dart';
+import 'presentation/screens/nfc_routines_screen.dart';
+import 'presentation/screens/heart_rate_screen.dart';
 import 'domain/services/briefing_service.dart';
 import 'domain/models/weather_info.dart';
 import 'domain/services/planner_algorithm.dart';
@@ -185,6 +189,34 @@ class _DayBookShellState extends State<DayBookShell> {
       onSaved: () {
         widget.repository.notifyDataChanged();
       },
+    );
+  }
+
+  Widget _buildModuleQuickAction({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.accentLime, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -562,6 +594,118 @@ class _DayBookShellState extends State<DayBookShell> {
             }),
           ],
 
+          // Upcoming Trip Countdown Card (Page 01)
+          if (repo.tripService.pinnedTrip != null) ...[
+            Builder(builder: (context) {
+              final trip = repo.tripService.pinnedTrip!;
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.surface1,
+                  borderRadius: BorderRadius.circular(AppRadius.card),
+                  border: Border.all(color: AppColors.accentLime.withValues(alpha: 0.6)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.flight_takeoff, color: AppColors.accentLime, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            repo.isBangla ? 'আসন্ন ট্রিপ কাউন্টডাউন' : 'UPCOMING TRIP COUNTDOWN',
+                            style: const TextStyle(color: AppColors.accentLime, fontSize: 10.5, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '${trip.routeFormatted} • ${trip.countdownFormatted}',
+                            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => TripsScreen(
+                              tripService: repo.tripService,
+                              isBangla: repo.isBangla,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        repo.isBangla ? 'উইজেট' : 'WIDGET',
+                        style: const TextStyle(color: AppColors.accentLime, fontWeight: FontWeight.bold, fontSize: 11),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+
+          // Core Feature Modules Quick Hub (Trips, Links, NFC, Heart Rate)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.surface1,
+              borderRadius: BorderRadius.circular(AppRadius.card),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildModuleQuickAction(
+                  icon: Icons.flight,
+                  label: 'Trips',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => TripsScreen(tripService: repo.tripService, isBangla: repo.isBangla),
+                    ),
+                  ),
+                ),
+                Container(width: 1, height: 20, color: AppColors.border),
+                _buildModuleQuickAction(
+                  icon: Icons.bookmark_border,
+                  label: 'Links',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => LinksScreen(linkService: repo.linkSaverService, isBangla: repo.isBangla),
+                    ),
+                  ),
+                ),
+                Container(width: 1, height: 20, color: AppColors.border),
+                _buildModuleQuickAction(
+                  icon: Icons.nfc,
+                  label: 'NFC',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => NfcRoutinesScreen(nfcService: repo.nfcRoutineService, isBangla: repo.isBangla),
+                    ),
+                  ),
+                ),
+                Container(width: 1, height: 20, color: AppColors.border),
+                _buildModuleQuickAction(
+                  icon: Icons.favorite_border,
+                  label: 'BPM',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => HeartRateScreen(hrService: repo.heartRateService, isBangla: repo.isBangla),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           // 3. Signature Day Page Entry Card
           Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
@@ -639,6 +783,7 @@ class _DayBookShellState extends State<DayBookShell> {
                           isBangla: repo.isBangla,
                           habitService: repo.habitService,
                           entriesRepo: repo.entriesRepository,
+                          notificationService: repo.habitNotificationService,
                         ),
                       ),
                     );

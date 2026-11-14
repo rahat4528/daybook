@@ -54,6 +54,8 @@ class HabitItem {
     required this.createdAt,
   });
 
+  String get title => name;
+
   bool get hasFreezeToken => freezeTokens > 0;
 
   HabitItem copyWith({

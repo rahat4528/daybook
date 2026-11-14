@@ -3,18 +3,22 @@ import '../../core/design/app_tokens.dart';
 import '../../domain/models/day_page.dart';
 import '../../domain/models/habit_item.dart';
 import '../../domain/services/habit_service.dart';
+import '../../domain/services/habit_notification_service.dart';
 import '../../data/repositories/entries_repository.dart';
+import '../widgets/habit_notification_dialog.dart';
 
 class HabitsScreen extends StatefulWidget {
   final bool isBangla;
   final HabitService habitService;
   final EntriesRepository entriesRepo;
+  final HabitNotificationService? notificationService;
 
   const HabitsScreen({
     super.key,
     this.isBangla = false,
     required this.habitService,
     required this.entriesRepo,
+    this.notificationService,
   });
 
   @override
@@ -306,6 +310,22 @@ class _HabitsScreenState extends State<HabitsScreen> {
                               ],
                             ),
                           ),
+                          if (widget.notificationService != null) ...[
+                            IconButton(
+                              icon: const Icon(Icons.notifications_active_outlined, color: AppColors.accentLime, size: 20),
+                              tooltip: 'Simulate Lock Screen Action (Done / Snooze)',
+                              onPressed: () {
+                                HabitNotificationSimulatorDialog.show(
+                                  context,
+                                  habit: habit,
+                                  notificationService: widget.notificationService!,
+                                  isBangla: widget.isBangla,
+                                  onActionCompleted: () => setState(() {}),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 4),
+                          ],
                           // 1-tap Toggle Button
                           InkWell(
                             onTap: () {

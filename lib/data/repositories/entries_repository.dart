@@ -33,6 +33,29 @@ class EntriesRepository {
     _updateDayPageCache(entry.dayKey);
   }
 
+  void createManualEntry({
+    required String type,
+    Map<String, dynamic> payload = const {},
+    String source = 'user',
+    int? mood,
+    int? energy,
+  }) {
+    final now = DateTime.now();
+    final dayKey = DayPageModel.formatDayKey(now);
+    insertEntry(
+      JournalEntry(
+        id: 'entry_${now.millisecondsSinceEpoch}_${_entries.length}',
+        type: EntryType.fromString(type),
+        ts: now,
+        payload: payload,
+        source: source,
+        dayKey: dayKey,
+        mood: mood,
+        energy: energy,
+      ),
+    );
+  }
+
   void updateEntry(JournalEntry entry) {
     final old = _entries[entry.id];
     if (old != null) {

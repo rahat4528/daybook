@@ -28,6 +28,11 @@ import '../domain/models/money_transaction.dart';
 import '../domain/models/dhar_record.dart';
 import '../domain/models/person_item.dart';
 import 'database/local_storage_service.dart';
+import '../domain/services/trip_service.dart';
+import '../domain/services/link_saver_service.dart';
+import '../domain/services/habit_notification_service.dart';
+import '../domain/services/nfc_routine_service.dart';
+import '../domain/services/heart_rate_service.dart';
 
 class AppRepository extends ChangeNotifier {
   final TaskService taskService = TaskService();
@@ -46,6 +51,11 @@ class AppRepository extends ChangeNotifier {
   late final InsightsService insightsService;
   late final AssistantToolEngine assistantToolEngine;
   late final AIAssistantService aiAssistantService;
+  late final TripService tripService;
+  late final LinkSaverService linkSaverService;
+  late final HabitNotificationService habitNotificationService;
+  late final NfcRoutineService nfcRoutineService;
+  late final HeartRateService heartRateService;
 
   List<AlarmItem> alarms = [];
   List<DailyPlanBlock> planBlocks = [];
@@ -73,6 +83,14 @@ class AppRepository extends ChangeNotifier {
       focusService: focusService,
       habitService: habitService,
     );
+    tripService = TripService(entriesRepo: entriesRepository);
+    linkSaverService = LinkSaverService(entriesRepo: entriesRepository);
+    habitNotificationService = HabitNotificationService(
+      habitService: habitService,
+      entriesRepo: entriesRepository,
+    );
+    nfcRoutineService = NfcRoutineService(entriesRepo: entriesRepository);
+    heartRateService = HeartRateService(entriesRepo: entriesRepository);
     _initializeSeedData();
   }
 
