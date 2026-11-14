@@ -141,11 +141,11 @@ class _EveningReviewSheetState extends State<EveningReviewSheet> {
   final _notesController = TextEditingController();
 
   final List<Map<String, dynamic>> _moods = [
-    {'score': 1, 'emoji': '😞', 'label': 'Tough'},
-    {'score': 2, 'emoji': '😐', 'label': 'Okay'},
-    {'score': 3, 'emoji': '🙂', 'label': 'Good'},
-    {'score': 4, 'emoji': '💪', 'label': 'Productive'},
-    {'score': 5, 'emoji': '🔥', 'label': 'Unstoppable'},
+    {'score': 1, 'emoji': '1', 'label': 'Tough'},
+    {'score': 2, 'emoji': '2', 'label': 'Okay'},
+    {'score': 3, 'emoji': '3', 'label': 'Good'},
+    {'score': 4, 'emoji': '4', 'label': 'Productive'},
+    {'score': 5, 'emoji': '5', 'label': 'Peak'},
   ];
 
   @override

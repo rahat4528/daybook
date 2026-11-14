@@ -90,7 +90,7 @@ class HabitNotificationSimulatorDialog extends StatelessWidget {
 
             // Notification Content Body
             Text(
-              '${habit.title} (${habit.currentStreak}-Day Streak 🔥)',
+              '${habit.title} (${habit.currentStreak}-Day Streak)',
               style: const TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 16,

@@ -643,7 +643,7 @@ class _StudentScreenState extends State<StudentScreen> with SingleTickerProvider
                           if (!isFlipped && card.hint.isNotEmpty) ...[
                             const SizedBox(height: 12),
                             Text(
-                              '💡 Hint: ${card.hint}',
+                              'Hint: ${card.hint}',
                               textAlign: TextAlign.center,
                               style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
                             ),

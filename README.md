@@ -1,4 +1,4 @@
-# 📖 DayBook — Offline-First, Bangla-First Daily Operating System & Encrypted Life Log
+# DayBook — Offline-First, Bangla-First Daily Operating System & Encrypted Life Log
 
 <div align="center">
 
@@ -9,19 +9,19 @@
 [![Render Deployment](https://img.shields.io/badge/Render-Backend%20API-46E3B7?logo=render)](https://daybook-backend.onrender.com)
 [![Encryption](https://img.shields.io/badge/Security-AES--256%20%7C%20SQLCipher-green.svg)](docs/threat-model.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests Passing](https://img.shields.io/badge/Tests-225%20Passing%20(100%25)-brightgreen.svg)](#-empirical-measured-benchmarks)
+[![Tests Passing](https://img.shields.io/badge/Tests-225%20Passing%20(100%25)-brightgreen.svg)](#empirical-measured-benchmarks)
 [![Download Android APK](https://img.shields.io/badge/Download%20APK-v1.0.0%20(54.2MB)-22C55E?logo=android&logoColor=white)](https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk)
 
 **A portfolio-grade Android application and zero-knowledge backend where every day is a single page in a life book.**  
 *Engineered for Bengali and bilingual users on Android with OLED black aesthetics, exact native alarms, and local-first memory.*
 
-[Direct APK Download](#-direct-app-install--apk-download) • [Vercel & Render Cloud](#-vercel--render-cloud-deployment) • [Key Innovations](#-signature-architectural-innovations) • [Architecture](#-system-architecture) • [Design System](#-design-system--wcag-compliance) • [Measured Benchmarks](#-empirical-measured-benchmarks) • [ADR Index](#-architecture-decision-records-adrs) • [CV Impact](#-senior-mobile--backend-tech-lead-cv-bullet-points) • [Quickstart](#-quickstart--local-development)
+[Direct APK Download](#direct-app-install--apk-download) • [Vercel & Render Cloud](#vercel--render-cloud-deployment) • [Key Innovations](#signature-architectural-innovations) • [Architecture](#system-architecture) • [Design System](#design-system--wcag-compliance) • [Measured Benchmarks](#empirical-measured-benchmarks) • [ADR Index](#architecture-decision-records-adrs) • [CV Impact](#senior-mobile--backend-tech-lead-cv-bullet-points) • [Quickstart](#quickstart--local-development)
 
 </div>
 
 ---
 
-## 📲 Direct App Install & APK Download
+## Direct App Install & APK Download
 
 > **Official Release**: [**DayBook v1.0.0 Android Release**](https://github.com/rahat4528/daybook/releases/tag/v1.0.0)  
 > **Direct Download Link**: [**Download DayBook-v1.0.0.apk (54.2 MB)**](https://github.com/rahat4528/daybook/releases/latest/download/DayBook-v1.0.0.apk)  
@@ -34,13 +34,13 @@
 
 ---
 
-## 🌟 Executive Overview
+## Executive Overview
 
 Most productivity applications isolate life into fragmented silos: one app for tasks, one for alarms, one for finances, one for habits, and another for notes. 
 
 **DayBook** reimagines personal organization through a single unifying metaphor: **every day is one page in a book**. Planning, waking up, focus sessions, habits, mood, money, people, academic study, and evening reflection all stream into that day's immutable journal log, so **the day writes itself**.
 
-### 💡 Core Engineering Pillars
+### Core Engineering Pillars
 - **100% Offline-First**: Built from the ground up to operate completely without internet connectivity. All scheduling, audio soundscapes, NLP parsing, spaced repetition, and biometric encryption execute entirely on-device.
 - **Bangla-First & Bilingual**: Deep linguistic support for Bangla Unicode script (`বাংলা`), English (`en_US`), and colloquial Banglish (`"shokal 7tay alarm dao"`).
 - **True OLED Black & Lime Bold (#000000 / #B6FF00)**: Ultra-minimalist aesthetic designed for high cognitive focus and maximum energy conservation on AMOLED displays.
@@ -48,59 +48,59 @@ Most productivity applications isolate life into fragmented silos: one app for t
 
 ---
 
-## 🚀 Signature Architectural Innovations
+## Signature Architectural Innovations
 
-### 1. 📜 The Day Page & Single Event Log (`entries`)
+### 1. The Day Page & Single Event Log (`entries`)
 At the architectural core lies a single append-only event stream (`entries`). Every action taken across any module (completing a high-priority task, dismissing an alarm, recording a debt repayment, flipping a flashcard) commits an event payload tagged with timestamp, mood, energy level, and celestial sky code.
 - **Chronological Narrative**: Renders a live timeline stream that compiles into an archival daily page.
 - **Export Engine**: One-tap archival export to structured Markdown, clean JSON, or print-ready PDF book volumes.
 
-### 2. ⏰ Wake Quest Native Alarm Engine
+### 2. Wake Quest Native Alarm Engine
 Standard mobile alarm apps fail on aggressive Android OEM task killers (Xiaomi MIUI/HyperOS, Samsung One UI, Oppo ColorOS). DayBook bypasses background limits via a custom native Kotlin engine:
 - **Exact Dispatching**: Schedules via `AlarmManager.setAlarmClock()` wrapped with high-priority foreground services and full-screen intent window overlays.
 - **Multi-Modal Dismissal Challenges**: Prevents oversleeping through active verification:
-  - 🧮 **Algebraic Math**: Multi-tier equations with variable round counters.
-  - 🧩 **Simon Memory Sequence**: Interactive 3x3 pattern recall.
-  - 🚶 **Step Counter & Movement**: Real-time pedometer and accelerometer evaluation.
-  - 📷 **Hashed QR Scanner & Camera Vision**: Forces physical movement (e.g. bathroom sink QR code).
-  - 🗣️ **Bangla Voice Verification**: Speech recognition requiring clear vocalization of positive affirmations.
+  - **Algebraic Math**: Multi-tier equations with variable round counters.
+  - **Simon Memory Sequence**: Interactive 3x3 pattern recall.
+  - **Step Counter & Movement**: Real-time pedometer and accelerometer evaluation.
+  - **Hashed QR Scanner & Camera Vision**: Forces physical movement (e.g. bathroom sink QR code).
+  - **Bangla Voice Verification**: Speech recognition requiring clear vocalization of positive affirmations.
 - **Graceful Fail-Safes**: Exponential volume ramping (20% to 100% over 60s) with 15-minute emergency timeouts.
 
-### 3. ☀️ Living Monochrome Line-Art Sky
+### 3. Living Monochrome Line-Art Sky
 - **Solar Trigonometry**: Computes real-time solar elevation angles and astronomical phases (`Dawn`, `Morning`, `Afternoon`, `Golden Hour`, `Dusk`, `Midnight`).
 - **Open-Meteo Integration with Offline Caching**: Weather forecasts cached for 30 minutes with fallback to historical seasonal baselines when network is unavailable.
 - **Atmospheric CustomPainter**: Line-art celestial bodies (corona sun, crescent moon, star fields, drifting isobar clouds) rendered cleanly in monochrome.
 
-### 4. 🇧🇩 Bangla & Banglish Rule-Based Natural Language Parser
+### 4. Bangla & Banglish Rule-Based Natural Language Parser
 Natural language processing runs entirely on-device with zero server latency:
 - **Hybrid Grammatical Lexer**: Normalizes Bangla Unicode diacritics, strip agglutinative case markers (`-ke`, `-te`, `-theke`), and matches Romanized Banglish phonetics.
 - **Temporal Entity Extraction**: Translates complex colloquial times (`"agami robibar bikal 4ta"`, `"poroshu shokal"`, `"raat 11:30"`) into standardized ISO-8601 timestamps.
 - **Universal Capture Inbox**: Instant triage into Tasks, Alarms, Money transactions, or Raw Notes with full undo capabilities.
 
-### 5. 🧠 SuperMemo SM-2 Spaced Repetition Engine
+### 5. SuperMemo SM-2 Spaced Repetition Engine
 Integrated **Student Mode** empowers academic learners with a mathematically verified implementation of the SuperMemo SM-2 algorithm:
 - Dynamic calculation of Easiness Factor ($EF \ge 1.3$), repetition count ($n$), and optimal review intervals:
   $$I(1) = 1, \quad I(2) = 6, \quad I(n) = \text{round}(I(n-1) \cdot EF)$$
 - Complete seat plan tracking, countdown clocks, and urgent exam alerts ($d \le 7$).
 
-### 6. 💰 Bangladeshi Dhar (ধার) Loan Tracker & Financial Ledger
+### 6. Bangladeshi Dhar (ধার) Loan Tracker & Financial Ledger
 - **Integer Paisa Math**: Absolute financial precision with zero floating-point rounding errors ($1\text{ BDT} = 100\text{ paisa}$).
 - **Bilateral Debt Ledger**: Tracks money borrowed (*"I Owe Them"*) versus money lent (*"They Owe Me"*), supporting micro-repayments, remaining balances, and CSV export.
 - **Account Segregation**: Multi-account attribution across Cash, bKash, Nagad, and Bank accounts with monthly budget thresholds.
 
-### 7. 🛡️ Zero-Knowledge Ciphertext Cloud Sync & Hardware Biometrics
+### 7. Zero-Knowledge Ciphertext Cloud Sync & Hardware Biometrics
 - **Local Database Encryption**: AES-256 with SQLCipher; keys derived via PBKDF2-HMAC-SHA256 (100,000 rounds) backed by the Android Hardware Keystore.
 - **Server Privacy Guarantee**: The NestJS sync backend stores only blind ciphertext envelopes with Last-Write-Wins (LWW) conflict resolution. The server never holds decryption keys.
 - **Session Auto-Lock**: Biometric lock screen (fingerprint/face) with secure PIN fallback and memory tamper protection.
 
-### 8. 🤖 Schema-Validated AI Assistant Sandbox
+### 8. Schema-Validated AI Assistant Sandbox
 - **Strict Separation of Concerns**: The AI assistant never writes directly to the local database.
 - **14 Allowlisted Tools**: All actions route through deterministic, schema-validated tools (`create_task`, `set_alarm`, `plan_day`, `log_expense`, `save_memory`, etc.).
 - **Safety Gating**: Destructive or bulk actions require explicit user confirmation prompts and push to an in-memory Undo stack.
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
@@ -149,7 +149,7 @@ flowchart TD
 
 ---
 
-## 🎨 Design System & WCAG Compliance
+## Design System & WCAG Compliance
 
 DayBook strictly enforces a high-contrast, dark-mode visual hierarchy built around OLED true black `#000000`, white typography, and bold lime green `#B6FF00` accents.
 
@@ -169,7 +169,7 @@ DayBook strictly enforces a high-contrast, dark-mode visual hierarchy built arou
 
 ---
 
-## 📊 Empirical Measured Benchmarks
+## Empirical Measured Benchmarks
 
 All metrics listed below are derived exclusively from automated test executions, benchmark harnesses, and hardware profiling:
 
@@ -204,7 +204,7 @@ All metrics listed below are derived exclusively from automated test executions,
 
 ---
 
-## 📑 Architecture Decision Records (ADRs)
+## Architecture Decision Records (ADRs)
 
 Key architectural trade-offs are permanently documented in [`docs/decisions/`](docs/decisions/):
 
@@ -226,7 +226,7 @@ Key architectural trade-offs are permanently documented in [`docs/decisions/`](d
 
 ---
 
-## 💼 Senior Mobile & Backend Tech Lead CV Bullet Points
+## Senior Mobile & Backend Tech Lead CV Bullet Points
 
 These quantified bullet points highlight technical leadership, architecture, and performance engineering:
 
@@ -240,7 +240,7 @@ These quantified bullet points highlight technical leadership, architecture, and
 
 ---
 
-## 🌐 Vercel & Render Cloud Deployment
+## Vercel & Render Cloud Deployment
 
 DayBook features a dual-cloud hosting topology separating high-speed edge static delivery from authenticated, zero-knowledge microservices. Full step-by-step operations runbooks are documented in [`docs/deployment-guide.md`](docs/deployment-guide.md).
 
@@ -256,14 +256,14 @@ DayBook features a dual-cloud hosting topology separating high-speed edge static
 └──────────────────────────┴─────────────────────────────┘
 ```
 
-### 🚀 Production Deployment Links & Status
+### Production Deployment Links & Status
 | Platform | Workload | Live Production URL | Health Check / Protocol |
 | :--- | :--- | :--- | :--- |
 | **Vercel** | Luxury Web Showcase & Case Study | [**daybook-app.vercel.app**](https://daybook-app.vercel.app) | HTTPS Edge Global CDN (Brotli/Gzip) |
 | **Render** | NestJS Zero-Knowledge Sync Engine | [**daybook-backend.onrender.com**](https://daybook-backend.onrender.com) | TLS 1.3 / JSON REST (`/api/v1`) |
 | **Render** | Backend Liveness & Readiness Probe | [**.../api/v1/health**](https://daybook-backend.onrender.com/api/v1/health) | Automated HTTP 200 Health Probe |
 
-### 🔑 Environment Variables Configuration
+### Environment Variables Configuration
 > **Security Notice**: Never expose secret values in Git repositories. Values are securely injected via cloud provider dashboards.
 
 - **Vercel Dashboard (`website/`)**:
@@ -278,14 +278,14 @@ DayBook features a dual-cloud hosting topology separating high-speed edge static
   - `REDIS_URL`: `redis://...` (Render managed Redis cache reference)
   - `GEMINI_API_KEY`: *Google AI Studio API key for server-side Bangla NLP parsing*
 
-### 🛠️ Infrastructure as Code (IaC) Files
+### Infrastructure as Code (IaC) Files
 - **Vercel Edge Config**: [`vercel.json`](vercel.json) & [`website/vercel.json`](website/vercel.json) — clean URLs, security headers (`nosniff`, `DENY`), and static routing.
 - **Render Blueprint**: [`render.yaml`](render.yaml) — declarative declaration of the Web Service, Managed PostgreSQL database, and Redis cache.
 - **Full Runbook**: Review [`docs/deployment-guide.md`](docs/deployment-guide.md) for cold start mitigation, token rotation, and zero-downtime rolling deploys.
 
 ---
 
-## 🛠️ Quickstart & Local Development
+## Quickstart & Local Development
 
 ### Prerequisites
 - **Flutter SDK**: `>= 3.24.0` (Dart `>= 3.5.0`)
@@ -340,7 +340,7 @@ node server.js
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - Full STRIDE Threat Model available at [`docs/threat-model.md`](docs/threat-model.md).
 - Privacy Policy available at [`docs/privacy-policy.md`](docs/privacy-policy.md).
@@ -348,7 +348,7 @@ node server.js
 
 ---
 
-## 📄 License
+## License
 
 DayBook is released under the [MIT License](LICENSE).  
 Copyright © 2026 DayBook Engineering Team.

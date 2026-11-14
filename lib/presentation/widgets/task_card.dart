@@ -105,7 +105,23 @@ class _TaskCardState extends State<TaskCard> {
                       Row(
                         children: [
                           if (task.isFrog) ...[
-                            const Text('🐸 ', style: TextStyle(fontSize: 14)),
+                            Container(
+                              margin: const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: AppTokens.accentLime,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                'FROG',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
                           ],
                           Expanded(
                             child: Text(

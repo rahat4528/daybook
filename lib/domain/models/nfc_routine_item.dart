@@ -2,12 +2,12 @@
 // Maps physical NFC tags (NTAG213/215/216) to daily rituals and routines.
 
 enum NfcRoutineCategory {
-  plant('Desk Plant', '🌱', 'Water Desk Plants'),
-  keys('Keys at Home', '🔑', 'Keys Placed at Home'),
-  medication('Vitamins / Medicine', '💊', 'Take Daily Vitamins'),
-  coffee('Morning Coffee', '☕', 'Morning Coffee Started'),
-  desk('Deep Work', '💻', 'Arrived at Desk / Work Ritual'),
-  custom('Custom Routine', '✨', 'Custom Physical Routine');
+  plant('Desk Plant', 'PLT', 'Water Desk Plants'),
+  keys('Keys at Home', 'KEY', 'Keys Placed at Home'),
+  medication('Vitamins / Medicine', 'MED', 'Take Daily Vitamins'),
+  coffee('Morning Coffee', 'COF', 'Morning Coffee Started'),
+  desk('Deep Work', 'WRK', 'Arrived at Desk / Work Ritual'),
+  custom('Custom Routine', 'RTN', 'Custom Physical Routine');
 
   final String label;
   final String icon;

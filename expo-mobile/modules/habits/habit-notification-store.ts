@@ -32,9 +32,9 @@ export const useHabitStore = create<HabitState>((set, get) => ({
       set({ habits: JSON.parse(raw) });
     } else {
       const defaultHabits: HabitItem[] = [
-        { id: 'h1', name: '💧 Drink 2L Water', targetCount: 1, reminderHour: 9, reminderMinute: 0, streakCount: 4, freezeTokens: 1 },
-        { id: 'h2', name: '📖 Read 15m', targetCount: 1, reminderHour: 21, reminderMinute: 30, streakCount: 12, freezeTokens: 2 },
-        { id: 'h3', name: '⚡ Morning Workout', targetCount: 1, reminderHour: 7, reminderMinute: 0, streakCount: 7, freezeTokens: 0 },
+        { id: 'h1', name: 'Drink 2L Water', targetCount: 1, reminderHour: 9, reminderMinute: 0, streakCount: 4, freezeTokens: 1 },
+        { id: 'h2', name: 'Read 15m', targetCount: 1, reminderHour: 21, reminderMinute: 30, streakCount: 12, freezeTokens: 2 },
+        { id: 'h3', name: 'Morning Workout', targetCount: 1, reminderHour: 7, reminderMinute: 0, streakCount: 7, freezeTokens: 0 },
       ];
       habitStorage.set('habits:list', JSON.stringify(defaultHabits));
       set({ habits: defaultHabits });

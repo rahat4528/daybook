@@ -28,7 +28,7 @@ export default function TodayHomeScreen() {
           onPress={() => router.push('/trips')}
         >
           <View style={styles.cardHeader}>
-            <Text style={styles.badge}>✈️ LIVE TRIP COUNTDOWN</Text>
+            <Text style={styles.badge}>LIVE TRIP COUNTDOWN</Text>
             <Text style={styles.flightNum}>{pinnedTrip.flightNumber || 'FLIGHT'}</Text>
           </View>
           <Text style={styles.routeText}>{pinnedTrip.originIata} ➔ {pinnedTrip.destinationIata}</Text>
@@ -43,31 +43,31 @@ export default function TodayHomeScreen() {
       <Text style={styles.sectionTitle}>CORE ARCHITECTURE MODULES</Text>
       <View style={styles.grid}>
         <TouchableOpacity style={styles.gridItem} onPress={() => router.push('/trips')}>
-          <Text style={styles.gridIcon}>✈️</Text>
+          <Text style={styles.gridIcon}>01</Text>
           <Text style={styles.gridLabel}>Trips</Text>
           <Text style={styles.gridSub}>SwiftUI Widgets</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.gridItem} onPress={() => router.push('/links')}>
-          <Text style={styles.gridIcon}>🔖</Text>
+          <Text style={styles.gridIcon}>02</Text>
           <Text style={styles.gridLabel}>Links</Text>
           <Text style={styles.gridSub}>Share Sheet Intent</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.gridItem} onPress={() => router.push('/habits')}>
-          <Text style={styles.gridIcon}>⚡</Text>
+          <Text style={styles.gridIcon}>03</Text>
           <Text style={styles.gridLabel}>Habits</Text>
           <Text style={styles.gridSub}>Actionable Notifs</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.gridItem} onPress={() => router.push('/nfc')}>
-          <Text style={styles.gridIcon}>📡</Text>
+          <Text style={styles.gridIcon}>04</Text>
           <Text style={styles.gridLabel}>NFC Tags</Text>
           <Text style={styles.gridSub}>Physical Routines</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.gridItem} onPress={() => router.push('/fitness')}>
-          <Text style={styles.gridIcon}>❤️</Text>
+          <Text style={styles.gridIcon}>05</Text>
           <Text style={styles.gridLabel}>Heart Rate</Text>
           <Text style={styles.gridSub}>BLE Telemetry</Text>
         </TouchableOpacity>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     marginBottom: 12,
   },
-  gridIcon: { fontSize: 24, marginBottom: 8 },
+  gridIcon: { fontSize: 16, fontWeight: '700', color: Colors.accentLime, fontFamily: 'monospace', marginBottom: 8 },
   gridLabel: { color: Colors.textPrimary, fontSize: 15, fontWeight: 'bold' },
   gridSub: { color: Colors.textSecondary, fontSize: 11, marginTop: 2 },
 });

@@ -344,8 +344,8 @@ class AIAssistantService extends ChangeNotifier {
         id: 'msg_ai_${now.microsecondsSinceEpoch}',
         sender: MessageSender.assistant,
         content: isBangla
-            ? "আজকের অভ্যাসের অগ্রগতি সফলভাবে লগ করা হয়েছে! ❄️"
-            : "Logged habit completion for today! ❄️",
+            ? "আজকের অভ্যাসের অগ্রগতি সফলভাবে লগ করা হয়েছে!"
+            : "Logged habit completion for today!",
         toolRecordId: record.id,
         undoDescription: record.undoDescription,
         timestamp: now,

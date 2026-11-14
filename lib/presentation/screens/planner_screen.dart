@@ -354,7 +354,22 @@ class _PlannerScreenState extends State<PlannerScreen> {
               ),
               child: Row(
                 children: [
-                  const Text('🐸', style: TextStyle(fontSize: 20)),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppTokens.accentLime,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'FROG',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(

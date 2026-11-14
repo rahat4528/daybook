@@ -330,7 +330,7 @@ class BookExportService {
 
       buffer.writeln('### Timeline');
       for (final e in day.entries) {
-        buffer.writeln('- `${e.timeFormatted}` ${e.displayText(isBangla: isBangla)} ${e.isPinned ? "📌" : ""}');
+        buffer.writeln('- `${e.timeFormatted}` ${e.displayText(isBangla: isBangla)} ${e.isPinned ? "[PINNED]" : ""}');
       }
       buffer.writeln();
 

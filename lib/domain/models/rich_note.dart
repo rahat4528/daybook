@@ -42,15 +42,15 @@ extension NoteTypeExtension on NoteType {
   String get glyph {
     switch (this) {
       case NoteType.plain:
-        return '✎';
+        return 'TXT';
       case NoteType.checklist:
-        return '☑';
+        return 'CHK';
       case NoteType.voiceNote:
-        return '🎙';
+        return 'MIC';
       case NoteType.photo:
-        return '📷';
+        return 'IMG';
       case NoteType.link:
-        return '🔗';
+        return 'URL';
     }
   }
 }

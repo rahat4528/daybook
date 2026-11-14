@@ -7,10 +7,10 @@ export default function NfcTabScreen() {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const testTags = [
-    { name: '🌱 Water Desk Plants', uid: '04:A2:8B:11:F2:60:80' },
-    { name: '🔑 Keys Placed at Home', uid: '04:B3:9C:22:E3:71:81' },
-    { name: '💊 Daily Vitamins Taken', uid: '04:C4:0D:33:D4:82:82' },
-    { name: '☕ Morning Coffee Ritual', uid: '04:D5:1E:44:C5:93:83' },
+    { name: 'Water Desk Plants', uid: '04:A2:8B:11:F2:60:80' },
+    { name: 'Keys Placed at Home', uid: '04:B3:9C:22:E3:71:81' },
+    { name: 'Daily Vitamins Taken', uid: '04:C4:0D:33:D4:82:82' },
+    { name: 'Morning Coffee Ritual', uid: '04:D5:1E:44:C5:93:83' },
   ];
 
   const handleSimulatedTap = async (uid: string) => {
@@ -25,7 +25,7 @@ export default function NfcTabScreen() {
 
       {/* Radar Card */}
       <View style={styles.radarCard}>
-        <Text style={styles.radarIcon}>📡</Text>
+        <Text style={styles.radarIcon}>NFC ANTENNA</Text>
         <Text style={styles.radarTitle}>HOLD PHONE TO NFC STICKER</Text>
         <Text style={styles.radarDesc}>13.56 MHz High-Frequency RF Sensor Active</Text>
         {feedback && (
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.lg,
   },
-  radarIcon: { fontSize: 40, marginBottom: 8 },
+  radarIcon: { fontSize: 13, fontWeight: '800', color: Colors.accentLime, letterSpacing: 1.5, marginBottom: 8, fontFamily: 'monospace' },
   radarTitle: { color: Colors.textPrimary, fontSize: 14, fontWeight: 'bold' },
   radarDesc: { color: Colors.textSecondary, fontSize: 11, marginTop: 4 },
   feedbackBox: {

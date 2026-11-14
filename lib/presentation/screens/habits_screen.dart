@@ -218,7 +218,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                       border: Border.all(color: AppColors.border),
                     ),
                     alignment: Alignment.center,
-                    child: const Text('⚡', style: TextStyle(fontSize: 28)),
+                    child: const Icon(Icons.bolt, size: 28, color: AppColors.accentLime),
                   ),
                   const SizedBox(height: 16),
                   Text(

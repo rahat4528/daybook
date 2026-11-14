@@ -13,10 +13,10 @@ let failedCount = 0;
 
 function assert(condition, testName) {
   if (condition) {
-    console.log(`✅ PASSED: ${testName}`);
+    console.log(`[PASS] ${testName}`);
     passedCount++;
   } else {
-    console.error(`❌ FAILED: ${testName}`);
+    console.error(`[FAIL] ${testName}`);
     failedCount++;
   }
 }
@@ -24,10 +24,10 @@ function assert(condition, testName) {
 function assertThrows(fn, testName) {
   try {
     fn();
-    console.error(`❌ FAILED (Expected throw): ${testName}`);
+    console.error(`[FAIL] (Expected throw): ${testName}`);
     failedCount++;
   } catch (e) {
-    console.log(`✅ PASSED: ${testName} -> [Caught expected error: ${e.message}]`);
+    console.log(`[PASS] ${testName} -> [Caught expected error: ${e.message}]`);
     passedCount++;
   }
 }
@@ -409,6 +409,6 @@ console.log(`========================================`);
 if (failedCount > 0) {
   process.exit(1);
 } else {
-  console.log('🎉 ALL BACKEND VERIFICATION TESTS PASSED!');
+  console.log('=== ALL BACKEND VERIFICATION TESTS PASSED ===');
   process.exit(0);
 }

@@ -110,7 +110,7 @@ class _NfcRoutinesScreenState extends State<NfcRoutinesScreen> {
                 items: routines
                     .map((r) => DropdownMenuItem(
                           value: r.id,
-                          child: Text('${r.category.icon} ${r.name}'),
+                          child: Text('[${r.category.icon}] ${r.name}'),
                         ))
                     .toList(),
                 onChanged: (val) {
@@ -308,7 +308,18 @@ class _NfcRoutinesScreenState extends State<NfcRoutinesScreen> {
       ),
       child: Row(
         children: [
-          Text(routine.category.icon, style: const TextStyle(fontSize: 24)),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.surface2,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Text(
+              routine.category.icon,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.accentLime, fontFamily: 'monospace'),
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

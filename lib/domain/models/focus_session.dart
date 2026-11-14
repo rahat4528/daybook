@@ -27,13 +27,13 @@ extension FocusSoundscapeExtension on FocusSoundscape {
   String get glyph {
     switch (this) {
       case FocusSoundscape.silence:
-        return '🔇';
+        return '—';
       case FocusSoundscape.rainOnTinRoof:
-        return '🌧️';
+        return '≈';
       case FocusSoundscape.whiteNoise:
-        return '〰️';
+        return '∼';
       case FocusSoundscape.binauralBeats:
-        return '🎧';
+        return '∿';
       case FocusSoundscape.monochromeStatic:
         return '▦';
     }

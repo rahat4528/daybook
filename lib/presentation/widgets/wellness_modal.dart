@@ -52,13 +52,13 @@ class _WellnessModalState extends State<WellnessModal> {
   final TextEditingController _reflectionController = TextEditingController();
 
   static const List<Map<String, String>> _availableFactors = [
-    {'en': 'Sleep', 'bn': 'ঘুম', 'icon': '🛌'},
-    {'en': 'Work', 'bn': 'কাজ', 'icon': '💼'},
-    {'en': 'Family', 'bn': 'পরিবার', 'icon': '👨‍👩‍👧'},
-    {'en': 'Health', 'bn': 'স্বাস্থ্য', 'icon': '🏃'},
-    {'en': 'Social', 'bn': 'আড্ডা', 'icon': '☕'},
-    {'en': 'Weather', 'bn': 'আবহাওয়া', 'icon': '🌦️'},
-    {'en': 'Finance', 'bn': 'অর্থনৈতিক', 'icon': '💰'},
+    {'en': 'Sleep', 'bn': 'ঘুম'},
+    {'en': 'Work', 'bn': 'কাজ'},
+    {'en': 'Family', 'bn': 'পরিবার'},
+    {'en': 'Health', 'bn': 'স্বাস্থ্য'},
+    {'en': 'Social', 'bn': 'আড্ডা'},
+    {'en': 'Weather', 'bn': 'আবহাওয়া'},
+    {'en': 'Finance', 'bn': 'অর্থনৈতিক'},
   ];
 
   void _save() {
@@ -120,7 +120,7 @@ class _WellnessModalState extends State<WellnessModal> {
           ),
           Row(
             children: [
-              const Text('☯', style: TextStyle(color: AppColors.accentLime, fontSize: 18)),
+              const Icon(Icons.self_improvement, color: AppColors.accentLime, size: 20),
               const SizedBox(width: 8),
               Text(
                 widget.isBangla ? 'মুড ও শক্তি চেক-ইন' : 'MOOD & ENERGY CHECK-IN',
@@ -146,12 +146,12 @@ class _WellnessModalState extends State<WellnessModal> {
             children: List.generate(5, (idx) {
               final score = idx + 1;
               final isSelected = _moodScore == score;
-              final moodGlyphs = ['😞', '🙁', '😐', '🙂', '✨'];
+              final moodLabels = ['Low', 'Fair', 'Good', 'Great', 'Peak'];
               return InkWell(
                 onTap: () => setState(() => _moodScore = score),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  width: 54,
+                  width: 58,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.accentLime : AppColors.surface2,
@@ -162,14 +162,21 @@ class _WellnessModalState extends State<WellnessModal> {
                   ),
                   child: Column(
                     children: [
-                      Text(moodGlyphs[idx], style: const TextStyle(fontSize: 18)),
-                      const SizedBox(height: 4),
                       Text(
                         '$score',
                         style: TextStyle(
                           color: isSelected ? Colors.black : AppColors.textPrimary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        moodLabels[idx],
+                        style: TextStyle(
+                          color: isSelected ? Colors.black : AppColors.textSecondary,
+                          fontSize: 10,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -191,12 +198,12 @@ class _WellnessModalState extends State<WellnessModal> {
             children: List.generate(5, (idx) {
               final score = idx + 1;
               final isSelected = _energyScore == score;
-              final energyGlyphs = ['🪫', '🔋', '⚡', '🔥', '⚡⚡'];
+              final energyLabels = ['20%', '40%', '60%', '80%', '100%'];
               return InkWell(
                 onTap: () => setState(() => _energyScore = score),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  width: 54,
+                  width: 58,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.accentLime : AppColors.surface2,
@@ -207,14 +214,21 @@ class _WellnessModalState extends State<WellnessModal> {
                   ),
                   child: Column(
                     children: [
-                      Text(energyGlyphs[idx], style: const TextStyle(fontSize: 16)),
-                      const SizedBox(height: 4),
                       Text(
                         '$score',
                         style: TextStyle(
                           color: isSelected ? Colors.black : AppColors.textPrimary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        energyLabels[idx],
+                        style: TextStyle(
+                          color: isSelected ? Colors.black : AppColors.textSecondary,
+                          fontSize: 10,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -238,7 +252,7 @@ class _WellnessModalState extends State<WellnessModal> {
               final tagKey = f['en']!;
               final isSelected = _selectedTags.contains(tagKey);
               return FilterChip(
-                avatar: Text(f['icon']!, style: const TextStyle(fontSize: 13)),
+                avatar: Text('#', style: TextStyle(color: isSelected ? Colors.black : AppColors.accentLime, fontSize: 11, fontWeight: FontWeight.bold)),
                 label: Text(widget.isBangla ? f['bn']! : f['en']!),
                 selected: isSelected,
                 selectedColor: AppColors.accentLime,

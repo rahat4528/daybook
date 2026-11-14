@@ -22,42 +22,42 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Today',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>☀️</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 12, fontWeight: '700', color }}>TDY</Text>,
         }}
       />
       <Tabs.Screen
         name="trips"
         options={{
           title: 'Trips',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>✈️</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 12, fontWeight: '700', color }}>TRP</Text>,
         }}
       />
       <Tabs.Screen
         name="links"
         options={{
           title: 'Links',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🔖</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 12, fontWeight: '700', color }}>LNK</Text>,
         }}
       />
       <Tabs.Screen
         name="habits"
         options={{
           title: 'Habits',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>⚡</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 12, fontWeight: '700', color }}>HBT</Text>,
         }}
       />
       <Tabs.Screen
         name="nfc"
         options={{
           title: 'NFC',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>📡</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 12, fontWeight: '700', color }}>NFC</Text>,
         }}
       />
       <Tabs.Screen
         name="fitness"
         options={{
           title: 'BPM',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>❤️</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 12, fontWeight: '700', color }}>BPM</Text>,
         }}
       />
     </Tabs>

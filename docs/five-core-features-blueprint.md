@@ -1,4 +1,4 @@
-# 🏛️ DayBook Master Technical Blueprint: 5 Core Feature Modules & Global Architecture
+# DayBook Master Technical Blueprint: 5 Core Feature Modules & Global Architecture
 
 **Role & Authority:** Senior Mobile Application Architect, Technical Product Manager, UI/UX Architect, and Software Engineering Lead  
 **Target Environment:** Expo / React Native / TypeScript (iOS & Android) with Native Subsystems  
@@ -6,7 +6,7 @@
 
 ---
 
-# 📑 EXECUTIVE SUMMARY & ARCHITECTURAL MANIFESTO
+# EXECUTIVE SUMMARY & ARCHITECTURAL MANIFESTO
 
 This document serves as the implementation-ready, authoritative technical specification for integrating **FIVE independent, mission-critical feature modules** into the DayBook ecosystem. 
 
@@ -509,7 +509,7 @@ sequenceDiagram
     participant Zustand as HabitZustandStore
     participant MMKV as MMKV Persistence
     
-    System->>User: Fires alert: "📖 Evening Reading (Day 14 Streak)"
+    System->>User: Fires alert: "Evening Reading (Day 14 Streak)"
     Note over User,System: Action Buttons: [ Done ]  [ Snooze 30m ]
     User->>System: Taps [ Done ] button
     System->>NotifHandler: Passes NotificationResponse (actionIdentifier: "ACTION_DONE")
@@ -1124,7 +1124,7 @@ export function decodeHeartRateMeasurement(base64Value: string): number {
 <!-- ========================================================================= -->
 <!-- GLOBAL ARCHITECTURE -->
 <!-- ========================================================================= -->
-# 🌐 GLOBAL APPLICATION ARCHITECTURE: UNIFYING ALL 5 MODULES
+# GLOBAL APPLICATION ARCHITECTURE: UNIFYING ALL 5 MODULES
 
 ```
        ┌────────────────────────────────────────────────────────┐
@@ -1139,12 +1139,12 @@ The five modules operate as logically isolated domains within a unified React Na
 
 ```mermaid
 flowchart TD
-    subgraph HostApp["📱 DayBook Unified Mobile Host (Expo Router)"]
+    subgraph HostApp["DayBook Unified Mobile Host (Expo Router)"]
         Navigation["Expo Router Root Layout\napp/_layout.tsx"]
         DesignTokens["DayBook Design System\nOLED Black (#000000) & Lime (#B6FF00)"]
     end
 
-    subgraph FeatureModules["📦 5 Independent Feature Domains"]
+    subgraph FeatureModules["5 Independent Feature Domains"]
         Mod1["Module 1: Trip Countdown\n(@bacons/apple-targets & SwiftUI)"]
         Mod2["Module 2: Link Saver\n(expo-share-intent & SQLite)"]
         Mod3["Module 3: Habits & Notifs\n(expo-notifications & Zustand)"]
@@ -1152,7 +1152,7 @@ flowchart TD
         Mod5["Module 5: BLE Heart Rate\n(react-native-ble-plx & Reanimated)"]
     end
 
-    subgraph StorageLayer["💾 Unified Local-First Storage Architecture"]
+    subgraph StorageLayer["Unified Local-First Storage Architecture"]
         SQLiteEngine[("expo-sqlite Database Engine\n• links & tags\n• nfc_tags & routines\n• entries & journals")]
         MMKVEngine[("MMKV Memory-Mapped Engine\n• active trip cache\n• habits & streak state\n• user preferences")]
         SharedAppGroup[("iOS App Group Bridge\n(group.org.daybook.app)\n• SwiftUI WidgetKit Snapshot")]

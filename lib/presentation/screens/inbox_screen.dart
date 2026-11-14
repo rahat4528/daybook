@@ -170,7 +170,7 @@ class _InboxScreenState extends State<InboxScreen> {
                       border: Border.all(color: AppColors.border),
                     ),
                     alignment: Alignment.center,
-                    child: const Text('📥', style: TextStyle(fontSize: 28)),
+                    child: const Icon(Icons.inbox, size: 28, color: AppColors.accentLime),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -340,7 +340,7 @@ class _InboxScreenState extends State<InboxScreen> {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  '📅 ${parsed.dueDate!.day}/${parsed.dueDate!.month}',
+                                  'Due: ${parsed.dueDate!.day}/${parsed.dueDate!.month}',
                                   style: const TextStyle(
                                     color: AppColors.textSecondary,
                                     fontSize: 11,

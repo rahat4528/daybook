@@ -28,20 +28,20 @@ export default function HabitsTabScreen() {
         <View key={h.id} style={styles.habitCard}>
           <View style={styles.habitInfo}>
             <Text style={styles.habitName}>{h.name}</Text>
-            <Text style={styles.habitStreak}>🔥 {h.streakCount} Day Streak • ❄️ {h.freezeTokens} Freezes</Text>
+            <Text style={styles.habitStreak}>{h.streakCount} Day Streak • {h.freezeTokens} Freezes</Text>
           </View>
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={styles.snoozeBtn}
               onPress={() => handleNotificationAction('ACTION_SNOOZE', h.id)}
             >
-              <Text style={styles.snoozeText}>⏱ Snooze</Text>
+              <Text style={styles.snoozeText}>Snooze</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.doneBtn}
               onPress={() => handleNotificationAction('ACTION_DONE', h.id)}
             >
-              <Text style={styles.doneText}>✓ Done</Text>
+              <Text style={styles.doneText}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>

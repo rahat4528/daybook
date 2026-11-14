@@ -30,7 +30,7 @@ export default function FitnessTabScreen() {
 
       {/* Main HUD */}
       <View style={styles.hudCard}>
-        <Text style={styles.heartIcon}>❤️</Text>
+        <Text style={styles.heartIcon}>LIVE PULSE</Text>
         <Text style={styles.bpmValue}>{isConnected ? bpm : '--'}</Text>
         <Text style={styles.bpmLabel}>BEATS PER MINUTE</Text>
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.lg,
   },
-  heartIcon: { fontSize: 36, marginBottom: 12 },
+  heartIcon: { fontSize: 13, fontWeight: '800', color: Colors.accentLime, letterSpacing: 1.5, marginBottom: 8, fontFamily: 'monospace' },
   bpmValue: { fontSize: 68, fontWeight: '900', color: Colors.accentLime, fontFamily: 'monospace' },
   bpmLabel: { color: Colors.textSecondary, fontSize: 11, letterSpacing: 1, marginTop: 4 },
   zoneChip: {

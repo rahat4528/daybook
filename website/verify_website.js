@@ -16,11 +16,11 @@ let totalTests = 0;
 function assert(condition, message) {
   totalTests++;
   if (!condition) {
-    console.error(`❌ FAILED: ${message}`);
+    console.error(`[FAIL] ${message}`);
     process.exitCode = 1;
   } else {
     passedTests++;
-    console.log(`✅ PASSED: ${message}`);
+    console.log(`[PASS] ${message}`);
   }
 }
 
@@ -65,5 +65,5 @@ requiredIds.forEach(id => {
 
 console.log(`\nDayBook Website Verification Summary: ${passedTests}/${totalTests} tests passed.`);
 if (passedTests === totalTests) {
-  console.log('🎉 ALL DAYBOOK WEBSITE VERIFICATIONS PASSED!\n');
+  console.log('=== ALL DAYBOOK WEBSITE VERIFICATIONS PASSED ===\n');
 }

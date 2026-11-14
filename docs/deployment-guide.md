@@ -1,10 +1,10 @@
-# 🌐 DayBook — Cloud Architecture & Deployment Guide (Vercel & Render)
+# DayBook — Cloud Architecture & Deployment Guide (Vercel & Render)
 
 This document provides complete, production-grade deployment and operations documentation for **DayBook** across **Vercel** (Showcase & Web Landing Portal) and **Render** (Zero-Knowledge Ciphertext Sync Engine, LLM Proxy, PostgreSQL, and Redis).
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 1. [Platform & Service Topology](#1-platform--service-topology)
 2. [Workload Distribution: Vercel vs. Render](#2-workload-distribution-vercel-vs-render)
 3. [Frontend & Backend Hosting Architectures](#3-frontend--backend-hosting-architectures)
@@ -24,18 +24,18 @@ DayBook operates on an offline-first, client-driven synchronization paradigm. Th
 
 ```mermaid
 flowchart TD
-    subgraph Client["📱 Mobile Client (Android / iOS)"]
+    subgraph Client["Mobile Client (Android / iOS)"]
         FlutterApp["Flutter Native App / React Native Client"]
         SQLCipherLocal["On-Device SQLCipher DB (AES-256)"]
         FlutterApp <--> SQLCipherLocal
     end
 
-    subgraph Vercel["⚡ Vercel Edge Network (Global CDN)"]
+    subgraph Vercel["Vercel Edge Network (Global CDN)"]
         WebPortal["DayBook Luxury Showcase Portal\n(HTML5, CSS3, ES6)"]
         VercelHeaders["Security Headers, Clean URLs & Brotli/Gzip"]
     end
 
-    subgraph Render["🚀 Render Cloud Platform (Oregon us-west)"]
+    subgraph Render["Render Cloud Platform (Oregon us-west)"]
         subgraph BackendService["Web Service: daybook-backend"]
             NestJS["NestJS 10.3 / Node 20+ Runtime"]
             AuthModule["Auth & JWT Rotation Module"]
@@ -53,7 +53,7 @@ flowchart TD
         NestJS <--> RenderRedis
     end
 
-    BrowserUser["🌐 Web Visitors & Recruiters"] -->|HTTPS| WebPortal
+    BrowserUser["Web Visitors & Recruiters"] -->|HTTPS| WebPortal
     FlutterApp -->|TLS 1.3 /api/v1/sync| SyncModule
     FlutterApp -->|TLS 1.3 /api/v1/llm-proxy| LLMModule
     FlutterApp -->|TLS 1.3 /api/v1/auth| AuthModule
